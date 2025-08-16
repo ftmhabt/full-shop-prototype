@@ -191,7 +191,7 @@ function FeatureItem({
 function Hero() {
   return (
     <section className="relative w-full">
-      <Carousel opts={{ align: "start" }} className="relative w-full">
+      <Carousel opts={{ align: "start" }}>
         <CarouselContent>
           {heroSlides.map((s) => (
             <CarouselItem key={s.id}>
@@ -233,7 +233,6 @@ function Hero() {
           ))}
         </CarouselContent>
         <CarouselPrevious />
-
         <CarouselNext />
       </Carousel>
     </section>
@@ -301,7 +300,7 @@ function HotThisWeek() {
           </TabsList>
         </Tabs>
       </div>
-      <Carousel opts={{ align: "start" }} className="relative w-full">
+      <Carousel opts={{ align: "start" }}>
         <CarouselContent>
           {products.map((p) => (
             <CarouselItem

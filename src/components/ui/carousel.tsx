@@ -120,7 +120,7 @@ function Carousel({
     >
       <div
         onKeyDownCapture={handleKeyDown}
-        className={cn("relative", className)}
+        className={cn("relative w-full md:w-[90%] mx-auto", className)}
         role="region"
         aria-roledescription="carousel"
         data-slot="carousel"
@@ -187,7 +187,7 @@ function CarouselPrevious({
       className={cn(
         "absolute size-8 rounded-full",
         orientation === "horizontal"
-          ? "top-1/2 left-2 sm:left-[-2.5rem] -translate-y-1/2 "
+          ? "top-1/2 left-[-5%] -translate-y-1/2 "
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
         className
       )}
@@ -217,7 +217,7 @@ function CarouselNext({
       className={cn(
         "absolute size-8 rounded-full",
         orientation === "horizontal"
-          ? "top-1/2 right-2 sm:right-[-2.5rem] -translate-y-1/2"
+          ? "top-1/2 right-[-5%] -translate-y-1/2"
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
         className
       )}

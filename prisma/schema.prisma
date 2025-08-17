@@ -7,6 +7,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+  EDITOR
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  COMPLETED
+  CANCELED
+}
+
 model User {
   id        String   @id @default(cuid())
   phone     String   @unique
@@ -30,15 +44,16 @@ model Otp {
 }
 
 model Product {
-  id          String      @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
-  description String?
+  description String
   price       Int
-  stock       Int         @default(0)
-  category    Category    @relation(fields: [categoryId], references: [id])
+  stock       Int
   categoryId  String
-  orders      OrderItem[]
-  createdAt   DateTime    @default(now())
+  category    Category @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime @default(now())
+
+  orderItems OrderItem[]
 }
 
 model Category {
@@ -49,40 +64,29 @@ model Category {
 
 model Order {
   id        String      @id @default(cuid())
-  user      User        @relation(fields: [userId], references: [id])
   userId    String
-  items     OrderItem[]
+  user      User        @relation(fields: [userId], references: [id])
   status    OrderStatus @default(PENDING)
   createdAt DateTime    @default(now())
+
+  items OrderItem[]
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  order     Order   @relation(fields: [orderId], references: [id])
+  id        String @id @default(cuid())
   orderId   String
-  product   Product @relation(fields: [productId], references: [id])
   productId String
-  quantity  Int     @default(1)
+  quantity  Int
+
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
 }
 
 model BlogPost {
   id        String   @id @default(cuid())
   title     String
   content   String
-  author    User     @relation(fields: [authorId], references: [id])
   authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
-}
-
-enum Role {
-  USER
-  ADMIN
-}
-
-enum OrderStatus {
-  PENDING
-  PAID
-  SHIPPED
-  DELIVERED
-  CANCELED
 }

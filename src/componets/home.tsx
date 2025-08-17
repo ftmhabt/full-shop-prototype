@@ -10,7 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -509,54 +508,6 @@ export default function HomePage() {
       <BlogRow />
       <ServiceBar />
       <Newsletter />
-      <Separator className="my-10" />
-      <footer className="grid grid-cols-2 gap-6 text-sm text-muted-foreground sm:grid-cols-4">
-        <div>
-          <div className="text-base font-bold text-foreground">
-            فروشگاه آنلاین سیستم‌های حفاظتی
-          </div>
-          <p className="mt-2 leading-7">
-            فروش تخصصی دزدگیر اماکن، دوربین مداربسته، اعلام حریق و لوازم جانبی
-            با قیمت رقابتی و ارسال فوری.
-          </p>
-        </div>
-        <div>
-          <div className="font-semibold text-foreground">راهنمای خرید</div>
-          <ul className="mt-2 space-y-2">
-            <li>
-              <Link href="#">شیوه‌های ارسال</Link>
-            </li>
-            <li>
-              <Link href="#">روش‌های پرداخت</Link>
-            </li>
-            <li>
-              <Link href="#">سوالات متداول</Link>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <div className="font-semibold text-foreground">خدمات پس از فروش</div>
-          <ul className="mt-2 space-y-2">
-            <li>
-              <Link href="#">گارانتی و مرجوعی</Link>
-            </li>
-            <li>
-              <Link href="#">پشتیبانی فنی</Link>
-            </li>
-            <li>
-              <Link href="#">آموزش نصب</Link>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <div className="font-semibold text-foreground">ارتباط با ما</div>
-          <ul className="mt-2 space-y-2">
-            <li>تلفن: ۰۲۱-۱۲۳۴۵۶۷</li>
-            <li>واتساپ: ۰۹۱۲۳۴۵۶۷۸۹</li>
-            <li>آدرس: تهران، ...</li>
-          </ul>
-        </div>
-      </footer>
     </main>
   );
 }

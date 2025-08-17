@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders    Order[]
+  blogPosts BlogPost[]
+}
+
+model Otp {
+  id        String   @id @default(cuid())
+  phone     String
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  price       Int
+  stock       Int         @default(0)
+  category    Category    @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  orders      OrderItem[]
+  createdAt   DateTime    @default(now())
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String
+  products Product[]
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  user      User        @relation(fields: [userId], references: [id])
+  userId    String
+  items     OrderItem[]
+  status    OrderStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int     @default(1)
+}
+
+model BlogPost {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELED
+}

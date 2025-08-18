@@ -3,7 +3,7 @@ export async function sendOtpSms(phone: string, code: string) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      // Accept: "text/plain",
+      Accept: "text/plain",
       "x-api-key": process.env.SMS_IR_API_KEY!,
     },
     body: JSON.stringify({
@@ -13,6 +13,4 @@ export async function sendOtpSms(phone: string, code: string) {
     }),
   });
   if (!res.ok) throw new Error("SMS.ir error");
-  const data = await res.json();
-  console.log(JSON.stringify(data));
 }

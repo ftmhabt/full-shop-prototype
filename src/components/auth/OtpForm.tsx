@@ -1,7 +1,10 @@
+"use client";
+
 import { requestOtp, verifyOtp } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormEvent, useTransition } from "react";
+import { toast } from "react-hot-toast";
 
 interface OtpFormProps {
   phone: string;
@@ -29,22 +32,47 @@ export const OtpForm = ({
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
-      await verifyOtp(phone, code);
+      try {
+        toast.loading("در حال بررسی کد...");
+        await verifyOtp(phone, code);
 
-      setPasswordMode("set");
-      setStep("password");
+        toast.dismiss();
+        toast.success("کد با موفقیت تأیید شد");
+
+        setPasswordMode("set");
+        setStep("password");
+      } catch (err: any) {
+        toast.dismiss();
+        toast.error(err.message || "خطایی رخ داد، لطفاً دوباره تلاش کنید");
+      }
     });
   };
 
   const handleResend = () => {
     resetTimer();
     startTransition(async () => {
-      const res = await requestOtp(phone);
-      if (res.status === "PASSWORD") {
-        setPasswordMode("set");
-        setStep("password");
-      } else {
-        setStep("done");
+      try {
+        toast.loading("در حال ارسال مجدد کد...");
+        const res = await requestOtp(phone);
+
+        toast.dismiss();
+
+        if (res.status === "ERROR") {
+          toast.error(res.message || "خطا در ارسال کد");
+          return;
+        }
+
+        toast.success("کد جدید ارسال شد");
+
+        if (res.status === "PASSWORD") {
+          setPasswordMode("set");
+          setStep("password");
+        } else {
+          setStep("otp");
+        }
+      } catch (err: any) {
+        toast.dismiss();
+        toast.error(err.message || "ارسال کد با مشکل مواجه شد");
       }
     });
   };
@@ -80,6 +108,7 @@ export const OtpForm = ({
           variant="outline"
           onClick={handleResend}
           className="w-full"
+          disabled={isPending}
         >
           ارسال مجدد کد
         </Button>

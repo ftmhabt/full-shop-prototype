@@ -5,6 +5,7 @@ import { Phone, Search, ShoppingCart } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -81,6 +82,7 @@ export default function RootLayout({
         {/* Main Content */}
         <main className="container mx-auto min-h-[60vh] px-4 py-6 flex items-center justify-center">
           {children}
+          <Toaster position="top-center" reverseOrder={false} />
         </main>
 
         {/* Footer */}

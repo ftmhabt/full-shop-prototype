@@ -1,7 +1,11 @@
+"use client";
+
 import { requestOtp } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getErrorMessage } from "@/lib/utils";
 import { FormEvent, useTransition } from "react";
+import { toast } from "react-hot-toast";
 
 interface PhoneFormProps {
   phone: string;
@@ -21,12 +25,28 @@ export const PhoneForm = ({
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
-      const res = await requestOtp(phone);
-      if (res?.status === "EXISTING") {
-        setPasswordMode("enter");
-        setStep("password");
-      } else {
-        setStep("otp");
+      try {
+        toast.loading("در حال ارسال کد...");
+        const res = await requestOtp(phone);
+
+        toast.dismiss();
+
+        if (res?.status === "ERROR") {
+          toast.error(getErrorMessage(res));
+          return;
+        }
+
+        if (res?.status === "EXISTING") {
+          toast.success("کاربر یافت شد");
+          setPasswordMode("enter");
+          setStep("password");
+        } else {
+          toast.success("کد ارسال شد");
+          setStep("otp");
+        }
+      } catch (err: any) {
+        toast.dismiss();
+        toast.error(getErrorMessage(err));
       }
     });
   };

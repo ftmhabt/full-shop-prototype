@@ -21,56 +21,112 @@ export async function requestOtp(phone: string) {
   const user = await db.user.findUnique({ where: { phone } });
   if (user) return { status: "EXISTING" };
 
-  await sendOtpSms(phone, code);
+  const smsResult = await sendOtpSms(phone, code);
   console.log(`DEBUG OTP for ${phone}:`, code);
+
+  if (!smsResult.success) {
+    return { status: "ERROR", message: smsResult.message };
+  }
 
   return { status: "NEW" };
 }
 
 export async function verifyOtp(phone: string, code: string) {
-  const otp = await db.otp.findFirst({
-    where: { phone },
-    orderBy: { createdAt: "desc" },
-  });
-  if (!otp) throw new Error("OTP not found");
-  if (otp.expiresAt < new Date()) throw new Error("OTP expired");
+  try {
+    const otp = await db.otp.findFirst({
+      where: { phone },
+      orderBy: { createdAt: "desc" },
+    });
 
-  const valid = await bcrypt.compare(code, otp.codeHash);
-  if (!valid) throw new Error("Invalid code");
+    if (!otp) {
+      return { success: false, message: "کدی برای این شماره یافت نشد" };
+    }
+    if (otp.expiresAt < new Date()) {
+      return { success: false, message: "کد منقضی شده است" };
+    }
 
-  await db.otp.delete({ where: { id: otp.id } });
+    const valid = await bcrypt.compare(code, otp.codeHash);
+    if (!valid) {
+      return { success: false, message: "کد وارد شده صحیح نیست" };
+    }
+
+    await db.otp.delete({ where: { id: otp.id } });
+    return { success: true, message: "کد معتبر است" };
+  } catch (err: any) {
+    return { success: false, message: err.message || "خطایی رخ داد" };
+  }
 }
-
 export async function setPassword(phone: string, password: string) {
-  const hash = await bcrypt.hash(password, 10);
-  const user = await db.user.create({
-    data: { phone, role: "USER", password: hash },
-  });
+  try {
+    const hash = await bcrypt.hash(password, 10);
 
-  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
-    expiresIn: "7d",
-  });
-  const allCookies = await cookies();
-  allCookies.set("token", token, { httpOnly: true });
+    let user = await db.user.findUnique({ where: { phone } });
 
-  return { status: "SIGNED_UP", user };
+    if (user) {
+      // 🔹 Update existing user’s password
+      user = await db.user.update({
+        where: { phone },
+        data: { password: hash },
+      });
+    } else {
+      // 🔹 Create new user
+      user = await db.user.create({
+        data: { phone, role: "USER", password: hash },
+      });
+    }
+
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+      expiresIn: "7d",
+    });
+
+    const allCookies = await cookies();
+    allCookies.set("token", token, { httpOnly: true });
+
+    return {
+      success: true,
+      status: user ? "PASSWORD_UPDATED" : "SIGNED_UP",
+      message: user
+        ? "رمز عبور با موفقیت تغییر کرد"
+        : "ثبت‌نام موفقیت‌آمیز بود",
+      user,
+    };
+  } catch (err: any) {
+    return { success: false, message: err.message || "خطا در ثبت رمز عبور" };
+  }
 }
 
 export async function loginWithPassword(phone: string, password: string) {
-  const user = await db.user.findUnique({ where: { phone } });
-  if (!user || !user.password) {
-    throw new Error("User not found or password not set");
+  try {
+    const user = await db.user.findUnique({ where: { phone } });
+    if (!user || !user.password) {
+      return {
+        success: false,
+        message: "کاربر یافت نشد یا رمز عبور تنظیم نشده است",
+      };
+    }
+
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) {
+      return { success: false, message: "رمز عبور اشتباه است" };
+    }
+
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+      expiresIn: "7d",
+    });
+
+    const allCookies = await cookies();
+    allCookies.set("token", token, { httpOnly: true });
+
+    return {
+      success: true,
+      status: "LOGGED_IN",
+      message: "ورود موفقیت‌آمیز بود",
+      user,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err.message || "خطا در ورود به حساب کاربری",
+    };
   }
-
-  const valid = await bcrypt.compare(password, user.password);
-  if (!valid) throw new Error("Invalid password");
-
-  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
-    expiresIn: "7d",
-  });
-
-  const allCookies = await cookies();
-  allCookies.set("token", token, { httpOnly: true });
-
-  return { status: "LOGGED_IN", user };
 }

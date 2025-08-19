@@ -4,6 +4,7 @@ import { requestOtp } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getErrorMessage } from "@/lib/utils";
+import { phoneSchema } from "@/lib/validations";
 import { FormEvent, useTransition } from "react";
 import { toast } from "react-hot-toast";
 
@@ -26,6 +27,7 @@ export const PhoneForm = ({
     e.preventDefault();
     startTransition(async () => {
       try {
+        phoneSchema.parse(phone);
         toast.loading("در حال ارسال کد...");
         const res = await requestOtp(phone);
 

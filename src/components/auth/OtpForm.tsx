@@ -4,6 +4,7 @@ import { requestOtp, verifyOtp } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getErrorMessage } from "@/lib/utils";
+import { otpSchema, phoneSchema } from "@/lib/validations";
 import { FormEvent, useTransition } from "react";
 import { toast } from "react-hot-toast";
 
@@ -34,6 +35,8 @@ export const OtpForm = ({
     e.preventDefault();
     startTransition(async () => {
       try {
+        phoneSchema.parse(phone);
+        otpSchema.parse(code);
         toast.loading("در حال بررسی کد...");
         await verifyOtp(phone, code);
 
@@ -55,6 +58,7 @@ export const OtpForm = ({
     resetTimer();
     startTransition(async () => {
       try {
+        phoneSchema.parse(phone);
         toast.loading("در حال ارسال مجدد کد...");
         const res = await requestOtp(phone);
 

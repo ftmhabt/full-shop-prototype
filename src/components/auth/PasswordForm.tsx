@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getErrorMessage } from "@/lib/utils";
+import { passwordSchema, phoneSchema } from "@/lib/validations";
 import { FormEvent, useTransition } from "react";
 import { toast } from "react-hot-toast";
 
@@ -27,6 +28,7 @@ export const PasswordForm = ({ phone, setStep, mode }: PasswordFormProps) => {
 
     startTransition(async () => {
       try {
+        passwordSchema.parse(pass);
         toast.loading(mode === "set" ? "در حال ثبت رمز..." : "در حال ورود...");
 
         const res =
@@ -57,6 +59,7 @@ export const PasswordForm = ({ phone, setStep, mode }: PasswordFormProps) => {
   const handleForgotPassword = () => {
     startTransition(async () => {
       try {
+        phoneSchema.parse(phone);
         toast.loading("در حال ارسال کد بازیابی...");
         const res = await requestOtp(phone);
         toast.dismiss();

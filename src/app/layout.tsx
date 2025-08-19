@@ -66,7 +66,7 @@ export default function RootLayout({
 
           {/* Nav */}
           <nav className="border-t">
-            <div className="container mx-auto flex items-center gap-6 overflow-x-auto p-3 text-sm">
+            <div className="container mx-auto flex items-center gap-6 overflow-x-auto p-3 text-sm *:text-nowrap">
               <Link href="/">خانه</Link>
               <Link href="/alarms">دزدگیر اماکن</Link>
               <Link href="/cctv">دوربین مداربسته</Link>
@@ -79,7 +79,7 @@ export default function RootLayout({
         </header>
 
         {/* Main Content */}
-        <main className="container mx-auto min-h-[60vh] px-4 py-6">
+        <main className="container mx-auto min-h-[60vh] px-4 py-6 flex items-center justify-center">
           {children}
         </main>
 

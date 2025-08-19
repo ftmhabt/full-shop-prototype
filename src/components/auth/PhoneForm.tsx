@@ -44,7 +44,7 @@ export const PhoneForm = ({
           toast.success("کد ارسال شد");
           setStep("otp");
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         toast.dismiss();
         toast.error(getErrorMessage(err));
       }

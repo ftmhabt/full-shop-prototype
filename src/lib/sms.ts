@@ -1,3 +1,5 @@
+import { getErrorMessage } from "./utils";
+
 export async function sendOtpSms(phone: string, code: string) {
   try {
     const res = await fetch("https://api.sms.ir/v1/send/verify", {
@@ -24,10 +26,10 @@ export async function sendOtpSms(phone: string, code: string) {
     }
 
     return { success: true, message: "کد با موفقیت ارسال شد" };
-  } catch (err: any) {
+  } catch (err: unknown) {
     return {
       success: false,
-      message: err.message || "مشکل در اتصال به SMS.ir",
+      message: getErrorMessage(err) || "مشکل در اتصال به SMS.ir",
     };
   }
 }

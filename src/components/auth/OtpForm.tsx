@@ -3,6 +3,7 @@
 import { requestOtp, verifyOtp } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getErrorMessage } from "@/lib/utils";
 import { FormEvent, useTransition } from "react";
 import { toast } from "react-hot-toast";
 
@@ -41,9 +42,11 @@ export const OtpForm = ({
 
         setPasswordMode("set");
         setStep("password");
-      } catch (err: any) {
+      } catch (err: unknown) {
         toast.dismiss();
-        toast.error(err.message || "خطایی رخ داد، لطفاً دوباره تلاش کنید");
+        toast.error(
+          getErrorMessage(err) || "خطایی رخ داد، لطفاً دوباره تلاش کنید"
+        );
       }
     });
   };
@@ -70,9 +73,9 @@ export const OtpForm = ({
         } else {
           setStep("otp");
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         toast.dismiss();
-        toast.error(err.message || "ارسال کد با مشکل مواجه شد");
+        toast.error(getErrorMessage(err) || "ارسال کد با مشکل مواجه شد");
       }
     });
   };

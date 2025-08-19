@@ -7,6 +7,7 @@ import {
 } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getErrorMessage } from "@/lib/utils";
 import { FormEvent, useTransition } from "react";
 import { toast } from "react-hot-toast";
 
@@ -46,9 +47,9 @@ export const PasswordForm = ({ phone, setStep, mode }: PasswordFormProps) => {
           toast.success("ثبت‌نام موفقیت‌آمیز بود");
         }
         setStep("done");
-      } catch (err: any) {
+      } catch (err: unknown) {
         toast.dismiss();
-        toast.error(err.message || "مشکلی پیش آمد");
+        toast.error(getErrorMessage(err) || "مشکلی پیش آمد");
       }
     });
   };
@@ -67,9 +68,9 @@ export const PasswordForm = ({ phone, setStep, mode }: PasswordFormProps) => {
 
         toast.success("کد بازیابی ارسال شد");
         setStep("otp");
-      } catch (err: any) {
+      } catch (err: unknown) {
         toast.dismiss();
-        toast.error(err.message || "مشکل در ارسال کد");
+        toast.error(getErrorMessage(err) || "مشکل در ارسال کد");
       }
     });
   };

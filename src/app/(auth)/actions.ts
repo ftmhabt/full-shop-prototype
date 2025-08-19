@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db";
 import { sendOtpSms } from "@/lib/sms";
+import { getErrorMessage } from "@/lib/utils";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
@@ -52,8 +53,8 @@ export async function verifyOtp(phone: string, code: string) {
 
     await db.otp.delete({ where: { id: otp.id } });
     return { success: true, message: "کد معتبر است" };
-  } catch (err: any) {
-    return { success: false, message: err.message || "خطایی رخ داد" };
+  } catch (err: unknown) {
+    return { success: false, message: getErrorMessage(err) || "خطایی رخ داد" };
   }
 }
 export async function setPassword(phone: string, password: string) {
@@ -90,8 +91,11 @@ export async function setPassword(phone: string, password: string) {
         : "ثبت‌نام موفقیت‌آمیز بود",
       user,
     };
-  } catch (err: any) {
-    return { success: false, message: err.message || "خطا در ثبت رمز عبور" };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      message: getErrorMessage(err) || "خطا در ثبت رمز عبور",
+    };
   }
 }
 
@@ -123,10 +127,10 @@ export async function loginWithPassword(phone: string, password: string) {
       message: "ورود موفقیت‌آمیز بود",
       user,
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     return {
       success: false,
-      message: err.message || "خطا در ورود به حساب کاربری",
+      message: getErrorMessage(err) || "خطا در ورود به حساب کاربری",
     };
   }
 }

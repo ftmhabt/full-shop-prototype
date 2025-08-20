@@ -3,11 +3,17 @@
 import { db } from "@/lib/db";
 import { sendOtpSms } from "@/lib/sms";
 import { getErrorMessage } from "@/lib/utils";
+import { phoneSchema } from "@/lib/validations";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
 export async function requestOtp(phone: string) {
+  const parsed = phoneSchema.safeParse(phone);
+  if (!parsed.success) {
+    return { status: "ERROR", message: getErrorMessage(parsed.error) };
+  }
+
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   const codeHash = await bcrypt.hash(code, 10);
 
@@ -20,6 +26,7 @@ export async function requestOtp(phone: string) {
   });
 
   const user = await db.user.findUnique({ where: { phone } });
+
   if (user) return { status: "EXISTING" };
 
   const smsResult = await sendOtpSms(phone, code);
@@ -64,13 +71,11 @@ export async function setPassword(phone: string, password: string) {
     let user = await db.user.findUnique({ where: { phone } });
 
     if (user) {
-      // 🔹 Update existing user’s password
       user = await db.user.update({
         where: { phone },
         data: { password: hash },
       });
     } else {
-      // 🔹 Create new user
       user = await db.user.create({
         data: { phone, role: "USER", password: hash },
       });

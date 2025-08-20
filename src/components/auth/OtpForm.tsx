@@ -94,13 +94,16 @@ export const OtpForm = ({
         </span>
         <button
           type="button"
-          className="text-blue-600 text-sm underline"
+          className="text-blue-600 text-sm"
           onClick={() => setStep("phone")}
         >
           تغییر شماره
         </button>
       </div>
       <Input
+        type="number"
+        minLength={3}
+        maxLength={6}
         value={code}
         onChange={(e) => setCode(e.target.value)}
         placeholder="کد یکبار مصرف"

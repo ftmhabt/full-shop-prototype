@@ -56,25 +56,24 @@ export const PasswordForm = ({ phone, setStep, mode }: PasswordFormProps) => {
     });
   };
 
-  const handleForgotPassword = () => {
-    startTransition(async () => {
-      try {
-        phoneSchema.parse(phone);
-        toast.loading("در حال ارسال کد بازیابی...");
-        const res = await requestOtp(phone);
-        toast.dismiss();
+  const handleForgotPassword = async () => {
+    try {
+      phoneSchema.parse(phone);
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err) || "شماره موبایل معتبر نیست");
+      return;
+    }
 
+    await toast.promise(requestOtp(phone), {
+      loading: "در حال ارسال کد بازیابی...",
+      success: (res) => {
         if (res?.status === "ERROR") {
-          toast.error(res.message || "خطا در ارسال کد");
-          return;
+          return res.message || "خطا در ارسال کد";
         }
-
-        toast.success("کد بازیابی ارسال شد");
         setStep("otp");
-      } catch (err: unknown) {
-        toast.dismiss();
-        toast.error(getErrorMessage(err) || "مشکل در ارسال کد");
-      }
+        return "کد بازیابی ارسال شد";
+      },
+      error: (err: unknown) => getErrorMessage(err) || "مشکل در ارسال کد",
     });
   };
 
@@ -98,16 +97,16 @@ export const PasswordForm = ({ phone, setStep, mode }: PasswordFormProps) => {
             ? "ثبت رمز"
             : "ورود"}
         </Button>
+        {phone && mode === "enter" && (
+          <button
+            type="button"
+            onClick={handleForgotPassword}
+            className="text-sm text-blue-600 w-full"
+          >
+            رمز عبور را فراموش کرده‌ام، کد بازیابی ارسال کن
+          </button>
+        )}
       </form>
-      {phone && mode === "enter" && (
-        <button
-          type="button"
-          onClick={handleForgotPassword}
-          className="text-sm text-blue-600 underline w-full"
-        >
-          رمز عبور را فراموش کرده‌ام
-        </button>
-      )}
     </>
   );
 };

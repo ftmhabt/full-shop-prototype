@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { FallbackImage } from "@/componets/FallbackImage";
 import { Phone, Search, ShoppingCart } from "lucide-react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
@@ -29,14 +29,13 @@ export default function RootLayout({
               href="/"
               className="flex items-center gap-2 font-bold text-lg"
             >
-              <Image
+              <FallbackImage
                 src="/logo.png"
                 alt="لوگو"
                 width={40}
                 height={40}
-                className="object-contain"
               />
-              صیادی شاپ
+              شاپ
             </Link>
 
             {/* Search Bar */}
@@ -136,7 +135,7 @@ export default function RootLayout({
           </div>
           <Separator />
           <div className="container mx-auto flex flex-col items-center justify-between gap-3 px-4 py-4 text-xs text-muted-foreground sm:flex-row">
-            <p>© 2025 صیادی شاپ - همه حقوق محفوظ است</p>
+            <p>© 2025 شاپ - همه حقوق محفوظ است</p>
             <div className="flex gap-3">
               <Link href="#">اینستاگرام</Link>
               <Link href="#">تلگرام</Link>

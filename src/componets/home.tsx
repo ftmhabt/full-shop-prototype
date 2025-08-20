@@ -29,7 +29,6 @@ import {
   Truck,
   Wrench,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
 
@@ -40,6 +39,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { FallbackImage } from "./FallbackImage";
 
 // ---- Mock Data (replace with API) -----------------------------------------
 const heroSlides = [
@@ -105,7 +105,7 @@ function ProductCard({ p }: { p: (typeof products)[number] }) {
     <Card className="group overflow-hidden rounded-2xl border-muted/40">
       <CardContent className="p-4">
         <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-muted">
-          <Image
+          <FallbackImage
             src={p.image}
             alt={p.title}
             fill
@@ -196,7 +196,7 @@ function Hero() {
             <CarouselItem key={s.id}>
               <Card className="overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-violet-600/10 to-indigo-600/10 p-0">
                 <div className="relative h-[260px] w-full sm:h-[360px] md:h-[420px]">
-                  <Image
+                  <FallbackImage
                     src={s.image}
                     alt={s.title}
                     fill
@@ -358,7 +358,12 @@ function Collections() {
               {products.slice(i * 4, i * 4 + 4).map((p) => (
                 <div key={p.id} className="space-y-2">
                   <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-muted">
-                    <Image src={p.image} alt="" fill className="object-cover" />
+                    <FallbackImage
+                      src={p.image}
+                      alt=""
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                   <div className="text-xs leading-5">{p.title}</div>
                 </div>
@@ -386,7 +391,7 @@ function BrandStrip() {
               key={b}
               className="opacity-70 transition-opacity hover:opacity-100"
             >
-              <Image
+              <FallbackImage
                 src={`/images/brands/${b}.png`}
                 alt={b}
                 width={96}
@@ -413,7 +418,7 @@ function BlogRow() {
         {posts.map((p) => (
           <Card key={p.id} className="overflow-hidden rounded-2xl">
             <div className="relative h-40 w-full">
-              <Image
+              <FallbackImage
                 src={p.image}
                 alt={p.title}
                 fill

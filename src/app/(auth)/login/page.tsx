@@ -7,9 +7,7 @@ import { useOtpTimer } from "@/hooks/useOtpTimer";
 import { useState } from "react";
 
 export default function LoginPage() {
-  const [step, setStep] = useState<"phone" | "otp" | "password" | "done">(
-    "phone"
-  );
+  const [step, setStep] = useState<"phone" | "otp" | "password">("phone");
   const [passwordMode, setPasswordMode] = useState<"set" | "enter">("enter");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
@@ -41,11 +39,6 @@ export default function LoginPage() {
       )}
       {step === "password" && (
         <PasswordForm phone={phone} setStep={setStep} mode={passwordMode} />
-      )}
-      {step === "done" && (
-        <p className="text-center font-semibold text-green-600 text-lg">
-          🎉 خوش آمدید!
-        </p>
       )}
     </div>
   );

@@ -12,7 +12,7 @@ interface OtpFormProps {
   phone: string;
   code: string;
   setCode: (val: string) => void;
-  setStep: (step: "phone" | "otp" | "password" | "done") => void;
+  setStep: (step: "phone" | "otp" | "password") => void;
   timer: number;
   canResend: boolean;
   resetTimer: () => void;

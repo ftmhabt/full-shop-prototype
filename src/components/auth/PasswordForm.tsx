@@ -9,17 +9,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getErrorMessage } from "@/lib/utils";
 import { passwordSchema, phoneSchema } from "@/lib/validations";
+import { useRouter } from "next/navigation";
 import { FormEvent, useTransition } from "react";
 import { toast } from "react-hot-toast";
 
 interface PasswordFormProps {
   phone: string;
-  setStep: (step: "phone" | "otp" | "password" | "done") => void;
+  setStep: (step: "phone" | "otp" | "password") => void;
   mode: "set" | "enter";
 }
 
 export const PasswordForm = ({ phone, setStep, mode }: PasswordFormProps) => {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,9 +48,9 @@ export const PasswordForm = ({ phone, setStep, mode }: PasswordFormProps) => {
         if (res.status === "PASSWORD_UPDATED") {
           toast.success("رمز عبور تغییر کرد");
         } else {
-          toast.success("ثبت‌نام موفقیت‌آمیز بود");
+          toast.success("خوش آمدید");
         }
-        setStep("done");
+        router.push("/dashboard");
       } catch (err: unknown) {
         toast.dismiss();
         toast.error(getErrorMessage(err) || "مشکلی پیش آمد");

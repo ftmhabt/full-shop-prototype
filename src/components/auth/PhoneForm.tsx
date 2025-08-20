@@ -10,7 +10,7 @@ import { toast } from "react-hot-toast";
 interface PhoneFormProps {
   phone: string;
   setPhone: (val: string) => void;
-  setStep: (step: "phone" | "otp" | "password" | "done") => void;
+  setStep: (step: "phone" | "otp" | "password") => void;
   setPasswordMode: (mode: "set" | "enter") => void;
 }
 

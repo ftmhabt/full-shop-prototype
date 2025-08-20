@@ -7,6 +7,7 @@ import { phoneSchema } from "@/lib/validations";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function requestOtp(phone: string) {
   const parsed = phoneSchema.safeParse(phone);
@@ -138,4 +139,11 @@ export async function loginWithPassword(phone: string, password: string) {
       message: getErrorMessage(err) || "خطا در ورود به حساب کاربری",
     };
   }
+}
+
+export async function logout() {
+  const allCookies = await cookies();
+  allCookies.set("token", "", { httpOnly: true, expires: new Date(0) });
+
+  redirect("/login");
 }

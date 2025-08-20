@@ -1,3 +1,4 @@
+import LogoutButton from "@/components/auth/LogoutButton";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -9,7 +10,6 @@ const links = [
   { href: "/dashboard/addresses", label: "آدرس" },
   { href: "/dashboard/payments", label: "روش های پرداخت" },
   { href: "/dashboard/account", label: "اطلاعات حساب کاربری" },
-  { href: "/logout", label: "خروج" },
 ];
 
 export default function DashboardLayout({
@@ -33,6 +33,7 @@ export default function DashboardLayout({
               {link.label}
             </Link>
           ))}
+          <LogoutButton />
         </Card>
       </aside>
 

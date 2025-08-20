@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 interface StepIndicatorProps {
-  step: "phone" | "otp" | "password" | "done";
+  step: "phone" | "otp" | "password";
 }
 
 export const StepIndicator = ({ step }: StepIndicatorProps) => {

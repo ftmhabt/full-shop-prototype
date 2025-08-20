@@ -1,18 +1,18 @@
 -- CreateEnum
-CREATE TYPE "public"."Role" AS ENUM ('USER', 'ADMIN');
+CREATE TYPE "public"."Role" AS ENUM ('USER', 'ADMIN', 'EDITOR');
 
 -- CreateEnum
-CREATE TYPE "public"."OrderStatus" AS ENUM ('PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELED');
+CREATE TYPE "public"."OrderStatus" AS ENUM ('PENDING', 'PAID', 'SHIPPED', 'COMPLETED', 'CANCELED');
 
 -- CreateTable
 CREATE TABLE "public"."User" (
     "id" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
     "role" "public"."Role" NOT NULL DEFAULT 'USER',
+    "password" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "password" TEXT NOT NULL,
-    
+
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
@@ -32,9 +32,9 @@ CREATE TABLE "public"."Otp" (
 CREATE TABLE "public"."Product" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "description" TEXT,
+    "description" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
-    "stock" INTEGER NOT NULL DEFAULT 0,
+    "stock" INTEGER NOT NULL,
     "categoryId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -45,6 +45,7 @@ CREATE TABLE "public"."Product" (
 CREATE TABLE "public"."Category" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
 );
@@ -64,7 +65,7 @@ CREATE TABLE "public"."OrderItem" (
     "id" TEXT NOT NULL,
     "orderId" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
-    "quantity" INTEGER NOT NULL DEFAULT 1,
+    "quantity" INTEGER NOT NULL,
 
     CONSTRAINT "OrderItem_pkey" PRIMARY KEY ("id")
 );
@@ -85,6 +86,9 @@ CREATE UNIQUE INDEX "User_phone_key" ON "public"."User"("phone");
 
 -- CreateIndex
 CREATE INDEX "Otp_phone_idx" ON "public"."Otp"("phone");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Category_slug_key" ON "public"."Category"("slug");
 
 -- AddForeignKey
 ALTER TABLE "public"."Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "public"."Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

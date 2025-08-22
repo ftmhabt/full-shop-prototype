@@ -41,27 +41,31 @@ model Otp {
   attempts  Int      @default(0)
   createdAt DateTime @default(now())
 
-  @@index([phone])
+  @@index([phone, expiresAt])
 }
 
 model Product {
-  id          String   @id @default(cuid())
+  id          String             @id @default(cuid())
+  slug        String             @unique
   name        String
   description String
   price       Int
   stock       Int
   categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id])
-  createdAt   DateTime @default(now())
+  category    Category           @relation(fields: [categoryId], references: [id])
+  attributes  ProductAttribute[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
 
   orderItems OrderItem[]
 }
 
 model Category {
-  id       String    @id @default(cuid())
-  name     String
-  slug     String    @unique
-  products Product[]
+  id         String      @id @default(cuid())
+  name       String
+  slug       String      @unique
+  products   Product[]
+  attributes Attribute[]
 }
 
 model Order {
@@ -80,8 +84,11 @@ model OrderItem {
   productId String
   quantity  Int
 
-  order   Order   @relation(fields: [orderId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 model BlogPost {
@@ -91,4 +98,45 @@ model BlogPost {
   authorId  String
   author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model Attribute {
+  id         String   @id @default(cuid())
+  name       String
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  values            AttributeValue[]
+  productAttributes ProductAttribute[]
+
+  @@unique([name, categoryId])
+}
+
+model AttributeValue {
+  id                String             @id @default(cuid())
+  value             String
+  attributeId       String
+  attribute         Attribute          @relation(fields: [attributeId], references: [id])
+  productAttributes ProductAttribute[]
+
+  @@unique([value, attributeId])
+  @@index([attributeId])
+  @@index([value])
+}
+
+model ProductAttribute {
+  id        String @id @default(cuid())
+  productId String
+  valueId   String
+
+  product     Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  value       AttributeValue @relation(fields: [valueId], references: [id], onDelete: Cascade)
+  Attribute   Attribute?     @relation(fields: [attributeId], references: [id])
+  attributeId String?
+
+  @@unique([productId, valueId])
+  @@index([productId])
+  @@index([valueId])
 }

@@ -1,28 +1,40 @@
-import {
-  getCategories,
-  getProductsByCategorySlug,
-} from "@/app/actions/products";
-import { ProductList } from "@/componets/ProductList";
-import { Sidebar } from "@/componets/Sidebar";
+import AttributesWrapper from "@/components/server/AttributesWrapper";
+import ProductsWrapper from "@/components/server/ProductsWrapper";
+import { Suspense } from "react";
 
-export default async function CategoryPage({
-  params,
-}: {
+interface CategoryPageProps {
   params: { slug: string };
-}) {
-  const { slug } = await params;
-  const categories = await getCategories();
-  const products = await getProductsByCategorySlug(slug);
-  console.log("slug:", slug);
-  console.log("products:", products);
-  console.log("categories:", categories);
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export default function CategoryPage({
+  params,
+  searchParams,
+}: CategoryPageProps) {
+  const slug = params.slug;
+
+  // Normalize searchParams to string[]
+  const filters: Record<string, string[]> = {};
+  Object.entries(searchParams || {}).forEach(([key, value]) => {
+    if (!value) return;
+    filters[key] = Array.isArray(value) ? value.filter(Boolean) : [value];
+  });
+
   return (
-    <div className="grid grid-cols-12 gap-6 p-6">
-      <aside className="col-span-3">
-        <Sidebar categories={categories} selected={slug} />
+    <div className="grid grid-cols-4 gap-6 p-6">
+      {/* Sidebar */}
+      <aside className="space-y-4">
+        <Suspense fallback={<p>در حال بارگذاری فیلترها…</p>}>
+          {/* Server component fetches attributes */}
+          <AttributesWrapper slug={slug} searchParams={searchParams} />
+        </Suspense>
       </aside>
-      <main className="col-span-9">
-        <ProductList products={products} />
+
+      {/* Main content */}
+      <main className="col-span-3">
+        <Suspense fallback={<p>در حال بارگذاری محصولات…</p>}>
+          <ProductsWrapper slug={slug} filters={filters} />
+        </Suspense>
       </main>
     </div>
   );

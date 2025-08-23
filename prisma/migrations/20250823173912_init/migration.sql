@@ -87,6 +87,7 @@ CREATE TABLE "public"."BlogPost" (
 CREATE TABLE "public"."Attribute" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "categoryId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -98,6 +99,7 @@ CREATE TABLE "public"."Attribute" (
 CREATE TABLE "public"."AttributeValue" (
     "id" TEXT NOT NULL,
     "value" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "attributeId" TEXT NOT NULL,
 
     CONSTRAINT "AttributeValue_pkey" PRIMARY KEY ("id")
@@ -135,6 +137,9 @@ CREATE INDEX "OrderItem_productId_idx" ON "public"."OrderItem"("productId");
 CREATE UNIQUE INDEX "Attribute_name_categoryId_key" ON "public"."Attribute"("name", "categoryId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Attribute_slug_categoryId_key" ON "public"."Attribute"("slug", "categoryId");
+
+-- CreateIndex
 CREATE INDEX "AttributeValue_attributeId_idx" ON "public"."AttributeValue"("attributeId");
 
 -- CreateIndex
@@ -142,6 +147,9 @@ CREATE INDEX "AttributeValue_value_idx" ON "public"."AttributeValue"("value");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "AttributeValue_value_attributeId_key" ON "public"."AttributeValue"("value", "attributeId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AttributeValue_slug_attributeId_key" ON "public"."AttributeValue"("slug", "attributeId");
 
 -- CreateIndex
 CREATE INDEX "ProductAttribute_productId_idx" ON "public"."ProductAttribute"("productId");

@@ -39,16 +39,21 @@ export default function RootLayout({
             </Link>
 
             {/* Search Bar */}
-            <div className="hidden flex-1 max-w-xl items-center gap-2 sm:flex">
+            <form
+              action="/search"
+              method="get"
+              className="flex flex-1 max-w-xl items-center gap-2"
+            >
               <Input
                 type="text"
+                name="q"
                 placeholder="جستجوی محصولات..."
                 className="rounded-full"
               />
-              <Button size="icon" className="rounded-full">
+              <Button type="submit" size="icon" className="rounded-full">
                 <Search className="h-4 w-4" />
               </Button>
-            </div>
+            </form>
 
             {/* Icons */}
             <div className="flex items-center gap-4">

@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { AttributeWithValues, ProductWithAttributes } from "@/types";
 
 export async function getCategories() {
   return db.category.findMany({
@@ -12,31 +13,37 @@ export async function getCategories() {
 export async function getProductsByCategorySlug(
   slug: string,
   filters: Record<string, string[]>
-) {
+): Promise<ProductWithAttributes[]> {
   const { orderBy, ...otherFilters } = filters;
 
-  // build Prisma where clause
   const where: any = {
     category: { slug },
   };
 
-  // inStock filter
+  // موجودی
   if (otherFilters.inStock?.includes("true")) {
     where.stock = { gt: 0 };
   }
 
-  // attribute filters
-  if (Object.keys(otherFilters).length > 0) {
-    where.attributes = {
-      some: {
-        valueId: { in: Object.values(otherFilters).flat() },
+  // فیلتر ویژگی‌ها با slug
+  const attributeFilters = Object.entries(otherFilters).filter(
+    ([key]) => key !== "inStock"
+  );
+  if (attributeFilters.length) {
+    where.AND = attributeFilters.map(([attrSlug, valueSlugs]) => ({
+      attributes: {
+        some: {
+          value: {
+            slug: { in: valueSlugs },
+            attribute: { slug: attrSlug },
+          },
+        },
       },
-    };
+    }));
   }
 
-  // build Prisma orderBy
-  let orderByClause: any = { createdAt: "desc" }; // default newest
-
+  // مرتب‌سازی
+  let orderByClause: any = { createdAt: "desc" };
   if (orderBy?.length) {
     switch (orderBy[0]) {
       case "oldest":
@@ -74,4 +81,64 @@ export async function getAttributesByCategorySlug(slug: string) {
     include: { values: true },
     orderBy: { name: "asc" },
   });
+}
+
+export async function getProductsBySearch(
+  query: string,
+  filters: Record<string, string[]> = {}
+): Promise<{
+  products: ProductWithAttributes[];
+  attributes: AttributeWithValues[];
+}> {
+  // ساخت where
+  const where: any = {
+    OR: [
+      { name: { contains: query, mode: "insensitive" } },
+      { description: { contains: query, mode: "insensitive" } },
+    ],
+  };
+
+  if (Object.keys(filters).length > 0) {
+    where.AND = Object.entries(filters).map(([attrSlug, valueSlugs]) => ({
+      attributes: {
+        some: {
+          value: {
+            slug: { in: valueSlugs },
+            attribute: { slug: attrSlug },
+          },
+        },
+      },
+    }));
+  }
+
+  const products = await db.product.findMany({
+    where,
+    include: {
+      attributes: {
+        include: {
+          value: { include: { attribute: true } },
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  // استخراج ویژگی‌ها از محصولات پیدا شده
+  const attributeMap: Record<string, AttributeWithValues> = {};
+  for (const p of products) {
+    for (const pa of p.attributes) {
+      const attr = pa.value.attribute;
+      if (!attributeMap[attr.slug]) {
+        attributeMap[attr.slug] = { ...attr, values: [] };
+      }
+      if (!attributeMap[attr.slug].values.find((v) => v.id === pa.value.id)) {
+        attributeMap[attr.slug].values.push(pa.value);
+      }
+    }
+  }
+
+  return {
+    products,
+    attributes: Object.values(attributeMap),
+  };
 }

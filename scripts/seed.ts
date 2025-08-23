@@ -1,5 +1,6 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { OrderStatus, PrismaClient, Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import slugify from "slugify";
 
 const prisma = new PrismaClient();
 
@@ -7,7 +8,7 @@ async function main() {
   const passwordHash = await bcrypt.hash("password123", 10);
 
   // --- Users ---
-  await Promise.all([
+  const [admin, user1, user2, editor] = await Promise.all([
     prisma.user.upsert({
       where: { phone: "1111111111" },
       update: {},
@@ -21,13 +22,34 @@ async function main() {
     prisma.user.upsert({
       where: { phone: "3333333333" },
       update: {},
+      create: { phone: "3333333333", role: Role.USER, password: passwordHash },
+    }),
+    prisma.user.upsert({
+      where: { phone: "4444444444" },
+      update: {},
       create: {
-        phone: "3333333333",
+        phone: "4444444444",
         role: Role.EDITOR,
         password: passwordHash,
       },
     }),
   ]);
+
+  // --- OTPs ---
+  await prisma.otp.createMany({
+    data: [
+      {
+        phone: "2222222222",
+        codeHash: "hashedcode123",
+        expiresAt: new Date(Date.now() + 300000),
+      },
+      {
+        phone: "3333333333",
+        codeHash: "hashedcode456",
+        expiresAt: new Date(Date.now() + 300000),
+      },
+    ],
+  });
 
   // --- Categories ---
   const [electronics, books, clothing] = await Promise.all([
@@ -48,336 +70,251 @@ async function main() {
     }),
   ]);
 
-  // --- Attributes ---
-  // Electronics: Brand, Color
-  const brandElectronics = await prisma.attribute.upsert({
-    where: { name_categoryId: { name: "Brand", categoryId: electronics.id } },
-    update: {},
-    create: { name: "Brand", categoryId: electronics.id },
-  });
+  // --- Attributes & Values ---
+  const [brandElectronics, colorElectronics] = await Promise.all([
+    prisma.attribute.upsert({
+      where: { name_categoryId: { name: "Brand", categoryId: electronics.id } },
+      update: {},
+      create: {
+        name: "Brand",
+        slug: slugify("Brand").toLowerCase(),
+        categoryId: electronics.id,
+      },
+    }),
+    prisma.attribute.upsert({
+      where: { name_categoryId: { name: "Color", categoryId: electronics.id } },
+      update: {},
+      create: {
+        name: "Color",
+        slug: slugify("Color").toLowerCase(),
+        categoryId: electronics.id,
+      },
+    }),
+  ]);
 
-  const colorElectronics = await prisma.attribute.upsert({
-    where: { name_categoryId: { name: "Color", categoryId: electronics.id } },
-    update: {},
-    create: { name: "Color", categoryId: electronics.id },
-  });
-
-  const brandValuesElectronics = await Promise.all(
-    ["Apple", "Samsung", "Dell"].map((val) =>
+  const [apple, samsung, dell] = await Promise.all(
+    ["Apple", "Samsung", "Dell"].map((v) =>
       prisma.attributeValue.upsert({
         where: {
-          value_attributeId: { value: val, attributeId: brandElectronics.id },
+          value_attributeId: { value: v, attributeId: brandElectronics.id },
         },
         update: {},
-        create: { value: val, attributeId: brandElectronics.id },
+        create: {
+          value: v,
+          slug: slugify(v).toLowerCase(),
+          attributeId: brandElectronics.id,
+        },
       })
     )
   );
 
-  const colorValuesElectronics = await Promise.all(
-    ["Black", "Silver", "White"].map((val) =>
+  const [black, silver, white] = await Promise.all(
+    ["Black", "Silver", "White"].map((v) =>
       prisma.attributeValue.upsert({
         where: {
-          value_attributeId: { value: val, attributeId: colorElectronics.id },
+          value_attributeId: { value: v, attributeId: colorElectronics.id },
         },
         update: {},
-        create: { value: val, attributeId: colorElectronics.id },
+        create: {
+          value: v,
+          slug: slugify(v).toLowerCase(),
+          attributeId: colorElectronics.id,
+        },
       })
     )
   );
 
-  // Clothing: Size, Color
-  const sizeClothing = await prisma.attribute.upsert({
-    where: { name_categoryId: { name: "Size", categoryId: clothing.id } },
-    update: {},
-    create: { name: "Size", categoryId: clothing.id },
-  });
+  // Clothing Attributes
+  const [sizeClothing, colorClothing] = await Promise.all([
+    prisma.attribute.upsert({
+      where: { name_categoryId: { name: "Size", categoryId: clothing.id } },
+      update: {},
+      create: {
+        name: "Size",
+        slug: slugify("Size").toLowerCase(),
+        categoryId: clothing.id,
+      },
+    }),
+    prisma.attribute.upsert({
+      where: { name_categoryId: { name: "Color", categoryId: clothing.id } },
+      update: {},
+      create: {
+        name: "Color",
+        slug: slugify("Color").toLowerCase(),
+        categoryId: clothing.id,
+      },
+    }),
+  ]);
 
-  const colorClothing = await prisma.attribute.upsert({
-    where: { name_categoryId: { name: "Color", categoryId: clothing.id } },
-    update: {},
-    create: { name: "Color", categoryId: clothing.id },
-  });
-
-  const sizeValuesClothing = await Promise.all(
-    ["S", "M", "L", "XL"].map((val) =>
+  const [sizeS, sizeM, sizeL, sizeXL] = await Promise.all(
+    ["S", "M", "L", "XL"].map((v) =>
       prisma.attributeValue.upsert({
         where: {
-          value_attributeId: { value: val, attributeId: sizeClothing.id },
+          value_attributeId: { value: v, attributeId: sizeClothing.id },
         },
         update: {},
-        create: { value: val, attributeId: sizeClothing.id },
+        create: {
+          value: v,
+          slug: slugify(v).toLowerCase(),
+          attributeId: sizeClothing.id,
+        },
       })
     )
   );
 
-  const colorValuesClothing = await Promise.all(
-    ["Red", "Blue", "Black"].map((val) =>
+  const [red, blue, blackCloth] = await Promise.all(
+    ["Red", "Blue", "Black"].map((v) =>
       prisma.attributeValue.upsert({
         where: {
-          value_attributeId: { value: val, attributeId: colorClothing.id },
+          value_attributeId: { value: v, attributeId: colorClothing.id },
         },
         update: {},
-        create: { value: val, attributeId: colorClothing.id },
+        create: {
+          value: v,
+          slug: slugify(v).toLowerCase(),
+          attributeId: colorClothing.id,
+        },
       })
     )
   );
 
   // --- Products ---
-  const products = await Promise.all([
-    prisma.product.upsert({
-      where: { slug: "laptop" },
-      update: {},
-      create: {
-        name: "Laptop",
-        slug: "laptop",
-        description: "High performance laptop",
-        price: 1200,
-        stock: 10,
-        categoryId: electronics.id,
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: "smartphone" },
-      update: {},
-      create: {
-        name: "Smartphone",
-        slug: "smartphone",
-        description: "Latest smartphone",
-        price: 800,
-        stock: 0, // out of stock
-        categoryId: electronics.id,
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: "headphones" },
-      update: {},
-      create: {
-        name: "Headphones",
-        slug: "headphones",
-        description: "Noise-canceling headphones",
-        price: 200,
-        stock: 25,
-        categoryId: electronics.id,
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: "book-a" },
-      update: {},
-      create: {
-        name: "Book A",
-        slug: "book-a",
-        description: "Interesting novel",
-        price: 25,
-        stock: 50,
-        categoryId: books.id,
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: "book-b" },
-      update: {},
-      create: {
-        name: "Book B",
-        slug: "book-b",
-        description: "Science textbook",
-        price: 40,
-        stock: 30,
-        categoryId: books.id,
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: "t-shirt" },
-      update: {},
-      create: {
-        name: "T-Shirt",
-        slug: "t-shirt",
-        description: "Cotton T-shirt",
-        price: 20,
-        stock: 100,
-        categoryId: clothing.id,
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: "jeans" },
-      update: {},
-      create: {
-        name: "Jeans",
-        slug: "jeans",
-        description: "Slim fit jeans",
-        price: 60,
-        stock: 40,
-        categoryId: clothing.id,
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: "jacket" },
-      update: {},
-      create: {
-        name: "Jacket",
-        slug: "jacket",
-        description: "Winter jacket",
-        price: 120,
-        stock: 15,
-        categoryId: clothing.id,
-      },
-    }),
-  ]);
+  const [laptop, smartphone, headphones, tshirt, jeans, jacket] =
+    await Promise.all([
+      prisma.product.upsert({
+        where: { slug: "laptop" },
+        update: {},
+        create: {
+          name: "Laptop",
+          slug: slugify("Laptop").toLowerCase(),
+          description: "High performance Dell laptop",
+          price: 1200,
+          stock: 10,
+          categoryId: electronics.id,
+        },
+      }),
+      prisma.product.upsert({
+        where: { slug: "smartphone" },
+        update: {},
+        create: {
+          name: "Smartphone",
+          slug: slugify("Smartphone").toLowerCase(),
+          description: "Latest Apple smartphone",
+          price: 800,
+          stock: 0,
+          categoryId: electronics.id,
+        },
+      }),
+      prisma.product.upsert({
+        where: { slug: "headphones" },
+        update: {},
+        create: {
+          name: "Headphones",
+          slug: slugify("Headphones").toLowerCase(),
+          description: "Samsung noise-canceling headphones",
+          price: 200,
+          stock: 25,
+          categoryId: electronics.id,
+        },
+      }),
+      prisma.product.upsert({
+        where: { slug: "t-shirt" },
+        update: {},
+        create: {
+          name: "T-Shirt",
+          slug: slugify("T-Shirt").toLowerCase(),
+          description: "Red cotton T-shirt",
+          price: 20,
+          stock: 100,
+          categoryId: clothing.id,
+        },
+      }),
+      prisma.product.upsert({
+        where: { slug: "jeans" },
+        update: {},
+        create: {
+          name: "Jeans",
+          slug: slugify("Jeans").toLowerCase(),
+          description: "Blue slim fit jeans",
+          price: 60,
+          stock: 40,
+          categoryId: clothing.id,
+        },
+      }),
+      prisma.product.upsert({
+        where: { slug: "jacket" },
+        update: {},
+        create: {
+          name: "Jacket",
+          slug: slugify("Jacket").toLowerCase(),
+          description: "Winter black jacket",
+          price: 120,
+          stock: 15,
+          categoryId: clothing.id,
+        },
+      }),
+    ]);
 
   // --- Product Attributes ---
-  // Link products to attribute values
-  await Promise.all([
-    // Laptop (Dell, Silver)
-    prisma.productAttribute.upsert({
-      where: {
-        productId_valueId: {
-          productId: products[0].id,
-          valueId: brandValuesElectronics[2].id,
-        },
-      },
-      update: {},
-      create: {
-        productId: products[0].id,
-        valueId: brandValuesElectronics[2].id,
-      },
-    }),
-    prisma.productAttribute.upsert({
-      where: {
-        productId_valueId: {
-          productId: products[0].id,
-          valueId: colorValuesElectronics[1].id,
-        },
-      },
-      update: {},
-      create: {
-        productId: products[0].id,
-        valueId: colorValuesElectronics[1].id,
-      },
-    }),
+  await prisma.productAttribute.createMany({
+    data: [
+      { productId: laptop.id, valueId: dell.id },
+      { productId: laptop.id, valueId: silver.id },
+      { productId: smartphone.id, valueId: apple.id },
+      { productId: smartphone.id, valueId: black.id },
+      { productId: headphones.id, valueId: samsung.id },
+      { productId: headphones.id, valueId: white.id },
+      { productId: tshirt.id, valueId: sizeM.id },
+      { productId: tshirt.id, valueId: red.id },
+      { productId: jeans.id, valueId: sizeL.id },
+      { productId: jeans.id, valueId: blue.id },
+      { productId: jacket.id, valueId: sizeXL.id },
+      { productId: jacket.id, valueId: blackCloth.id },
+    ],
+    skipDuplicates: true,
+  });
 
-    // Smartphone (Apple, Black)
-    prisma.productAttribute.upsert({
-      where: {
-        productId_valueId: {
-          productId: products[1].id,
-          valueId: brandValuesElectronics[0].id,
-        },
+  // --- Orders ---
+  await prisma.order.create({
+    data: {
+      userId: user1.id,
+      status: OrderStatus.PAID,
+      items: {
+        create: [
+          { productId: laptop.id, quantity: 1 },
+          { productId: tshirt.id, quantity: 2 },
+        ],
       },
-      update: {},
-      create: {
-        productId: products[1].id,
-        valueId: brandValuesElectronics[0].id,
-      },
-    }),
-    prisma.productAttribute.upsert({
-      where: {
-        productId_valueId: {
-          productId: products[1].id,
-          valueId: colorValuesElectronics[0].id,
-        },
-      },
-      update: {},
-      create: {
-        productId: products[1].id,
-        valueId: colorValuesElectronics[0].id,
-      },
-    }),
+    },
+  });
 
-    // Headphones (Samsung, White)
-    prisma.productAttribute.upsert({
-      where: {
-        productId_valueId: {
-          productId: products[2].id,
-          valueId: brandValuesElectronics[1].id,
-        },
+  await prisma.order.create({
+    data: {
+      userId: user2.id,
+      status: OrderStatus.PENDING,
+      items: {
+        create: [{ productId: jacket.id, quantity: 1 }],
       },
-      update: {},
-      create: {
-        productId: products[2].id,
-        valueId: brandValuesElectronics[1].id,
-      },
-    }),
-    prisma.productAttribute.upsert({
-      where: {
-        productId_valueId: {
-          productId: products[2].id,
-          valueId: colorValuesElectronics[2].id,
-        },
-      },
-      update: {},
-      create: {
-        productId: products[2].id,
-        valueId: colorValuesElectronics[2].id,
-      },
-    }),
+    },
+  });
 
-    // T-Shirt (Size M, Red)
-    prisma.productAttribute.upsert({
-      where: {
-        productId_valueId: {
-          productId: products[5].id,
-          valueId: sizeValuesClothing[1].id,
-        },
+  // --- Blog Posts ---
+  await prisma.blogPost.createMany({
+    data: [
+      {
+        title: "Top 5 Electronics in 2025",
+        content: "Here are the top 5 trending electronics...",
+        authorId: editor.id,
       },
-      update: {},
-      create: { productId: products[5].id, valueId: sizeValuesClothing[1].id },
-    }),
-    prisma.productAttribute.upsert({
-      where: {
-        productId_valueId: {
-          productId: products[5].id,
-          valueId: colorValuesClothing[0].id,
-        },
+      {
+        title: "Why Winter Jackets Are a Must-Have",
+        content: "Stay warm and stylish with our winter collection...",
+        authorId: admin.id,
       },
-      update: {},
-      create: { productId: products[5].id, valueId: colorValuesClothing[0].id },
-    }),
+    ],
+  });
 
-    // Jeans (Size L, Blue)
-    prisma.productAttribute.upsert({
-      where: {
-        productId_valueId: {
-          productId: products[6].id,
-          valueId: sizeValuesClothing[2].id,
-        },
-      },
-      update: {},
-      create: { productId: products[6].id, valueId: sizeValuesClothing[2].id },
-    }),
-    prisma.productAttribute.upsert({
-      where: {
-        productId_valueId: {
-          productId: products[6].id,
-          valueId: colorValuesClothing[1].id,
-        },
-      },
-      update: {},
-      create: { productId: products[6].id, valueId: colorValuesClothing[1].id },
-    }),
-
-    // Jacket (Size XL, Black)
-    prisma.productAttribute.upsert({
-      where: {
-        productId_valueId: {
-          productId: products[7].id,
-          valueId: sizeValuesClothing[3].id,
-        },
-      },
-      update: {},
-      create: { productId: products[7].id, valueId: sizeValuesClothing[3].id },
-    }),
-    prisma.productAttribute.upsert({
-      where: {
-        productId_valueId: {
-          productId: products[7].id,
-          valueId: colorValuesClothing[2].id,
-        },
-      },
-      update: {},
-      create: { productId: products[7].id, valueId: colorValuesClothing[2].id },
-    }),
-  ]);
-
-  console.log("seed completed");
+  console.log("Seed completed with proper slugs!");
 }
 
 main()

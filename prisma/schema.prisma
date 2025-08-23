@@ -103,6 +103,7 @@ model BlogPost {
 model Attribute {
   id         String   @id @default(cuid())
   name       String
+  slug       String
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
   createdAt  DateTime @default(now())
@@ -112,16 +113,19 @@ model Attribute {
   productAttributes ProductAttribute[]
 
   @@unique([name, categoryId])
+  @@unique([slug, categoryId])
 }
 
 model AttributeValue {
   id                String             @id @default(cuid())
   value             String
+  slug              String
   attributeId       String
   attribute         Attribute          @relation(fields: [attributeId], references: [id])
   productAttributes ProductAttribute[]
 
   @@unique([value, attributeId])
+  @@unique([slug, attributeId])
   @@index([attributeId])
   @@index([value])
 }

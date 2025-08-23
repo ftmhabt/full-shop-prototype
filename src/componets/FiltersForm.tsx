@@ -1,21 +1,19 @@
 "use client";
-
-import { Loader2 } from "lucide-react";
+import { AttributeWithValues } from "@/types";
+import { Record } from "@prisma/client/runtime/library";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 interface FiltersFormProps {
-  slug: string;
+  slug?: string; // category slug یا "search"
+  query?: string; // جستجو
   filters?: Record<string, string[]>;
-  attributes?: {
-    id: string;
-    name: string;
-    values: { id: string; value: string }[];
-  }[];
+  attributes?: AttributeWithValues[];
 }
 
 export default function FiltersForm({
   slug,
+  query,
   filters = {},
   attributes = [],
 }: FiltersFormProps) {
@@ -24,17 +22,30 @@ export default function FiltersForm({
 
   function applyFilters(formData: FormData) {
     const params = new URLSearchParams();
+
+    if (query) params.append("q", query);
+
     for (const [key, value] of formData.entries()) {
       params.append(key, String(value));
     }
 
     startTransition(() => {
-      router.push(`/category/${slug}?${params.toString()}`);
+      if (!slug || slug === "search") {
+        router.push(`/search?${params.toString()}`);
+      } else {
+        router.push(`/category/${slug}?${params.toString()}`);
+      }
     });
   }
 
   return (
-    <form action={applyFilters} className="space-y-4">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        applyFilters(new FormData(e.currentTarget));
+      }}
+      className="space-y-4"
+    >
       <label className="flex items-center space-x-2">
         <input
           type="checkbox"
@@ -52,9 +63,9 @@ export default function FiltersForm({
             <label key={val.id} className="flex items-center space-x-2">
               <input
                 type="checkbox"
-                name={attr.id}
-                value={val.id}
-                defaultChecked={filters[attr.id]?.includes(val.id) ?? false}
+                name={attr.slug}
+                value={val.slug}
+                defaultChecked={filters[attr.slug]?.includes(val.slug) ?? false}
               />
               <span>{val.value}</span>
             </label>
@@ -64,14 +75,10 @@ export default function FiltersForm({
 
       <button
         type="submit"
-        className="bg-primary text-white px-4 py-2 rounded w-full flex items-center justify-center"
         disabled={isPending}
+        className="bg-primary text-white px-4 py-2 rounded w-full flex items-center justify-center"
       >
-        {isPending ? (
-          <Loader2 className="h-5 w-5 animate-spin" />
-        ) : (
-          "اعمال فیلتر"
-        )}
+        {isPending ? "در حال بارگذاری..." : "اعمال فیلتر"}
       </button>
     </form>
   );

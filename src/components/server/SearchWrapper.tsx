@@ -30,7 +30,9 @@ export default async function SearchWrapper({
       {/* Products */}
       <main className="col-span-3 space-y-4">
         <div className="flex justify-between">
-          <h1 className="text-2xl font-bold">نتایج جستجو برای "{q}"</h1>
+          <h1 className="text-2xl font-bold">
+            نتایج جستجو برای &quot;{q}&quot;
+          </h1>
         </div>
         <ProductsWrapper products={products} />
       </main>

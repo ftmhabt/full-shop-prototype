@@ -22,7 +22,7 @@ export default async function ProductsWrapper({
       throw new Error("Either products or slug must be provided");
     }
 
-    const queryFilters: Record<string, any> = { ...filters };
+    const queryFilters: Record<string, string[]> = { ...filters };
     if (orderBy) queryFilters.orderBy = [orderBy];
 
     finalProducts = await getProductsByCategorySlug(slug, queryFilters);

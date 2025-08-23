@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db";
 import { AttributeWithValues, ProductWithAttributes } from "@/types";
+import { Prisma } from "@prisma/client";
 
 export async function getCategories() {
   return db.category.findMany({
@@ -16,7 +17,7 @@ export async function getProductsByCategorySlug(
 ): Promise<ProductWithAttributes[]> {
   const { orderBy, ...otherFilters } = filters;
 
-  const where: any = {
+  const where: Prisma.ProductWhereInput = {
     category: { slug },
   };
 
@@ -43,7 +44,9 @@ export async function getProductsByCategorySlug(
   }
 
   // مرتب‌سازی
-  let orderByClause: any = { createdAt: "desc" };
+  let orderByClause: Prisma.ProductOrderByWithRelationInput = {
+    createdAt: "desc",
+  };
   if (orderBy?.length) {
     switch (orderBy[0]) {
       case "oldest":
@@ -91,7 +94,7 @@ export async function getProductsBySearch(
   attributes: AttributeWithValues[];
 }> {
   // ساخت where
-  const where: any = {
+  const where: Prisma.ProductWhereInput = {
     OR: [
       { name: { contains: query, mode: "insensitive" } },
       { description: { contains: query, mode: "insensitive" } },

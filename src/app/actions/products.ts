@@ -1,7 +1,6 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { Prisma } from "@prisma/client";
 
 export async function getCategories() {
   return db.category.findMany({
@@ -12,35 +11,60 @@ export async function getCategories() {
 
 export async function getProductsByCategorySlug(
   slug: string,
-  filters: Record<string, string[]> = {}
+  filters: Record<string, string[]>
 ) {
-  const where: Prisma.ProductWhereInput = {
-    category: { is: { slug } },
+  const { orderBy, ...otherFilters } = filters;
+
+  // build Prisma where clause
+  const where: any = {
+    category: { slug },
   };
 
-  // In Stock filter
-  if (filters.inStock?.includes("true")) {
+  // inStock filter
+  if (otherFilters.inStock?.includes("true")) {
     where.stock = { gt: 0 };
   }
 
-  // Attribute filters
-  if (Object.keys(filters).length > 0) {
-    where.AND = Object.entries(filters)
-      .filter(([k]) => k !== "inStock")
-      .map(([attributeId, values]) => ({
-        attributes: {
-          some: { value: { attributeId, id: { in: values } } },
-        },
-      }));
+  // attribute filters
+  if (Object.keys(otherFilters).length > 0) {
+    where.attributes = {
+      some: {
+        valueId: { in: Object.values(otherFilters).flat() },
+      },
+    };
+  }
+
+  // build Prisma orderBy
+  let orderByClause: any = { createdAt: "desc" }; // default newest
+
+  if (orderBy?.length) {
+    switch (orderBy[0]) {
+      case "oldest":
+        orderByClause = { createdAt: "asc" };
+        break;
+      case "priceAsc":
+        orderByClause = { price: "asc" };
+        break;
+      case "priceDesc":
+        orderByClause = { price: "desc" };
+        break;
+      case "newest":
+      default:
+        orderByClause = { createdAt: "desc" };
+        break;
+    }
   }
 
   return db.product.findMany({
     where,
     include: {
       attributes: {
-        include: { value: { include: { attribute: true } } },
+        include: {
+          value: { include: { attribute: true } },
+        },
       },
     },
+    orderBy: orderByClause,
   });
 }
 

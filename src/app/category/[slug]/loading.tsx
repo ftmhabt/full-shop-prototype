@@ -1,9 +1,11 @@
+import { Loader2 } from "lucide-react";
+
 export default function CategoryLoading() {
   return (
-    <div className="col-span-3 flex flex-col items-center justify-center space-y-4">
-      <p>در حال بارگذاری محصولات…</p>
-      <div className="w-full h-1 bg-gray-200 rounded overflow-hidden">
-        <div className="h-1 bg-blue-500 animate-loading" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10">
+      <div className="flex flex-col gap-3 items-center justify-center">
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+        <p className="text-primary">در حال بارگذاری محصولات…</p>
       </div>
     </div>
   );

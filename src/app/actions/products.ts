@@ -88,12 +88,12 @@ export async function getAttributesByCategorySlug(slug: string) {
 
 export async function getProductsBySearch(
   query: string,
-  filters: Record<string, string[]> = {}
+  filters: Record<string, string[]> = {},
+  orderBy: string = "newest"
 ): Promise<{
   products: ProductWithAttributes[];
   attributes: AttributeWithValues[];
 }> {
-  // ساخت where
   const where: Prisma.ProductWhereInput = {
     OR: [
       { name: { contains: query, mode: "insensitive" } },
@@ -114,6 +114,24 @@ export async function getProductsBySearch(
     }));
   }
 
+  // تعیین ترتیب مرتب‌سازی بر اساس orderBy
+  let orderByClause: Prisma.ProductOrderByWithRelationInput = {
+    createdAt: "desc",
+  };
+  switch (orderBy) {
+    case "oldest":
+      orderByClause = { createdAt: "asc" };
+      break;
+    case "priceAsc":
+      orderByClause = { price: "asc" };
+      break;
+    case "priceDesc":
+      orderByClause = { price: "desc" };
+      break;
+    default:
+      orderByClause = { createdAt: "desc" };
+  }
+
   const products = await db.product.findMany({
     where,
     include: {
@@ -123,10 +141,9 @@ export async function getProductsBySearch(
         },
       },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: orderByClause,
   });
 
-  // استخراج ویژگی‌ها از محصولات پیدا شده
   const attributeMap: Record<string, AttributeWithValues> = {};
   for (const p of products) {
     for (const pa of p.attributes) {

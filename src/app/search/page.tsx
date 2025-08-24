@@ -6,7 +6,7 @@ export default function SearchPage({
   searchParams: { q?: string };
 }) {
   return (
-    <div className="p-6">
+    <div className="p-6 w-full">
       <SearchWrapper searchParams={searchParams} />
     </div>
   );

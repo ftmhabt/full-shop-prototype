@@ -1,4 +1,5 @@
 import { getProductsByCategorySlug } from "@/app/actions/products";
+import ProductCard from "@/componets/ProductCard";
 import { ProductWithAttributes } from "@/types";
 
 interface ProductsWrapperProps {
@@ -16,34 +17,19 @@ export default async function ProductsWrapper({
 }: ProductsWrapperProps) {
   let finalProducts: ProductWithAttributes[] = products ?? [];
 
-  // اگر products پاس داده نشده، با slug بگیریم
   if (!finalProducts.length) {
-    if (!slug) {
-      throw new Error("Either products or slug must be provided");
-    }
-
+    if (!slug) throw new Error("Either products or slug must be provided");
     const queryFilters: Record<string, string[]> = { ...filters };
     if (orderBy) queryFilters.orderBy = [orderBy];
-
     finalProducts = await getProductsByCategorySlug(slug, queryFilters);
   }
 
-  if (!finalProducts.length) {
-    return <p>محصولی یافت نشد.</p>;
-  }
+  if (!finalProducts.length) return <p>محصولی یافت نشد.</p>;
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {finalProducts.map((p) => (
-        <div key={p.id} className="border rounded p-4">
-          <h2 className="font-semibold">{p.name}</h2>
-          <p>{new Intl.NumberFormat("fa-IR").format(p.price)} تومان</p>
-          <p className="text-sm text-gray-500">
-            {p.attributes
-              ?.map((a) => `${a.value.attribute.name}: ${a.value.value}`)
-              .join(", ")}
-          </p>
-        </div>
+        <ProductCard key={p.id} product={p} />
       ))}
     </div>
   );

@@ -34,6 +34,7 @@ CREATE TABLE "public"."Product" (
     "slug" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
+    "image" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
     "stock" INTEGER NOT NULL,
     "categoryId" TEXT NOT NULL,

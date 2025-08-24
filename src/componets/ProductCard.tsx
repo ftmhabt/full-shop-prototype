@@ -6,7 +6,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { ProductWithAttributes } from "@/types";
-import Image from "next/image";
+import { FallbackImage } from "./FallbackImage";
 
 export default function ProductCard({
   product,
@@ -16,8 +16,9 @@ export default function ProductCard({
   return (
     <Card className="flex flex-col gap-0 rounded-2xl shadow hover:shadow-lg transition">
       <CardHeader>
-        <Image
-          src={product.image || "/fallback.png"}
+        <FallbackImage
+          src={product.image}
+          fallbackSrc="/fallback.png"
           alt={product.name}
           width={400}
           height={160}

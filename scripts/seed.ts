@@ -191,6 +191,8 @@ async function main() {
           price: 1200,
           stock: 10,
           categoryId: electronics.id,
+          image:
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
         },
       }),
       prisma.product.upsert({
@@ -203,6 +205,8 @@ async function main() {
           price: 800,
           stock: 0,
           categoryId: electronics.id,
+          image:
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
         },
       }),
       prisma.product.upsert({
@@ -215,6 +219,8 @@ async function main() {
           price: 200,
           stock: 25,
           categoryId: electronics.id,
+          image:
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
         },
       }),
       prisma.product.upsert({
@@ -227,6 +233,8 @@ async function main() {
           price: 20,
           stock: 100,
           categoryId: clothing.id,
+          image:
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
         },
       }),
       prisma.product.upsert({
@@ -239,6 +247,8 @@ async function main() {
           price: 60,
           stock: 40,
           categoryId: clothing.id,
+          image:
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
         },
       }),
       prisma.product.upsert({
@@ -251,6 +261,8 @@ async function main() {
           price: 120,
           stock: 15,
           categoryId: clothing.id,
+          image:
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
         },
       }),
     ]);

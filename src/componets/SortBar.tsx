@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"; // adjust path
+} from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
@@ -27,9 +27,8 @@ export default function SortBar() {
 
   function handleChange(value: string) {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("orderBy", value);
+    params.set("orderBy", value); // preserve all filters
 
-    // disable dropdown while navigating
     startTransition(() => {
       router.push(`?${params.toString()}`);
     });

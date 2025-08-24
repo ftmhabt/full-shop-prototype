@@ -36,9 +36,22 @@ export default function FiltersForm({
   const [open, setOpen] = useState(false);
 
   function applyFilters(formData: FormData) {
-    const params = new URLSearchParams();
+    // Start with current URL params so orderBy and others are preserved
+    const currentParams = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(currentParams);
 
-    if (query) params.append("q", query);
+    // Keep query up-to-date
+    if (query) {
+      params.set("q", query);
+    } else {
+      params.delete("q");
+    }
+
+    // Remove old filters but keep orderBy and other unrelated params
+    attributes.forEach((attr) => params.delete(attr.slug));
+    params.delete("inStock");
+
+    // Add new filters from form
     for (const [key, value] of formData.entries()) {
       params.append(key, String(value));
     }
@@ -46,8 +59,9 @@ export default function FiltersForm({
     startTransition(() => {
       const url =
         !slug || slug === "search"
-          ? `/search?${params}`
-          : `/category/${slug}?${params}`;
+          ? `/search?${params.toString()}`
+          : `/category/${slug}?${params.toString()}`;
+
       router.push(url);
       setOpen(false);
     });

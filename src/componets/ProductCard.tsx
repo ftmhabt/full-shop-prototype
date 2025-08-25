@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -5,7 +7,9 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import { useCart } from "@/store/useCart";
 import { ProductWithAttributes } from "@/types";
+import toast from "react-hot-toast";
 import { FallbackImage } from "./FallbackImage";
 
 export default function ProductCard({
@@ -13,6 +17,24 @@ export default function ProductCard({
 }: {
   product: ProductWithAttributes;
 }) {
+  const addItem = useCart((s) => s.addItem);
+  const increaseQty = useCart((s) => s.increaseQty);
+  const decreaseQty = useCart((s) => s.decreaseQty);
+  const items = useCart((s) => s.items);
+
+  const cartItem = items.find((i) => i.id === product.id);
+  const quantity = cartItem?.quantity || 0;
+
+  const handleAddToCart = () => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+    });
+    toast.success(`${product.name} به سبد اضافه شد`);
+  };
+
   return (
     <Card className="flex flex-col gap-0 rounded-2xl shadow hover:shadow-lg transition">
       <CardHeader>
@@ -33,10 +55,30 @@ export default function ProductCard({
         </p>
       </CardContent>
 
-      <CardFooter>
-        <Button variant="outline" className="w-10 h-10">
-          +
-        </Button>
+      <CardFooter className="flex justify-center mt-3">
+        {quantity === 0 ? (
+          <Button onClick={handleAddToCart} variant="outline" size="sm">
+            +
+          </Button>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => decreaseQty(product.id)}
+            >
+              -
+            </Button>
+            <span className="w-6 text-center">{quantity}</span>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => increaseQty(product.id)}
+            >
+              +
+            </Button>
+          </div>
+        )}
       </CardFooter>
     </Card>
   );

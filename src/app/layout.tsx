@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import CartHydrator from "@/componets/CartHydrator";
 import { FallbackImage } from "@/componets/FallbackImage";
-import { Phone, Search, ShoppingCart } from "lucide-react";
+import ResponsiveCart from "@/componets/ResponsiveCart";
+import { Phone, Search } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Toaster } from "react-hot-toast";
@@ -22,6 +24,7 @@ export default function RootLayout({
     <html lang="fa" dir="rtl">
       <body className="bg-background text-foreground">
         {/* Header */}
+        <CartHydrator />
         <header className="border-b bg-white shadow-sm">
           <div className="container mx-auto flex items-center justify-between gap-4 p-4">
             {/* Logo */}
@@ -57,9 +60,7 @@ export default function RootLayout({
 
             {/* Icons */}
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <ShoppingCart className="h-5 w-5" />
-              </Button>
+              <ResponsiveCart />
               <a
                 href="tel:09123456789"
                 className="flex items-center gap-1 text-sm text-primary"

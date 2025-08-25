@@ -4,6 +4,77 @@ import { db } from "@/lib/db";
 import { AttributeWithValues, ProductWithAttributes } from "@/types";
 import { Prisma } from "@prisma/client";
 
+export type ProductWithAttribute = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  image: string;
+  price: number;
+  attributes: {
+    id: string;
+    value: {
+      id: string;
+      slug: string;
+      value: string;
+      attributeId: string;
+      attribute: {
+        id: string;
+        slug: string;
+        name: string;
+        categoryId: string;
+        createdAt: Date;
+        updatedAt: Date;
+      };
+    };
+  }[];
+  category: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+};
+
+export async function getProductBySlug(
+  slug: string
+): Promise<ProductWithAttribute> {
+  const product = await db.product.findUnique({
+    where: { slug },
+    include: {
+      attributes: {
+        include: {
+          value: {
+            include: {
+              attribute: true,
+            },
+          },
+          Attribute: true,
+        },
+      },
+      category: true, // category is already here
+    },
+  });
+
+  if (!product) {
+    throw new Error(`Product with slug "${slug}" not found`);
+  }
+
+  return {
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    price: product.price,
+    description: product.description,
+    image: product.image,
+    attributes: product.attributes,
+    category: {
+      id: product.category.id,
+      name: product.category.name,
+      slug: product.category.slug,
+    },
+  };
+}
+
 export async function getCategories() {
   return db.category.findMany({
     select: { id: true, name: true, slug: true },

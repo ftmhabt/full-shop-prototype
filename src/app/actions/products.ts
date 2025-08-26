@@ -9,7 +9,7 @@ export type ProductWithAttribute = {
   slug: string;
   name: string;
   description: string;
-  image: string;
+  image: string[];
   price: number;
   attributes: {
     id: string;

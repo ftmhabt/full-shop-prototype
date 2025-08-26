@@ -49,7 +49,7 @@ model Product {
   slug        String             @unique
   name        String
   description String
-  image       String
+  image       String[]
   price       Int
   stock       Int
   categoryId  String

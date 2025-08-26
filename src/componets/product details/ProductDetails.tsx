@@ -14,6 +14,7 @@ export default function ProductDetails({
 }: {
   product: ProductWithAttribute;
 }) {
+  const [activeImage, setActiveImage] = useState(product.image[0]);
   const addItem = useCart((s) => s.addItem);
   const [qty, setQty] = useState(1);
 
@@ -23,7 +24,7 @@ export default function ProductDetails({
         id: product.id,
         name: product.name,
         price: product.price,
-        image: product.image,
+        image: product.image[0],
       });
     }
   };
@@ -42,19 +43,41 @@ export default function ProductDetails({
       </nav>
 
       {/* Top Section */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-3 gap-6">
         {/* Left: Image */}
-        <div className="aspect-square relative border">
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            className="object-contain rounded-2xl"
-          />
+        <div>
+          <div className="aspect-square relative border mb-2 rounded-2xl">
+            <Image
+              src={activeImage}
+              alt={product.name}
+              fill
+              className="object-contain rounded-2xl"
+              unoptimized
+            />
+          </div>
+          <div className="flex space-x-2 overflow-x-auto">
+            {product.image.map((img, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveImage(img)}
+                className={`w-16 h-16 relative border rounded-lg ${
+                  activeImage === img ? "border-blue-500" : ""
+                }`}
+              >
+                <Image
+                  src={img}
+                  alt={`Thumbnail ${i + 1}`}
+                  fill
+                  className="object-cover rounded-lg"
+                  unoptimized
+                />
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Right: Info */}
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-4 md:col-span-2">
           <h1 className="text-2xl font-bold">{product.name}</h1>
           <p className="text-xl font-semibold">${product.price}</p>
           <Badge variant="secondary">In Stock</Badge>

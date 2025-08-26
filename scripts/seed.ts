@@ -191,8 +191,11 @@ async function main() {
           price: 1200,
           stock: 10,
           categoryId: electronics.id,
-          image:
-            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+          image: [
+            "https://images.pexels.com/photos/18105/pexels-photo.jpg",
+            "https://images.pexels.com/photos/238118/pexels-photo-238118.jpeg",
+            "https://images.pexels.com/photos/812264/pexels-photo-812264.jpeg",
+          ],
         },
       }),
       prisma.product.upsert({
@@ -205,8 +208,11 @@ async function main() {
           price: 800,
           stock: 0,
           categoryId: electronics.id,
-          image:
+          image: [
             "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+          ],
         },
       }),
       prisma.product.upsert({
@@ -219,8 +225,11 @@ async function main() {
           price: 200,
           stock: 25,
           categoryId: electronics.id,
-          image:
+          image: [
             "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+          ],
         },
       }),
       prisma.product.upsert({
@@ -233,8 +242,11 @@ async function main() {
           price: 20,
           stock: 100,
           categoryId: clothing.id,
-          image:
+          image: [
             "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+          ],
         },
       }),
       prisma.product.upsert({
@@ -247,8 +259,11 @@ async function main() {
           price: 60,
           stock: 40,
           categoryId: clothing.id,
-          image:
+          image: [
             "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+          ],
         },
       }),
       prisma.product.upsert({
@@ -261,8 +276,11 @@ async function main() {
           price: 120,
           stock: 15,
           categoryId: clothing.id,
-          image:
+          image: [
             "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+            "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg",
+          ],
         },
       }),
     ]);

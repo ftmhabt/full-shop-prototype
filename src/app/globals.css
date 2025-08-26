@@ -121,7 +121,8 @@
   }
 }
 
-ul {
+ul,
+p {
   direction: rtl !important;
 }
 li::marker {

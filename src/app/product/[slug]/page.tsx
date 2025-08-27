@@ -7,7 +7,8 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const product = await getProductBySlug(params.slug);
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
 
   return {
     title: `${product.name} | My Shop`,
@@ -31,7 +32,8 @@ export default async function ProductPage({
 }: {
   params: { slug: string };
 }) {
-  const product = await getProductBySlug(params.slug);
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
 
   return (
     <>

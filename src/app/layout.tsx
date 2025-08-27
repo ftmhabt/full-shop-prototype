@@ -91,7 +91,7 @@ export default function RootLayout({
         </main>
 
         {/* Footer */}
-        <footer className="border-t bg-muted/30 mt-10">
+        <footer className="border-t bg-muted/30">
           <div className="container mx-auto grid grid-cols-2 gap-8 px-4 py-10 text-sm sm:grid-cols-4">
             <div>
               <h3 className="mb-3 font-bold">

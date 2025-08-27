@@ -13,6 +13,6 @@ export async function getCurrentUserId(): Promise<string | null> {
     };
     return payload.userId;
   } catch (err) {
-    return null;
+    return "";
   }
 }

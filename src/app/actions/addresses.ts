@@ -38,3 +38,11 @@ export async function deleteAddress(id: string, userId: string) {
 
   revalidatePath("/dashboard/addresses");
 }
+
+export async function getUserAddresses(userId: string) {
+  const addresses = await db.address.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+  });
+  return addresses;
+}

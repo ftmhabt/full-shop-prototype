@@ -17,10 +17,10 @@ import { useState, useTransition } from "react";
 import toast from "react-hot-toast";
 
 interface AddressFormProps {
-  onSuccess?: () => void;
+  onClose?: () => void;
 }
 
-export default function AddressForm({ onSuccess }: AddressFormProps) {
+export default function AddressForm({ onClose }: AddressFormProps) {
   const userId = useUser((state) => state.userId);
   const [form, setForm] = useState<AddressInput>({
     title: "",
@@ -61,7 +61,7 @@ export default function AddressForm({ onSuccess }: AddressFormProps) {
         // فراخوانی سرور اکشن برای اضافه کردن آدرس
 
         await createAddress(userId || "", form);
-        onSuccess?.();
+        onClose?.();
         setForm({
           title: "",
           fullName: "",
@@ -179,7 +179,14 @@ export default function AddressForm({ onSuccess }: AddressFormProps) {
         <p className="text-red-500 text-sm">{errors.postalCode}</p>
       )}
 
-      <Button type="submit">ذخیره آدرس</Button>
+      <div className="flex gap-2">
+        <Button type="submit" disabled={isPending}>
+          ذخیره
+        </Button>
+        <Button type="button" variant="secondary" onClick={onClose}>
+          انصراف
+        </Button>
+      </div>
     </form>
   );
 }

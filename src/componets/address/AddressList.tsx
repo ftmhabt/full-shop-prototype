@@ -29,28 +29,29 @@ export default function AddressList({
         <h1 className="text-xl font-bold">آدرس‌های من</h1>
 
         <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={() => setShowForm(!showForm)}
+          className="bg-primary text-white px-4 py-2 rounded"
+          onClick={() => setShowForm(true)}
         >
           افزودن آدرس
         </button>
       </div>
 
-      {showForm && <AddressForm onClose={() => setShowForm(false)} />}
+      {showForm && (
+        <AddressForm onClose={() => setShowForm(false)} isVisible={showForm} />
+      )}
 
       {addresses.length === 0 ? (
         <div className="col-span-full text-center text-gray-500">
           هیچ آدرسی ثبت نشده است.
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 mt-4">
+        <div className="grid gap-4 md:grid-cols-2 mt-4 auto-rows-auto">
           {addresses.map((addr) => (
-            <div key={addr.id} className="border p-4 rounded shadow">
+            <div key={addr.id} className="border p-4 rounded shadow h-fit">
               {editingId === addr.id ? (
                 <EditAddressForm
                   address={addr}
-                  onCancel={() => setEditingId(null)}
-                  onSuccess={() => setEditingId(null)}
+                  onClose={() => setEditingId(null)}
                 />
               ) : (
                 <>
@@ -66,7 +67,7 @@ export default function AddressList({
 
                   <button
                     onClick={() => setEditingId(addr.id)}
-                    className="mt-2 text-blue-600 underline"
+                    className="mt-2 text-primary underline"
                   >
                     ویرایش
                   </button>

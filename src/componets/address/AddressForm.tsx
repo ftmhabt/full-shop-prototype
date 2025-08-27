@@ -13,14 +13,19 @@ import {
 import { provinces } from "@/lib/locations";
 import { AddressInput, addressSchema } from "@/lib/validations";
 import { useUser } from "@/store/useUser";
-import { useState, useTransition } from "react";
+import { motion, useAnimation } from "framer-motion";
+import { useLayoutEffect, useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 
 interface AddressFormProps {
   onClose?: () => void;
+  isVisible?: boolean;
 }
 
-export default function AddressForm({ onClose }: AddressFormProps) {
+export default function AddressForm({
+  onClose,
+  isVisible = true,
+}: AddressFormProps) {
   const userId = useUser((state) => state.userId);
   const [form, setForm] = useState<AddressInput>({
     title: "",
@@ -33,35 +38,60 @@ export default function AddressForm({ onClose }: AddressFormProps) {
   });
 
   const [cities, setCities] = useState<string[]>([]);
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isPending, startTransition] = useTransition();
 
-  function handleProvinceChange(value: string) {
-    setForm((f) => ({ ...f, province: value, city: "" }));
-    const selected = provinces.find((p) => p.province === value);
-    setCities(selected?.cities || []);
-  }
+  // --- animation + height measurement ---
+  const ref = useRef<HTMLFormElement | null>(null);
+  const controls = useAnimation();
+  const [measuredHeight, setMeasuredHeight] = useState<number>(0);
 
-  function handleCityChange(value: string) {
-    setForm((f) => ({ ...f, city: value }));
+  useLayoutEffect(() => {
+    if (isVisible && ref.current) {
+      // اندازه واقعی محتوا
+      const h = ref.current.scrollHeight;
+      setMeasuredHeight(h);
+      // انیمیشن باز شدن
+      controls.start({
+        opacity: 1,
+        y: 0,
+        height: h,
+        transition: { duration: 0.25, ease: "easeInOut" },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVisible]); // فقط وقتی visible شد دوباره اندازه رو بگیر و باز کن
+
+  // تابعی که انیمیشن خروج رو با کنترل انجام میده و بعد والد رو می‌بنده
+  async function closeWithAnimation() {
+    try {
+      await controls.start({
+        opacity: 0,
+        y: -10,
+        height: 0,
+        transition: { duration: 0.25, ease: "easeInOut" },
+      });
+    } catch (e) {
+      /* ignore */
+    } finally {
+      onClose?.();
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    try {
-      const parsed = addressSchema.safeParse(form);
-      if (!parsed.success) {
-        const fieldErrors: Record<string, string> = {};
-        toast.error("لطفا تمام فیلدها را به درستی پر کنید.");
-        setErrors(fieldErrors);
-        return;
-      }
-      setErrors({});
-      startTransition(async () => {
-        // فراخوانی سرور اکشن برای اضافه کردن آدرس
+    const parsed = addressSchema.safeParse(form);
+    if (!parsed.success) {
+      toast.error("لطفا تمام فیلدها را به درستی پر کنید.");
+      return;
+    }
 
+    startTransition(async () => {
+      try {
         await createAddress(userId || "", form);
-        onClose?.();
+        toast.success("آدرس با موفقیت اضافه شد.");
+        // بعد از ذخیره، انیمیشن خروج اجرا و سپس والد بسته میشه
+        await closeWithAnimation();
+        // reset فرم (بعد از انیمیشن یا قبل — برای اطمینان اینجا ریست میکنیم)
         setForm({
           title: "",
           fullName: "",
@@ -71,122 +101,124 @@ export default function AddressForm({ onClose }: AddressFormProps) {
           address: "",
           postalCode: "",
         });
-      });
-    } catch (err) {
-      console.error(err);
-      toast.error("خطا در افزودن آدرس.");
-    }
+      } catch (err) {
+        console.error(err);
+        toast.error("خطا در افزودن آدرس.");
+      }
+    });
+  }
+
+  function handleProvinceChange(value: string) {
+    setForm((f) => ({ ...f, province: value, city: "" }));
+    const selected = provinces.find((p) => p.province === value);
+    setCities(selected?.cities || []);
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      dir="rtl"
-      className="border p-4 rounded shadow space-y-3 mt-4"
+    <motion.div
+      // initial: مخفی، animate: کنترل‌شده توسط controls
+      initial={{ opacity: 0, y: -10, height: 0 }}
+      animate={controls}
+      className="overflow-hidden"
+      style={{ width: "100%" }}
     >
-      <Input
-        placeholder="عنوان"
-        value={form.title}
-        onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-      />
-      {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
-
-      <Input
-        placeholder="نام کامل گیرنده"
-        value={form.fullName}
-        onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))}
-      />
-      {errors.fullName && (
-        <p className="text-red-500 text-sm">{errors.fullName}</p>
-      )}
-
-      <Input
-        placeholder="شماره تماس گیرنده"
-        value={form.phone}
-        onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-      />
-      {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
-
-      {/* Dropdown استان */}
-      <Select
-        value={form.province}
-        onValueChange={handleProvinceChange}
-        disabled={isPending}
+      <form
+        ref={ref}
+        onSubmit={handleSubmit}
+        dir="rtl"
+        className="border p-4 rounded shadow space-y-3 mt-4"
       >
-        <SelectTrigger className="w-full border rounded-md px-3 py-2 bg-white flex items-center justify-between flex-row-reverse">
-          <SelectValue placeholder="انتخاب استان" />
-        </SelectTrigger>
-        <SelectContent
-          dir="rtl"
-          className="w-full bg-white shadow-lg rounded-md max-h-60 overflow-auto text-right"
+        <Input
+          placeholder="عنوان"
+          value={form.title}
+          onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+        />
+        <Input
+          placeholder="نام کامل گیرنده"
+          value={form.fullName}
+          onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))}
+        />
+        <Input
+          placeholder="شماره تماس گیرنده"
+          value={form.phone}
+          onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+        />
+
+        <Select
+          value={form.province}
+          onValueChange={handleProvinceChange}
+          disabled={isPending}
         >
-          {provinces.map((p) => (
-            <SelectItem
-              key={p.province}
-              value={p.province}
-              className="cursor-pointer px-4 py-2 hover:bg-gray-100 text-right"
-            >
-              {p.province}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      {errors.province && (
-        <p className="text-red-500 text-sm">{errors.province}</p>
-      )}
+          <SelectTrigger className="w-full border rounded-md px-3 py-2 bg-white flex items-center justify-between flex-row-reverse">
+            <SelectValue placeholder="انتخاب استان" />
+          </SelectTrigger>
+          <SelectContent
+            dir="rtl"
+            className="w-full bg-white shadow-lg rounded-md max-h-60 overflow-auto text-right"
+          >
+            {provinces.map((p) => (
+              <SelectItem
+                key={p.province}
+                value={p.province}
+                className="cursor-pointer px-4 py-2 hover:bg-gray-100 text-right"
+              >
+                {p.province}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-      {/* Dropdown شهر */}
-      <Select
-        value={form.city}
-        onValueChange={handleCityChange}
-        disabled={!form.province || isPending}
-      >
-        <SelectTrigger className="w-full border rounded-md px-3 py-2 bg-white flex items-center justify-between flex-row-reverse">
-          <SelectValue placeholder="انتخاب شهر" />
-        </SelectTrigger>
-        <SelectContent
-          dir="rtl"
-          className="w-full bg-white shadow-lg rounded-md max-h-60 overflow-auto"
+        <Select
+          value={form.city}
+          onValueChange={(v) => setForm((f) => ({ ...f, city: v }))}
+          disabled={!form.province || isPending}
         >
-          {cities.map((c) => (
-            <SelectItem
-              key={c}
-              value={c}
-              className="cursor-pointer px-4 py-2 hover:bg-gray-100 text-right"
-            >
-              {c}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      {errors.city && <p className="text-red-500 text-sm">{errors.city}</p>}
+          <SelectTrigger className="w-full border rounded-md px-3 py-2 bg-white flex items-center justify-between flex-row-reverse">
+            <SelectValue placeholder="انتخاب شهر" />
+          </SelectTrigger>
+          <SelectContent
+            dir="rtl"
+            className="w-full bg-white shadow-lg rounded-md max-h-60 overflow-auto"
+          >
+            {cities.map((c) => (
+              <SelectItem
+                key={c}
+                value={c}
+                className="cursor-pointer px-4 py-2 hover:bg-gray-100 text-right"
+              >
+                {c}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-      <Input
-        placeholder="آدرس دقیق"
-        value={form.address}
-        onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
-      />
-      {errors.address && (
-        <p className="text-red-500 text-sm">{errors.address}</p>
-      )}
+        <Input
+          placeholder="آدرس دقیق"
+          value={form.address}
+          onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
+        />
 
-      <Input
-        placeholder="کد پستی"
-        value={form.postalCode}
-        onChange={(e) => setForm((f) => ({ ...f, postalCode: e.target.value }))}
-      />
-      {errors.postalCode && (
-        <p className="text-red-500 text-sm">{errors.postalCode}</p>
-      )}
+        <Input
+          placeholder="کد پستی"
+          value={form.postalCode}
+          onChange={(e) =>
+            setForm((f) => ({ ...f, postalCode: e.target.value }))
+          }
+        />
 
-      <div className="flex gap-2">
-        <Button type="submit" disabled={isPending}>
-          ذخیره
-        </Button>
-        <Button type="button" variant="secondary" onClick={onClose}>
-          انصراف
-        </Button>
-      </div>
-    </form>
+        <div className="flex gap-2">
+          <Button type="submit" disabled={isPending}>
+            ذخیره آدرس
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={closeWithAnimation}
+          >
+            انصراف
+          </Button>
+        </div>
+      </form>
+    </motion.div>
   );
 }

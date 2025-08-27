@@ -19,14 +19,12 @@ import toast from "react-hot-toast";
 
 interface EditAddressFormProps {
   address: Address;
-  onCancel: () => void;
-  onSuccess: () => void;
+  onClose: () => void; // ترکیب Cancel + Success
 }
 
 export default function EditAddressForm({
   address,
-  onCancel,
-  onSuccess,
+  onClose,
 }: EditAddressFormProps) {
   const [form, setForm] = useState<AddressInput>({
     title: address.title,
@@ -63,7 +61,7 @@ export default function EditAddressForm({
       try {
         await updateAddress(address.id, userId || "", form);
         toast.success("آدرس با موفقیت ویرایش شد.");
-        onSuccess();
+        onClose();
       } catch (err) {
         console.error(err);
         toast.error("خطا در ویرایش آدرس.");
@@ -72,7 +70,7 @@ export default function EditAddressForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} dir="rtl" className="space-y-3">
+    <form dir="rtl" className="space-y-3" onSubmit={handleSubmit}>
       <Input
         placeholder="عنوان"
         value={form.title}
@@ -135,7 +133,7 @@ export default function EditAddressForm({
         <Button type="submit" disabled={isPending}>
           ذخیره
         </Button>
-        <Button type="button" variant="secondary" onClick={onCancel}>
+        <Button type="button" variant="secondary" onClick={onClose}>
           انصراف
         </Button>
       </div>

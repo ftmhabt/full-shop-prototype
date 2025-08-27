@@ -1,21 +1,30 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import AddressList from "@/componets/address/AddressList";
+import { getCurrentUserId } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { Address } from "@/types";
 
-export default function AddressesPage() {
-  return (
-    <div>
-      <h2 className="text-lg font-semibold mb-4">آدرس‌ها</h2>
-      <Card>
-        <CardHeader>
-          <CardTitle>آدرس پیش‌فرض</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>تهران، خیابان آزادی، پلاک ۱۲۳</p>
-          <Button size="sm" className="mt-3">
-            ویرایش
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
+export default async function AddressesPage() {
+  const userId = await getCurrentUserId();
+
+  if (!userId) {
+    return (
+      <div className="space-y-4 p-4">
+        <h1 className="text-xl font-bold">آدرس‌های من</h1>
+        <p>ابتدا وارد حساب کاربری خود شوید.</p>
+      </div>
+    );
+  }
+
+  const addressesFromDb = await db.address.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const addresses: Address[] = addressesFromDb.map((addr) => ({
+    ...addr,
+    createdAt: addr.createdAt.toISOString(),
+    updatedAt: addr.updatedAt.toISOString(),
+  }));
+
+  return <AddressList addresses={addresses} serverUserId={userId} />;
 }

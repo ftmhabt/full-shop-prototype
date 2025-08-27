@@ -10,7 +10,7 @@ export const phoneSchema = z
 // اعتبارسنجی OTP
 export const otpSchema = z
   .string()
-  .length(5, "کد OTP باید 5 رقم باشد")
+  .length(6, "کد OTP باید 6 رقم باشد")
   .regex(/^\d+$/, "کد OTP باید فقط عدد باشد");
 
 // اعتبارسنجی پسورد
@@ -18,3 +18,17 @@ export const passwordSchema = z
   .string()
   .min(6, "پسورد حداقل 6 کاراکتر باشد")
   .max(30, "پسورد نمی‌تواند بیشتر از 30 کاراکتر باشد");
+
+import { provinces } from "@/lib/locations";
+
+export const addressSchema = z.object({
+  title: z.string().min(2, "عنوان حداقل ۲ کاراکتر باشد").max(50),
+  fullName: z.string().min(2, "نام کامل حداقل ۲ کاراکتر باشد").max(50),
+  phone: z.string().regex(/^\d{10,11}$/, "شماره تلفن باید ۱۰ یا ۱۱ رقم باشد"),
+  province: z.enum(provinces.map((p) => p.province) as [string, ...string[]]),
+  city: z.string().min(2).max(50),
+  address: z.string().min(10, "آدرس حداقل ۱۰ کاراکتر باشد"),
+  postalCode: z.string().regex(/^\d{10}$/, "کد پستی باید ۱۰ رقم باشد"),
+});
+
+export type AddressInput = z.infer<typeof addressSchema>;

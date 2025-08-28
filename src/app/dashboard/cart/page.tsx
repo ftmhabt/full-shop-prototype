@@ -1,12 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useCart } from "@/store/useCart";
+import { useCartServer } from "@/hooks/useCartServer";
 import Image from "next/image";
 
 export default function CartPage() {
-  const { items, removeItem, totalPrice, clearCart, decreaseQty, increaseQty } =
-    useCart();
+  const { items, remove, totalPrice, decrease, increase, clear, isPending } =
+    useCartServer();
 
   if (items.length === 0) return <p>سبد خرید خالی است</p>;
 
@@ -20,7 +20,12 @@ export default function CartPage() {
             className="grid grid-cols-2 sm:grid-cols-3 border p-3 rounded"
           >
             <div className="flex items-center gap-3 col-span-1 sm:col-span-2">
-              <Image src={item.image} alt={item.name} width={50} height={50} />
+              <Image
+                src={item.image || ""}
+                alt={item.name}
+                width={50}
+                height={50}
+              />
               <div>
                 <p className="font-semibold">{item.name}</p>
                 <p>
@@ -33,7 +38,8 @@ export default function CartPage() {
               <Button
                 size="icon"
                 variant="outline"
-                onClick={() => decreaseQty(item.id)}
+                onClick={() => decrease(item.id)}
+                disabled={isPending}
               >
                 -
               </Button>
@@ -41,14 +47,16 @@ export default function CartPage() {
               <Button
                 size="icon"
                 variant="outline"
-                onClick={() => increaseQty(item.id)}
+                onClick={() => increase(item.id)}
+                disabled={isPending}
               >
                 +
               </Button>
               <Button
                 size="sm"
                 variant="destructive"
-                onClick={() => removeItem(item.id)}
+                onClick={() => remove(item.id)}
+                disabled={isPending}
               >
                 حذف
               </Button>
@@ -60,7 +68,9 @@ export default function CartPage() {
         <p className="text-lg font-bold">
           مجموع: {new Intl.NumberFormat("fa-IR").format(totalPrice)} تومان
         </p>
-        <Button onClick={clearCart}>تسویه حساب</Button>
+        <Button onClick={clear} disabled={isPending}>
+          تسویه حساب
+        </Button>
       </div>
     </div>
   );

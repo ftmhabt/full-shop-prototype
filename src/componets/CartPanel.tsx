@@ -1,12 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useCart } from "@/store/useCart";
+import { useCartServer } from "@/hooks/useCartServer";
 import Image from "next/image";
 
 export default function CartPanel({ onClose }: { onClose?: () => void }) {
-  const { items, totalPrice, increaseQty, decreaseQty, removeItem, clearCart } =
-    useCart();
+  const { items, totalPrice, increase, decrease, remove, clear, isPending } =
+    useCartServer();
 
   if (items.length === 0) {
     return <p className="text-center py-8">سبد خرید خالی است</p>;
@@ -22,7 +22,7 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
           >
             <div className="flex items-center gap-3">
               <Image
-                src={item.image}
+                src={item.image || "/fallback.png"}
                 alt={item.name}
                 width={56}
                 height={56}
@@ -40,7 +40,8 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
               <Button
                 size="icon"
                 variant="outline"
-                onClick={() => decreaseQty(item.id)}
+                onClick={() => decrease(item.id)}
+                disabled={isPending}
               >
                 -
               </Button>
@@ -48,14 +49,16 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
               <Button
                 size="icon"
                 variant="outline"
-                onClick={() => increaseQty(item.id)}
+                onClick={() => increase(item.id)}
+                disabled={isPending}
               >
                 +
               </Button>
               <Button
                 size="sm"
                 variant="destructive"
-                onClick={() => removeItem(item.id)}
+                onClick={() => remove(item.id)}
+                disabled={isPending}
               >
                 حذف
               </Button>
@@ -69,14 +72,17 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
           مجموع: {new Intl.NumberFormat("fa-IR").format(totalPrice)} تومان
         </p>
         <div className="flex gap-2">
-          <Button className="flex-1">تسویه حساب</Button>
+          <Button className="flex-1" disabled={isPending}>
+            تسویه حساب
+          </Button>
           <Button
             variant="outline"
             className="flex-1"
             onClick={() => {
-              clearCart();
+              clear();
               onClose?.();
             }}
+            disabled={isPending}
           >
             خالی کردن سبد
           </Button>

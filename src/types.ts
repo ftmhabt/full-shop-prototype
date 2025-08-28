@@ -29,3 +29,13 @@ export interface Address {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image?: string;
+}
+
+export type OrderStep = "address" | "cart" | "review" | "payment" | "success";

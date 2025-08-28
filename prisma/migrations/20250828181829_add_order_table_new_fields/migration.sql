@@ -1,0 +1,17 @@
+-- AlterTable
+ALTER TABLE "public"."Order" ADD COLUMN     "address" TEXT NOT NULL DEFAULT 'Unknown',
+ADD COLUMN     "city" TEXT NOT NULL DEFAULT 'Unknown',
+ADD COLUMN     "deliveredAt" TIMESTAMP(3),
+ADD COLUMN     "discount" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "finalPrice" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "fullName" TEXT NOT NULL DEFAULT 'Unknown',
+ADD COLUMN     "paidAt" TIMESTAMP(3),
+ADD COLUMN     "paymentMethod" TEXT NOT NULL DEFAULT 'ONLINE',
+ADD COLUMN     "paymentStatus" TEXT NOT NULL DEFAULT 'PENDING',
+ADD COLUMN     "phone" TEXT NOT NULL DEFAULT '0000000000',
+ADD COLUMN     "postalCode" TEXT,
+ADD COLUMN     "province" TEXT NOT NULL DEFAULT 'Unknown',
+ADD COLUMN     "shippedAt" TIMESTAMP(3),
+ADD COLUMN     "shippingCost" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "totalPrice" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "trackingCode" TEXT;

@@ -88,11 +88,33 @@ model Category {
 }
 
 model Order {
-  id        String      @id @default(cuid())
-  userId    String
-  user      User        @relation(fields: [userId], references: [id])
-  status    OrderStatus @default(PENDING)
-  createdAt DateTime    @default(now())
+  id     String      @id @default(cuid())
+  userId String
+  user   User        @relation(fields: [userId], references: [id])
+  status OrderStatus @default(PENDING)
+
+  fullName String @default("Unknown")
+  phone    String @default("0000000000")
+
+  province   String  @default("Unknown")
+  city       String  @default("Unknown")
+  address    String  @default("Unknown")
+  postalCode String?
+
+  totalPrice   Int @default(0)
+  shippingCost Int @default(0)
+  discount     Int @default(0)
+  finalPrice   Int @default(0)
+
+  paymentMethod String    @default("ONLINE") // ONLINE, COD
+  paymentStatus String    @default("PENDING") // PENDING, PAID, FAILED
+  paidAt        DateTime?
+
+  trackingCode String?
+  shippedAt    DateTime?
+  deliveredAt  DateTime?
+
+  createdAt DateTime @default(now())
 
   items OrderItem[]
 }

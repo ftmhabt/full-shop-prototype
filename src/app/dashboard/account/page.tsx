@@ -1,48 +1,25 @@
-"use client";
+import AccountForm from "@/components/account/AccountForm";
+import { getCurrentUserId } from "@/lib/auth";
+import { db } from "@/lib/db";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+export default async function AccountPage() {
+  const userId = await getCurrentUserId();
+  if (!userId) return <p>لطفا ابتدا وارد شوید</p>;
 
-export default function AccountPage() {
-  return (
-    <form className="space-y-4">
-      <div>
-        <Label>شماره موبایل</Label>
-        <Input placeholder="98+9123456789" />
-      </div>
-      <div>
-        <Label>نام</Label>
-        <Input />
-      </div>
-      <div>
-        <Label>نام خانوادگی</Label>
-        <Input />
-      </div>
-      <div>
-        <Label>نام نمایشی</Label>
-        <Input />
-        <p className="text-xs text-muted-foreground">
-          به این صورت نام شما در حساب کاربری و نظرات دیده خواهد شد
-        </p>
-      </div>
-      <div>
-        <Label>آدرس ایمیل</Label>
-        <Input type="email" value="alice@mail.com" readOnly />
-      </div>
-      <div>
-        <Label>رمز عبور پیشین</Label>
-        <Input type="password" />
-      </div>
-      <div>
-        <Label>رمز عبور جدید</Label>
-        <Input type="password" />
-      </div>
-      <div>
-        <Label>تکرار رمز عبور</Label>
-        <Input type="password" />
-      </div>
-      <Button type="submit">ذخیره تغییرات</Button>
-    </form>
-  );
+  const userFromDb = await db.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!userFromDb) return <p>کاربر یافت نشد</p>;
+
+  const user = {
+    id: userFromDb.id,
+    phone: userFromDb.phone,
+    firstName: userFromDb.firstName ?? undefined,
+    lastName: userFromDb.lastName ?? undefined,
+    displayName: userFromDb.displayName ?? undefined,
+    email: userFromDb.email ?? undefined,
+  };
+
+  return <AccountForm user={user} />;
 }

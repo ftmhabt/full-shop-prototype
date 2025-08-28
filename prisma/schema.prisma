@@ -22,12 +22,16 @@ enum OrderStatus {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  phone     String   @unique
-  role      Role     @default(USER)
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  phone       String   @unique
+  firstName   String?
+  lastName    String?
+  displayName String?
+  email       String?
+  role        Role     @default(USER)
+  password    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   orders    Order[]
   blogPosts BlogPost[]

@@ -9,19 +9,20 @@ import {
   increaseQty,
   removeItem,
 } from "@/app/actions/cart";
-import { useEffect, useState, useTransition } from "react";
+import { useCart } from "@/store/useCart";
+import { useEffect, useTransition } from "react";
 
 export function useCartServer() {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const { items, setItems } = useCart();
   const [isPending, startTransition] = useTransition();
 
-  // --- لود اولیه سبد خرید ---
+  // بارگیری اولیه
   useEffect(() => {
     startTransition(async () => {
       const cart = await getCart();
       setItems(cart);
     });
-  }, []);
+  }, [setItems]);
 
   const syncAndUpdate = (fn: () => Promise<void>) => {
     startTransition(async () => {
@@ -32,13 +33,9 @@ export function useCartServer() {
   };
 
   const add = (item: CartItem) => syncAndUpdate(() => addItem(item));
-
   const remove = (id: string) => syncAndUpdate(() => removeItem(id));
-
   const increase = (id: string) => syncAndUpdate(() => increaseQty(id));
-
   const decrease = (id: string) => syncAndUpdate(() => decreaseQty(id));
-
   const clear = () => syncAndUpdate(() => clearCart());
 
   const totalPrice = items.reduce((sum, i) => sum + i.price * i.quantity, 0);

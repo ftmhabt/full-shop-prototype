@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import CartHydrator from "@/componets/CartHydrator";
 import { FallbackImage } from "@/componets/FallbackImage";
 import ResponsiveCart from "@/componets/ResponsiveCart";
 import { Phone, Search } from "lucide-react";
@@ -24,7 +23,6 @@ export default function RootLayout({
     <html lang="fa" dir="rtl">
       <body className="bg-background text-foreground">
         {/* Header */}
-        <CartHydrator />
         <header className="border-b bg-white shadow-sm">
           <div className="container mx-auto flex items-center justify-between gap-4 p-4">
             {/* Logo */}

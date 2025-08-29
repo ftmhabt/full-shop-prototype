@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useCart, useCartCount } from "@/store/useCart";
 import { ShoppingCart } from "lucide-react";
 import { useState } from "react";
 
@@ -23,16 +22,16 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
+import { useCartServer } from "@/hooks/useCartServer";
 import CartPanel from "./CartPanel";
 
 export default function ResponsiveCart() {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const totalItems = useCartCount();
-  const hasHydrated = useCart((s) => s.hasHydrated);
 
-  // Avoid hydration mismatch: don't show the badge until after hydration
-  const countVisible = hasHydrated ? totalItems : 0;
+  const { items } = useCartServer();
+
+  const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
 
   const Trigger = (
     <Button
@@ -42,9 +41,9 @@ export default function ResponsiveCart() {
       aria-label="Cart"
     >
       <ShoppingCart className="h-5 w-5" />
-      {countVisible > 0 && (
+      {totalItems > 0 && (
         <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-          {countVisible}
+          {totalItems}
         </span>
       )}
     </Button>

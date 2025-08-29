@@ -1,27 +1,17 @@
 "use client";
 
-import { useUser } from "@/store/useUser";
 import { Address } from "@/types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AddressForm from "./AddressForm";
 import EditAddressForm from "./EditAddressForm";
 
 interface AddressesPageProps {
   addresses: Address[];
-  serverUserId: string | null;
 }
 
-export default function AddressList({
-  addresses,
-  serverUserId,
-}: AddressesPageProps) {
+export default function AddressList({ addresses }: AddressesPageProps) {
   const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null); // حالت ویرایش
-  const setUserId = useUser((state) => state.setUserId);
-
-  useEffect(() => {
-    setUserId(serverUserId || "");
-  }, [serverUserId, setUserId]);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   return (
     <div className="space-y-4 p-4">

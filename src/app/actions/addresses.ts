@@ -1,10 +1,12 @@
 "use server";
 
+import { getCurrentUserId } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { AddressInput, addressSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 
-export async function createAddress(userId: string, data: AddressInput) {
+export async function createAddress(data: AddressInput) {
+  const userId = (await getCurrentUserId()) || "";
   const parsed = addressSchema.safeParse(data);
   if (!parsed.success) throw new Error("Invalid data");
 
@@ -13,6 +15,7 @@ export async function createAddress(userId: string, data: AddressInput) {
   });
 
   revalidatePath("/dashboard/addresses");
+  revalidatePath("/dashboard/cart/checkout");
 }
 
 export async function updateAddress(

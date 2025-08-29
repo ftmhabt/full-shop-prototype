@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/select";
 import { provinces } from "@/lib/locations";
 import { AddressInput, addressSchema } from "@/lib/validations";
-import { useUser } from "@/store/useUser";
 import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState, useTransition } from "react";
 import toast from "react-hot-toast";
@@ -26,8 +25,6 @@ export default function AddressForm({
   onClose,
   isVisible = true,
 }: AddressFormProps) {
-  const userId = useUser((s) => s.userId);
-
   const [form, setForm] = useState<AddressInput>({
     title: "",
     fullName: "",
@@ -70,8 +67,7 @@ export default function AddressForm({
 
     startTransition(async () => {
       try {
-        if (!userId) throw new Error("کاربر شناسایی نشد");
-        await createAddress(userId, form); // سرور اکشن
+        await createAddress(form); // سرور اکشن
         toast.success("آدرس با موفقیت اضافه شد.");
         onClose?.();
         setForm({

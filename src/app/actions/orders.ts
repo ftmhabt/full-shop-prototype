@@ -64,3 +64,15 @@ export async function updateOrderStatus(
     data: { status },
   });
 }
+
+export async function getUserOrders() {
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("کاربر یافت نشد");
+
+  const orders = await db.order.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return orders;
+}

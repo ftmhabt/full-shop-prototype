@@ -1,13 +1,10 @@
 "use client";
 
-import { useCartServer } from "@/hooks/useCartServer";
 import { Address } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import AddressStep from "./step/AddressStep";
-import PaymentStep from "./step/PaymentStep";
 import ReviewStep from "./step/ReviewStep";
 import ShippingStep from "./step/ShippingStep";
-import SuccessStep from "./step/SuccessStep";
 
 interface Props {
   addresses: Address[];
@@ -18,9 +15,7 @@ export default function CheckoutStepper({ addresses }: Props) {
   const [selectedAddressId, setSelectedAddressId] = useState<Address | null>(
     null
   );
-  const [orderId, setOrderId] = useState<string | null>(null);
   const [shippingMethod, setShippingMethod] = useState<string>("");
-  const { items } = useCartServer();
 
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -51,33 +46,16 @@ export default function CheckoutStepper({ addresses }: Props) {
       ),
     },
     {
-      title: "مرور سفارش",
+      title: "پرداخت",
       component: (
         <ReviewStep
           shippingMethod={shippingMethod}
           selectedAddress={selectedAddressId}
-          onNext={goNext}
+          discount={0}
+          shippingCost={0}
           onBack={goBack}
         />
       ),
-    },
-    {
-      title: "پرداخت",
-      component: (
-        <PaymentStep
-          orderId={orderId ?? "temp-123"}
-          onSuccess={() => {
-            setOrderId("ORD-" + Date.now());
-            goNext();
-          }}
-          onNext={goNext}
-          onBack={goBack}
-        />
-      ),
-    },
-    {
-      title: "موفقیت",
-      component: <SuccessStep trackingCode={orderId ?? "ORD-000"} />,
     },
   ];
 

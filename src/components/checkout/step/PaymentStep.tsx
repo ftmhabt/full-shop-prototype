@@ -1,6 +1,6 @@
 "use client";
 
-import { createOrder } from "@/app/actions/orders";
+import { createOrderAndStartPayment } from "@/app/actions/payment";
 import { Button } from "@/components/ui/button";
 import { PaymentStepProps } from "../types";
 
@@ -9,21 +9,9 @@ export default function PaymentStep({
   onSuccess,
   onBack,
 }: PaymentStepProps) {
+  // PaymentStep.tsx
   const handlePayment = async () => {
-    // شبیه‌سازی پرداخت
-    const trackingCode = "TRK-" + Date.now();
-
-    // ثبت سفارش در دیتابیس بعد از پرداخت موفق
-    await createOrder("USER_ID_PLACEHOLDER", [], {
-      fullName: "Test",
-      phone: "09123456789",
-      province: "تهران",
-      city: "تهران",
-      address: "خیابان تست",
-      postalCode: "1234567890",
-    });
-
-    setTimeout(() => onSuccess(trackingCode), 2000);
+    await createOrderAndStartPayment(orderId); // server action که کاربر رو به درگاه هدایت می‌کنه
   };
 
   return (

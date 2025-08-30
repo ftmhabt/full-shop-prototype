@@ -1,16 +1,17 @@
 "use server";
 
 import { AddressSnapshot } from "@/components/checkout/types";
+import { getCurrentUserId } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { CartItem } from "@/types";
 
 export async function createOrder(
-  userId: string,
   items: CartItem[],
   address: AddressSnapshot,
   discount: number = 0,
   shippingCost: number = 0
 ) {
+  const userId = await getCurrentUserId();
   if (!userId) throw new Error("User not found");
   if (items.length === 0) throw new Error("Cart is empty");
 

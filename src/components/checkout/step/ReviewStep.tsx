@@ -1,5 +1,6 @@
 "use client";
 
+import { createOrderAndStartPayment } from "@/app/actions/payment";
 import { Button } from "@/components/ui/button";
 import { useCartServer } from "@/hooks/useCartServer";
 import { Address } from "@/types";
@@ -7,15 +8,34 @@ import { Address } from "@/types";
 export default function ReviewStep({
   selectedAddress,
   shippingMethod,
+  discount,
+  shippingCost,
   onBack,
-  onNext,
 }: {
   selectedAddress: Address | null;
   shippingMethod: string | null;
+  discount: number;
+  shippingCost: number;
   onBack: () => void;
-  onNext: () => void;
 }) {
   const { items } = useCartServer();
+  const handlePayment = async () => {
+    const url = await createOrderAndStartPayment(
+      items,
+      {
+        fullName: selectedAddress?.fullName || "",
+        phone: selectedAddress?.phone || "",
+        province: selectedAddress?.province || "",
+        city: selectedAddress?.city || "",
+        address: selectedAddress?.address || "",
+        postalCode: selectedAddress?.postalCode || "",
+      },
+      discount,
+      shippingCost
+    );
+
+    window.location.href = url; // هدایت کاربر به درگاه زرین‌پال
+  };
 
   return (
     <div className="space-y-6">
@@ -71,8 +91,8 @@ export default function ReviewStep({
         <Button variant="outline" className="flex-1" onClick={onBack}>
           بازگشت
         </Button>
-        <Button className="flex-1" onClick={onNext}>
-          ادامه
+        <Button className="flex-1" onClick={handlePayment}>
+          پرداخت
         </Button>
       </div>
     </div>

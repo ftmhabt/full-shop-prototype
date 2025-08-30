@@ -37,3 +37,12 @@ export interface PaymentStepProps {
 export interface SuccessStepProps {
   trackingCode: string;
 }
+
+export interface AddressSnapshot {
+  fullName: string;
+  phone: string;
+  province: string;
+  city: string;
+  address: string;
+  postalCode?: string;
+}

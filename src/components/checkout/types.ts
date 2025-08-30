@@ -7,35 +7,33 @@ export interface CheckoutStepperProps {
 
 export interface AddressStepProps {
   addresses: Address[];
+  selectedAddress: Address | null;
+  setSelectedAddress: (address: Address) => void;
   onNext: () => void;
-  selectedAddressId: string | null;
-  setSelectedAddressId: (id: string) => void;
 }
 
-export interface CartStepProps {
-  cart: CartItem[];
+export interface ShippingStepProps {
+  shippingMethod: string;
+  setShippingMethod: (method: string) => void;
   onNext: () => void;
+  onBack: () => void;
 }
 
 export interface ReviewStepProps {
+  cart: CartItem[];
+  selectedAddressId: string | null;
+  shippingMethod: string;
   onNext: () => void;
   onBack: () => void;
 }
 
 export interface PaymentStepProps {
   orderId: string;
-  onSuccess: () => void;
+  onSuccess: (trackingCode: string) => void;
+  onNext: () => void;
+  onBack: () => void;
 }
 
 export interface SuccessStepProps {
-  orderId: string;
-}
-
-export interface AddressSnapshot {
-  fullName: string;
-  phone: string;
-  province: string;
-  city: string;
-  address: string;
-  postalCode?: string;
+  trackingCode: string;
 }

@@ -103,7 +103,7 @@ export const PasswordForm = ({ phone, setStep, mode }: PasswordFormProps) => {
           <button
             type="button"
             onClick={handleForgotPassword}
-            className="text-sm text-blue-600 w-full"
+            className="text-sm text-primary w-full"
           >
             رمز عبور را فراموش کرده‌ام، کد بازیابی ارسال کن
           </button>

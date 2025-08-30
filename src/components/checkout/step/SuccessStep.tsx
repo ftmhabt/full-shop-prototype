@@ -1,16 +1,14 @@
 "use client";
 
-interface Props {
-  orderId: string;
-}
+import { SuccessStepProps } from "../types";
 
-export default function SuccessStep({ orderId }: Props) {
+export default function SuccessStep({ trackingCode }: SuccessStepProps) {
   return (
     <div className="text-center">
       <h2 className="text-2xl font-bold text-green-600 mb-4">
         سفارش با موفقیت ثبت شد 🎉
       </h2>
-      <p>کد سفارش شما: {orderId}</p>
+      <p>کد رهگیری شما: {trackingCode}</p>
     </div>
   );
 }

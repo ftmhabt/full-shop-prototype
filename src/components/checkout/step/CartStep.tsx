@@ -1,9 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CartStepProps } from "../types";
+import { CartItem } from "@/types";
 
-export default function CartStep({ cart, onNext }: CartStepProps) {
+interface CartStepProps {
+  cart: CartItem[];
+  onNext: () => void;
+  onBack: () => void;
+}
+export default function CartStep({ cart, onNext, onBack }: CartStepProps) {
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">سبد خرید</h2>
@@ -23,7 +28,10 @@ export default function CartStep({ cart, onNext }: CartStepProps) {
           </div>
         ))}
       </div>
-      <Button className="mt-6" onClick={onNext}>
+      <Button variant="outline" className="mt-6 w-1/2" onClick={onBack}>
+        بازگشت
+      </Button>
+      <Button className="mt-6 w-1/2" onClick={onNext}>
         ادامه
       </Button>
     </div>

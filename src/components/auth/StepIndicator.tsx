@@ -17,7 +17,7 @@ export const StepIndicator = ({ step }: StepIndicatorProps) => {
               (step === "phone" && i === 0) ||
                 (step === "otp" && i === 1) ||
                 (step === "password" && i === 2)
-                ? "bg-blue-600 text-white"
+                ? "bg-primary text-white"
                 : "bg-gray-200 text-gray-500"
             )}
           >

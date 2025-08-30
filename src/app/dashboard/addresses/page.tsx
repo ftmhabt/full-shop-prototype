@@ -26,5 +26,5 @@ export default async function AddressesPage() {
     updatedAt: addr.updatedAt.toISOString(),
   }));
 
-  return <AddressList addresses={addresses} serverUserId={userId} />;
+  return <AddressList addresses={addresses} />;
 }

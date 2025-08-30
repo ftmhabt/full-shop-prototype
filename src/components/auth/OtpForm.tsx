@@ -94,7 +94,7 @@ export const OtpForm = ({
         </span>
         <button
           type="button"
-          className="text-blue-600 text-sm"
+          className="text-primary text-sm"
           onClick={() => setStep("phone")}
         >
           تغییر شماره

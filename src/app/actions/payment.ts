@@ -2,6 +2,7 @@
 
 import { AddressSnapshot } from "@/components/checkout/types";
 import { CartItem } from "@/types";
+import { clearCart } from "./cart";
 import { createOrder } from "./orders";
 
 export async function createOrderAndStartPayment(
@@ -11,7 +12,7 @@ export async function createOrderAndStartPayment(
   shippingCost: number = 0
 ) {
   const order = await createOrder(items, address, discount, shippingCost);
-
+  await clearCart();
   // درخواست به زرین‌پال
   const response = await fetch(
     "https://sandbox.zarinpal.com/pg/v4/payment/request.json",

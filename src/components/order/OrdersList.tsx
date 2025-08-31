@@ -2,12 +2,16 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Order } from "@prisma/client";
+import { Order, OrderItem } from "@prisma/client";
 import { Package } from "lucide-react";
 import Link from "next/link";
 
-export default function OrdersList({ orders }: { orders: Order[] }) {
-  const statusColor = {
+type OrderWithItems = Order & {
+  items: (OrderItem & { productName: string })[];
+};
+
+export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
+  const statusColor: Record<Order["status"], string> = {
     PENDING: "bg-yellow-100 text-yellow-800",
     PAID: "bg-blue-100 text-blue-800",
     SHIPPED: "bg-purple-100 text-purple-800",
@@ -24,14 +28,18 @@ export default function OrdersList({ orders }: { orders: Order[] }) {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-4 space-y-4">
-      <h1 className="text-2xl font-bold flex items-center gap-2">
+    <div className="p-4 space-y-2">
+      <h1 className="text-2xl font-bold flex items-center gap-2 mb-4">
         <Package className="w-6 h-6" /> سفارش‌های من
       </h1>
 
       {orders.map((order) => (
-        <Link key={order.id} href={"/dashboard/orders/" + order.id}>
-          <Card className="rounded-xl shadow-sm">
+        <Link
+          key={order.id}
+          href={"/dashboard/orders/" + order.id}
+          className="block"
+        >
+          <Card className="rounded-xl shadow-sm hover:shadow-md transition">
             <CardHeader className="flex flex-row justify-between items-center">
               <CardTitle className="text-base">
                 سفارش #{order.id.slice(0, 8)}
@@ -40,18 +48,36 @@ export default function OrdersList({ orders }: { orders: Order[] }) {
                 {order.status}
               </Badge>
             </CardHeader>
-            <CardContent className="flex justify-between items-center text-sm text-gray-600">
-              <p>
-                تاریخ:{" "}
-                {new Date(order.createdAt).toLocaleDateString("fa-IR", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-              <p className="font-semibold">
-                مبلغ: {order.finalPrice.toLocaleString("fa-IR")} تومان
-              </p>
+            <CardContent className="text-sm text-gray-600 space-y-2">
+              <div className="flex justify-between">
+                <p>
+                  تاریخ:{" "}
+                  {new Date(order.createdAt).toLocaleDateString("fa-IR", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+                <p className="font-semibold">
+                  مبلغ: {order.finalPrice.toLocaleString("fa-IR")} تومان
+                </p>
+              </div>
+
+              {/* نمایش آیتم‌ها */}
+              <div className="text-xs text-gray-500 space-y-1">
+                {order.items.map((item) => (
+                  <p key={item.id}>
+                    {item.productName} × {item.quantity}
+                  </p>
+                ))}
+              </div>
+
+              {/* آدرس سفارش (اختیاری) */}
+              {order.address && (
+                <p className="text-xs text-gray-500">
+                  آدرس: {order.province}، {order.city}، {order.address}...
+                </p>
+              )}
             </CardContent>
           </Card>
         </Link>

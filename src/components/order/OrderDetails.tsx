@@ -20,7 +20,7 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
       const res = await fetch(`/api/payment/retry?orderId=${order.id}`);
       const data = await res.json();
       if (data.url) {
-        window.location.href = data.url; // هدایت به زرین‌پال
+        window.location.href = data.url;
       } else {
         alert(data.error || "خطا در شروع پرداخت");
       }
@@ -33,7 +33,7 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4 space-y-6">
+    <div className="p-4 space-y-6">
       {/* اطلاعات سفارش */}
       <Card>
         <CardHeader>

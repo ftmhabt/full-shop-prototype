@@ -9,7 +9,22 @@ export default async function OrdersPage() {
   const orders = await db.order.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
+    include: {
+      items: {
+        include: {
+          product: true,
+        },
+      },
+    },
   });
 
-  return <OrdersList orders={orders} />;
+  const formattedOrders = orders.map((order) => ({
+    ...order,
+    items: order.items.map((item) => ({
+      ...item,
+      productName: item.product.name,
+    })),
+  }));
+
+  return <OrdersList orders={formattedOrders} />;
 }

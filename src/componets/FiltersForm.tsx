@@ -33,7 +33,8 @@ export default function FiltersForm({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
-
+  console.log("query", query);
+  console.log("slug", slug);
   // State برای کنترل checkbox ها
   const [localFilters, setLocalFilters] =
     useState<Record<string, string[]>>(filters);
@@ -58,10 +59,9 @@ export default function FiltersForm({
     }
 
     startTransition(() => {
-      const url =
-        !slug || slug === "search"
-          ? `/search?${params.toString()}`
-          : `/category/${slug}?${params.toString()}`;
+      const url = query
+        ? `/category/${slug}/search?${params.toString()}`
+        : `/category/${slug}?${params.toString()}`;
       router.push(url);
       setOpen(false);
 
@@ -87,10 +87,9 @@ export default function FiltersForm({
     if (currentOrderBy) params.set("orderBy", currentOrderBy);
 
     startTransition(() => {
-      const url =
-        !slug || slug === "search"
-          ? `/search?${params.toString()}`
-          : `/category/${slug}?${params.toString()}`;
+      const url = query
+        ? `/category/${slug}/search?${params.toString()}`
+        : `/category/${slug}?${params.toString()}`;
       router.push(url);
       setOpen(false);
 

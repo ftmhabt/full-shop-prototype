@@ -6,7 +6,7 @@ import FiltersForm from "@/componets/FiltersForm";
 import SortBar from "@/componets/SortBar";
 import { Suspense } from "react";
 
-export default async function CategoryPage({
+export default async function CategorySearchPage({
   params,
   searchParams,
 }: {
@@ -23,8 +23,10 @@ export default async function CategoryPage({
   });
 
   const orderBy = resolvedSearchParams.orderBy as string | undefined;
-  const attributes = await getAttributesByCategorySlug(slug);
   const query = resolvedSearchParams.q as string | undefined;
+
+  const attributes = await getAttributesByCategorySlug(slug);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 p-4 lg:p-6 w-full">
       {/* Sidebar */}
@@ -32,9 +34,9 @@ export default async function CategoryPage({
         <Suspense fallback={<Spinner />}>
           <FiltersForm
             slug={slug}
+            query={query}
             filters={filters}
             attributes={attributes}
-            query={query}
           />
         </Suspense>
       </aside>
@@ -42,7 +44,9 @@ export default async function CategoryPage({
       {/* Main */}
       <main className="lg:col-span-3 space-y-4">
         <div className="flex items-center justify-between gap-3 sm:mb-4">
-          <h1 className="text-xl sm:text-2xl font-bold block">محصولات</h1>
+          <h1 className="text-xl sm:text-2xl font-bold block">
+            نتایج برای &quot;{query}&quot; در دسته {slug}
+          </h1>
           <SortBar />
         </div>
         <Suspense fallback={<ProductsSkeleton />}>

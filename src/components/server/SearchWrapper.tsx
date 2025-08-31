@@ -1,44 +1,32 @@
-import { getProductsBySearch } from "@/app/actions/products";
-import FiltersForm from "@/componets/FiltersForm";
-import SortBar from "@/componets/SortBar";
-import ProductsWrapper from "./ProductsWrapper";
+import { getCategoriesBySearch } from "@/app/actions/search";
 
 export default async function SearchWrapper({
   searchParams,
 }: {
   searchParams: Record<string, string | string[]>;
 }) {
-  const q = searchParams.q as string;
-  const orderBy = (searchParams.orderBy as string) || "newest";
+  const sp = await searchParams;
+  const q = sp.q as string;
 
-  const filters: Record<string, string[]> = {};
-  for (const key in searchParams) {
-    if (key !== "q" && key !== "orderBy") {
-      filters[key] = Array.isArray(searchParams[key])
-        ? (searchParams[key] as string[])
-        : [searchParams[key] as string];
-    }
-  }
-
-  const { products, attributes } = await getProductsBySearch(
-    q,
-    filters,
-    orderBy
-  );
+  // یه فانکشن جدید که دسته‌بندی‌های مرتبط با سرچ رو میاره
+  const categories = await getCategoriesBySearch(q);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 p-4 lg:p-6 w-full">
-      <aside className="lg:col-span-1 space-y-4">
-        <FiltersForm query={q} filters={filters} attributes={attributes} />
-      </aside>
-
-      <main className="lg:col-span-3 space-y-4">
-        <div className="flex items-center justify-between gap-3 sm:mb-4">
-          <h1 className="text-xl sm:text-2xl font-bold block">محصولات</h1>
-          <SortBar />
-        </div>
-        <ProductsWrapper products={products} />
-      </main>
+    <div className="p-6 w-full space-y-4">
+      <h1 className="text-xl sm:text-2xl font-bold">
+        انتخاب دسته برای &quot;{q}&quot;
+      </h1>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {categories.map((cat) => (
+          <a
+            key={cat.id}
+            href={`/category/${cat.slug}/search?q=${q}`}
+            className="p-4 border rounded-lg hover:bg-gray-50 transition"
+          >
+            {cat.name}
+          </a>
+        ))}
+      </div>
     </div>
   );
 }

@@ -86,7 +86,7 @@ export async function getProductsByCategorySlug(
   slug: string,
   filters: Record<string, string[]>
 ): Promise<ProductWithAttributes[]> {
-  const { orderBy, ...otherFilters } = filters;
+  const { orderBy, query, ...otherFilters } = filters;
 
   const where: Prisma.ProductWhereInput = {
     category: { slug },
@@ -97,6 +97,13 @@ export async function getProductsByCategorySlug(
     where.stock = { gt: 0 };
   }
 
+  // سرچ روی نام یا توضیحات
+  if (query?.length) {
+    where.OR = [
+      { name: { contains: query[0], mode: "insensitive" } },
+      { description: { contains: query[0], mode: "insensitive" } },
+    ];
+  }
   // فیلتر ویژگی‌ها با slug
   const attributeFilters = Object.entries(otherFilters).filter(
     ([key]) => key !== "inStock"
@@ -171,6 +178,10 @@ export async function getProductsBySearch(
       { description: { contains: query, mode: "insensitive" } },
     ],
   };
+
+  if (filters.inStock?.includes("true")) {
+    (where as Prisma.ProductWhereInput).stock = { gt: 0 };
+  }
 
   if (Object.keys(filters).length > 0) {
     where.AND = Object.entries(filters).map(([attrSlug, valueSlugs]) => ({

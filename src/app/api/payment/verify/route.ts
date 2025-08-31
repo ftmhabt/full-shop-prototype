@@ -34,7 +34,7 @@ export async function GET(req: Request) {
     return NextResponse.redirect(`/dashboard/cart/checkout?error=notfound`);
 
   const response = await zarinpal.PaymentVerification({
-    Amount: order.finalPrice, // حتماً مبلغ واقعی
+    Amount: order.finalPrice * 10, // حتماً مبلغ واقعی
     Authority,
   });
 

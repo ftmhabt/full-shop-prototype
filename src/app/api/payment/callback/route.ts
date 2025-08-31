@@ -23,7 +23,6 @@ export async function GET(req: NextRequest) {
       `${origin}/dashboard/payment/fail?orderId=${orderId}`
     );
   }
-
   if (status === "OK") {
     const verify = await fetch(
       "https://sandbox.zarinpal.com/pg/v4/payment/verify.json",

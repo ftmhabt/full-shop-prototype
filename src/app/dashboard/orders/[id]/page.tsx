@@ -12,9 +12,10 @@ export default async function OrderDetailsPage({ params }: Props) {
   const userId = await getCurrentUserId();
   if (!userId) throw new Error("کاربر یافت نشد");
 
+  const { id } = await params;
   // پیدا کردن سفارش
   const order = await db.order.findFirst({
-    where: { id: params.id, userId },
+    where: { id, userId },
     include: { items: true },
   });
 

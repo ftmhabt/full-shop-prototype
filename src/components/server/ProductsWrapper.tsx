@@ -18,7 +18,7 @@ export default async function ProductsWrapper({
   let finalProducts: ProductWithAttributes[] = products ?? [];
 
   if (!finalProducts.length) {
-    if (!slug) throw new Error("Either products or slug must be provided");
+    if (!slug) return <p className="text-gray-500">هیچ محصولی یافت نشد.</p>;
     const queryFilters: Record<string, string[]> = { ...filters };
     if (orderBy) queryFilters.orderBy = [orderBy];
     finalProducts = await getProductsByCategorySlug(slug, queryFilters);

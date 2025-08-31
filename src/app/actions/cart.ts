@@ -71,8 +71,19 @@ export async function increaseQty(id: string) {
 
 export async function decreaseQty(id: string) {
   const cart = await getCart();
-  const updated = cart.map((i) =>
-    i.id === id ? { ...i, quantity: i.quantity > 1 ? i.quantity - 1 : 1 } : i
-  );
+
+  let updated: CartItem[];
+
+  const item = cart.find((i) => i.id === id);
+  if (!item) return;
+
+  if (item.quantity <= 1) {
+    updated = cart.filter((i) => i.id !== id);
+  } else {
+    updated = cart.map((i) =>
+      i.id === id ? { ...i, quantity: i.quantity - 1 } : i
+    );
+  }
+
   await saveCart(updated);
 }

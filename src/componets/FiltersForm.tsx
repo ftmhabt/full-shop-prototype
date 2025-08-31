@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Accordion,
   AccordionContent,
@@ -35,23 +34,25 @@ export default function FiltersForm({
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
 
+  // State برای کنترل checkbox ها
+  const [localFilters, setLocalFilters] =
+    useState<Record<string, string[]>>(filters);
+
   function applyFilters(formData: FormData) {
-    // Start with current URL params so orderBy and others are preserved
     const currentParams = new URLSearchParams(window.location.search);
-    const params = new URLSearchParams(currentParams);
 
-    // Keep query up-to-date
-    if (query) {
-      params.set("q", query);
-    } else {
-      params.delete("q");
-    }
+    // نگه داشتن orderBy
+    const currentOrderBy = currentParams.get("orderBy");
 
-    // Remove old filters but keep orderBy and other unrelated params
-    attributes.forEach((attr) => params.delete(attr.slug));
-    params.delete("inStock");
+    const params = new URLSearchParams();
 
-    // Add new filters from form
+    // query
+    if (query) params.set("q", query);
+
+    // orderBy رو حفظ کن
+    if (currentOrderBy) params.set("orderBy", currentOrderBy);
+
+    // فیلترها از فرم
     for (const [key, value] of formData.entries()) {
       params.append(key, String(value));
     }
@@ -61,9 +62,40 @@ export default function FiltersForm({
         !slug || slug === "search"
           ? `/search?${params.toString()}`
           : `/category/${slug}?${params.toString()}`;
-
       router.push(url);
       setOpen(false);
+
+      // آپدیت state فرم با مقادیر اعمال‌شده
+      const newFilters: Record<string, string[]> = {};
+      for (const [key, value] of formData.entries()) {
+        if (!newFilters[key]) newFilters[key] = [];
+        newFilters[key].push(String(value));
+      }
+      setLocalFilters(newFilters);
+    });
+  }
+
+  function resetFilters() {
+    const params = new URLSearchParams();
+
+    // نگه داشتن query و orderBy
+    const currentParams = new URLSearchParams(window.location.search);
+    const currentQ = currentParams.get("q");
+    const currentOrderBy = currentParams.get("orderBy");
+
+    if (currentQ) params.set("q", currentQ);
+    if (currentOrderBy) params.set("orderBy", currentOrderBy);
+
+    startTransition(() => {
+      const url =
+        !slug || slug === "search"
+          ? `/search?${params.toString()}`
+          : `/category/${slug}?${params.toString()}`;
+      router.push(url);
+      setOpen(false);
+
+      // پاک کردن state فرم
+      setLocalFilters({});
     });
   }
 
@@ -80,7 +112,13 @@ export default function FiltersForm({
         <Checkbox
           name="inStock"
           value="true"
-          defaultChecked={filters["inStock"]?.includes("true") ?? false}
+          checked={localFilters["inStock"]?.includes("true") ?? false}
+          onCheckedChange={(checked) => {
+            setLocalFilters((prev) => ({
+              ...prev,
+              inStock: checked ? ["true"] : [],
+            }));
+          }}
         />
         <span>فقط موجودی</span>
       </label>
@@ -96,9 +134,19 @@ export default function FiltersForm({
                   <Checkbox
                     name={attr.slug}
                     value={val.slug}
-                    defaultChecked={
-                      filters[attr.slug]?.includes(val.slug) ?? false
+                    checked={
+                      localFilters[attr.slug]?.includes(val.slug) ?? false
                     }
+                    onCheckedChange={(checked) => {
+                      setLocalFilters((prev) => ({
+                        ...prev,
+                        [attr.slug]: checked
+                          ? [...(prev[attr.slug] || []), val.slug]
+                          : (prev[attr.slug] || []).filter(
+                              (v) => v !== val.slug
+                            ),
+                      }));
+                    }}
                   />
                   <span>{val.value}</span>
                 </label>
@@ -108,18 +156,29 @@ export default function FiltersForm({
         ))}
       </Accordion>
 
-      <Button type="submit" disabled={isPending} className="w-full">
-        {isPending ? "در حال بارگذاری..." : "اعمال فیلتر"}
-      </Button>
+      <div className="flex gap-2">
+        <Button type="submit" disabled={isPending} className="flex-1">
+          {isPending ? "در حال بارگذاری..." : "اعمال فیلتر"}
+        </Button>
+
+        {Object.keys(localFilters).length > 0 && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={resetFilters}
+            className="flex-1"
+          >
+            ریست فیلترها
+          </Button>
+        )}
+      </div>
     </form>
   );
 
   return (
     <>
-      {/* Desktop Sidebar */}
       <div className="hidden sm:block">{FilterContent}</div>
 
-      {/* Mobile Drawer */}
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
           <Button variant="outline" className="sm:hidden w-full">

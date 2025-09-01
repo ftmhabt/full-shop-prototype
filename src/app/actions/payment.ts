@@ -9,7 +9,7 @@ export async function createOrderAndStartPayment(
   items: CartItem[],
   address: AddressSnapshot,
   discount: number = 0,
-  shippingCost: number = 0
+  shippingCost: string
 ) {
   const order = await createOrder(items, address, discount, shippingCost);
   await clearCart();

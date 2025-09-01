@@ -9,18 +9,23 @@ export async function createOrder(
   items: CartItem[],
   address: AddressSnapshot,
   discount: number = 0,
-  shippingCost: number = 0
+  shippingId: string
 ) {
   const userId = await getCurrentUserId();
   if (!userId) throw new Error("User not found");
   if (items.length === 0) throw new Error("Cart is empty");
+
+  const method = await db.shippingMethod.findUnique({
+    where: { id: shippingId },
+  });
+  if (!method) throw new Error("روش ارسال نامعتبر است");
 
   // محاسبه مبلغ کل
   const totalPrice = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const finalPrice = totalPrice + shippingCost - discount;
+  const finalPrice = totalPrice + method.cost - discount;
 
   const order = await db.order.create({
     data: {
@@ -37,7 +42,6 @@ export async function createOrder(
 
       // مالی
       totalPrice,
-      shippingCost,
       discount,
       finalPrice,
 
@@ -48,8 +52,11 @@ export async function createOrder(
           quantity: item.quantity,
         })),
       },
+
+      // ارسال
+      shippingMethodId: shippingId,
     },
-    include: { items: true },
+    include: { items: true, ShippingMethod: true },
   });
 
   return order;

@@ -50,7 +50,7 @@ export default function DashboardLayout({
   );
 
   return (
-    <div className="container mx-auto pb-6 min-h-1/2 self-start">
+    <div className="container mx-auto pb-6 min-h-1/2 h-full self-start">
       {/* Mobile Top Bar */}
       <div className="flex items-center justify-between mb-4 md:hidden">
         <h1 className="text-xl font-bold">داشبورد</h1>
@@ -70,12 +70,12 @@ export default function DashboardLayout({
       </div>
 
       {/* Desktop Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-full">
         <aside className="hidden md:block md:col-span-1">
           {SidebarContent}
         </aside>
-        <main className="md:col-span-3">
-          <Card className="p-6">{children}</Card>
+        <main className="md:col-span-3 h-full">
+          <Card className="p-6 h-full">{children}</Card>
         </main>
       </div>
     </div>

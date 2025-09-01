@@ -13,16 +13,21 @@ export default async function OrderDetailsPage({ params }: Props) {
   if (!userId) throw new Error("کاربر یافت نشد");
 
   const { id } = await params;
-  // پیدا کردن سفارش
   const order = await db.order.findFirst({
     where: { id, userId },
-    include: { items: true },
+    include: {
+      items: {
+        include: {
+          product: true,
+        },
+      },
+      ShippingMethod: true,
+    },
   });
 
   if (!order) {
     return <p className="text-center mt-10 text-red-500">سفارش یافت نشد.</p>;
   }
 
-  // پاس دادن داده‌ها به Client Component
   return <OrderDetailsClient order={order} />;
 }

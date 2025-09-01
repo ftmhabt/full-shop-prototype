@@ -1,5 +1,5 @@
 import { CartItem } from "@/types";
-import { Address } from "@prisma/client";
+import { Address, ShippingMethod } from "@prisma/client";
 
 export interface CheckoutStepperProps {
   addresses: Address[];
@@ -13,8 +13,8 @@ export interface AddressStepProps {
 }
 
 export interface ShippingStepProps {
-  shippingMethod: string;
-  setShippingMethod: (method: string) => void;
+  shippingMethod: ShippingMethod | null;
+  setShippingMethod: (method: ShippingMethod) => void;
   onNext: () => void;
   onBack: () => void;
 }

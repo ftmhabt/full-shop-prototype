@@ -1,6 +1,7 @@
 "use client";
 
 import { Address } from "@/types";
+import { ShippingMethod } from "@prisma/client";
 import { useEffect, useRef, useState } from "react";
 import AddressStep from "./step/AddressStep";
 import ReviewStep from "./step/ReviewStep";
@@ -15,8 +16,9 @@ export default function CheckoutStepper({ addresses }: Props) {
   const [selectedAddressId, setSelectedAddressId] = useState<Address | null>(
     null
   );
-  const [shippingMethod, setShippingMethod] = useState<string>("");
-
+  const [shippingMethod, setShippingMethod] = useState<ShippingMethod | null>(
+    null
+  );
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const goNext = () => setStep((s) => Math.min(s + 1, steps.length - 1));
@@ -52,7 +54,6 @@ export default function CheckoutStepper({ addresses }: Props) {
           shippingMethod={shippingMethod}
           selectedAddress={selectedAddressId}
           discount={0}
-          shippingCost={0}
           onBack={goBack}
         />
       ),

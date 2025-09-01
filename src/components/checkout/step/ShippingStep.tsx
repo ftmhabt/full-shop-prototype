@@ -1,12 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { ShippingMethod } from "@prisma/client";
+import { useEffect, useState } from "react";
 import { ShippingStepProps } from "../types";
-
-const methods = [
-  { id: "STANDARD", name: "ارسال معمولی", cost: 20000 },
-  { id: "EXPRESS", name: "ارسال فوری", cost: 50000 },
-];
 
 export default function ShippingStep({
   shippingMethod,
@@ -14,6 +11,14 @@ export default function ShippingStep({
   onNext,
   onBack,
 }: ShippingStepProps) {
+  const [methods, setMethods] = useState<ShippingMethod[]>([]);
+
+  useEffect(() => {
+    fetch("/api/shipping-methods")
+      .then((res) => res.json())
+      .then((data) => setMethods(data));
+  }, []);
+
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-xl font-bold">روش ارسال</h2>
@@ -21,9 +26,9 @@ export default function ShippingStep({
       {methods.map((m) => (
         <div
           key={m.id}
-          onClick={() => setShippingMethod(m.id)}
+          onClick={() => setShippingMethod(m)}
           className={`border p-3 rounded cursor-pointer flex justify-between items-center ${
-            shippingMethod === m.id ? "border-primary bg-primary/10" : ""
+            shippingMethod?.id === m.id ? "border-primary bg-primary/10" : ""
           }`}
         >
           <span>{m.name}</span>
@@ -38,7 +43,7 @@ export default function ShippingStep({
         <Button
           className="flex-1"
           onClick={onNext}
-          disabled={shippingMethod === ""}
+          disabled={shippingMethod?.id === ""}
         >
           ادامه
         </Button>

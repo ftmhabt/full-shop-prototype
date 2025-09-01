@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 h-full">
       <Card>
         <CardHeader>
           <CardTitle>خوش آمدید!</CardTitle>
@@ -19,15 +19,6 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <p>سفارش شماره #1234 در حال پردازش است.</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>موجودی کیف پول</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>۲۵۰٬۰۰۰ تومان</p>
           </CardContent>
         </Card>
       </div>

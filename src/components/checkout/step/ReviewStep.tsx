@@ -2,20 +2,30 @@
 
 import { createOrderAndStartPayment } from "@/app/actions/payment";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCartServer } from "@/hooks/useCartServer";
+import { formatPrice } from "@/lib/format";
 import { Address } from "@/types";
+import { ShippingMethod } from "@prisma/client";
+import {
+  Hash,
+  Home,
+  MapPin,
+  Phone,
+  ShoppingCart,
+  Truck,
+  User,
+} from "lucide-react";
 
 export default function ReviewStep({
   selectedAddress,
   shippingMethod,
   discount,
-  shippingCost,
   onBack,
 }: {
   selectedAddress: Address | null;
-  shippingMethod: string | null;
+  shippingMethod: ShippingMethod | null;
   discount: number;
-  shippingCost: number;
   onBack: () => void;
 }) {
   const { items } = useCartServer();
@@ -31,7 +41,7 @@ export default function ReviewStep({
         postalCode: selectedAddress?.postalCode || "",
       },
       discount,
-      shippingCost
+      shippingMethod?.id || ""
     );
 
     window.location.href = url; // هدایت کاربر به درگاه زرین‌پال
@@ -42,49 +52,88 @@ export default function ReviewStep({
       <h2 className="text-lg font-bold">مرور سفارش</h2>
 
       {/* آدرس */}
-      <div className="border rounded-lg p-4 bg-gray-50">
-        <h3 className="font-semibold mb-2">آدرس انتخابی</h3>
-        {selectedAddress ? (
-          <p className="text-sm leading-relaxed">
-            {selectedAddress.fullName} - {selectedAddress.phone} <br />
-            {selectedAddress.province}, {selectedAddress.city} <br />
-            {selectedAddress.address} <br />
-            کد پستی: {selectedAddress.postalCode || "ثبت نشده"}
-          </p>
-        ) : (
-          <p className="text-sm text-gray-500">هیچ آدرسی انتخاب نشده است.</p>
-        )}
-      </div>
+      <Card className="bg-gray-50 border">
+        <CardHeader>
+          <CardTitle className="text-gray-700 text-base flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-gray-500" />
+            آدرس انتخابی
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm text-gray-800">
+          {selectedAddress ? (
+            <>
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4 text-gray-500" />
+                <span>{selectedAddress.fullName}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-gray-500" />
+                <span>{selectedAddress.phone}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-gray-500" />
+                <span>
+                  {selectedAddress.province}, {selectedAddress.city}
+                </span>
+              </div>
+              <div className="flex items-start gap-2">
+                <Home className="w-4 h-4 text-gray-500 mt-0.5" />
+                <span>{selectedAddress.address}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Hash className="w-4 h-4 text-gray-500" />
+                <span>{selectedAddress.postalCode || "ثبت نشده"}</span>
+              </div>
+            </>
+          ) : (
+            <p className="text-gray-500">هیچ آدرسی انتخاب نشده است.</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* روش ارسال */}
-      <div className="border rounded-lg p-4 bg-gray-50">
-        <h3 className="font-semibold mb-2">روش ارسال</h3>
-        <p className="text-sm">
-          {shippingMethod ? shippingMethod : "روش ارسال انتخاب نشده است"}
-        </p>
-      </div>
+      <Card className="bg-gray-50 border">
+        <CardHeader>
+          <CardTitle className="text-gray-700 text-base flex items-center gap-2">
+            <Truck className="w-4 h-4 text-gray-500" />
+            روش ارسال
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-gray-800">
+          {shippingMethod ? (
+            <div className="flex justify-between border-b pb-1">
+              <span>{shippingMethod.name}</span>
+              <span>{formatPrice(shippingMethod.cost)} تومان</span>
+            </div>
+          ) : (
+            <p className="text-gray-500">روش ارسال انتخاب نشده است.</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* آیتم‌های سبد خرید */}
-      <div className="border rounded-lg p-4 bg-gray-50">
-        <h3 className="font-semibold mb-2">سبد خرید</h3>
-        {items.length > 0 ? (
-          <ul className="space-y-2">
-            {items.map((item) => (
-              <li
-                key={item.id}
-                className="flex justify-between text-sm border-b pb-1"
-              >
+      <Card className="bg-gray-50 border">
+        <CardHeader>
+          <CardTitle className="text-gray-700 text-base flex items-center gap-2">
+            <ShoppingCart className="w-4 h-4 text-gray-500" />
+            سبد خرید
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-gray-800 space-y-2">
+          {items.length > 0 ? (
+            items.map((item) => (
+              <div key={item.id} className="flex justify-between border-b pb-1">
                 <span>
                   {item.name} × {item.quantity}
                 </span>
-                <span>{item.price * item.quantity} تومان</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-gray-500">سبد خرید خالی است.</p>
-        )}
-      </div>
+                <span>{formatPrice(item.price * item.quantity)} تومان</span>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">سبد خرید خالی است.</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* دکمه‌ها */}
       <div className="flex gap-2 mt-4">

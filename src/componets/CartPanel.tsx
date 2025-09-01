@@ -3,11 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { useCartServer } from "@/hooks/useCartServer";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function CartPanel({ onClose }: { onClose?: () => void }) {
   const { items, totalPrice, increase, decrease, remove, clear, isPending } =
     useCartServer();
-
+  const router = useRouter();
   if (items.length === 0) {
     return <p className="text-center py-8">سبد خرید خالی است</p>;
   }
@@ -72,7 +73,14 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
           مجموع: {new Intl.NumberFormat("fa-IR").format(totalPrice)} تومان
         </p>
         <div className="flex gap-2">
-          <Button className="flex-1" disabled={isPending}>
+          <Button
+            className="flex-1"
+            disabled={isPending}
+            onClick={() => {
+              onClose?.();
+              router.push("/dashboard/cart/checkout");
+            }}
+          >
             تسویه حساب
           </Button>
           <Button

@@ -3,11 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { useCartServer } from "@/hooks/useCartServer";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
-  const { items, remove, totalPrice, decrease, increase, clear, isPending } =
+  const { items, remove, totalPrice, decrease, increase, isPending } =
     useCartServer();
-
+  const router = useRouter();
   if (items.length === 0) return <p>سبد خرید خالی است</p>;
 
   return (
@@ -68,7 +69,10 @@ export default function CartPage() {
         <p className="text-lg font-bold">
           مجموع: {new Intl.NumberFormat("fa-IR").format(totalPrice)} تومان
         </p>
-        <Button onClick={clear} disabled={isPending}>
+        <Button
+          onClick={() => router.push("/dashboard/cart/checkout")}
+          disabled={isPending}
+        >
           تسویه حساب
         </Button>
       </div>

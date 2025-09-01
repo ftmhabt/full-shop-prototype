@@ -1,6 +1,9 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Address } from "@/types";
+import { useState } from "react";
+import AddressForm from "../AddressForm";
 
 export default function AddressStep({
   addresses,
@@ -13,11 +16,24 @@ export default function AddressStep({
   setSelectedAddress: (address: Address) => void;
   onNext: () => void;
 }) {
+  const [showForm, setShowForm] = useState(false);
+
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-bold">انتخاب آدرس</h2>
-
-      {addresses.length > 0 ? (
+      {/* Toggle add new address form */}
+      {!showForm ? (
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => setShowForm(true)}
+        >
+          افزودن آدرس جدید
+        </Button>
+      ) : (
+        <AddressForm onClose={() => setShowForm(false)} isVisible={true} />
+      )}
+      {addresses.length > 0 && !showForm && (
         <div className="space-y-4">
           {addresses.map((address) => (
             <div
@@ -40,10 +56,6 @@ export default function AddressStep({
             </div>
           ))}
         </div>
-      ) : (
-        <p className="text-sm text-gray-500">
-          هیچ آدرسی ثبت نشده است. لطفاً یک آدرس جدید اضافه کنید.
-        </p>
       )}
 
       <div className="flex justify-end">

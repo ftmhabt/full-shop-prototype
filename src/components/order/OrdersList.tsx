@@ -29,7 +29,7 @@ export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
 
   return (
     <div className="p-4 space-y-4">
-      <h1 className="text-2xl font-bold flex items-center gap-2 mb-4">
+      <h1 className="text-2xl font-bold flex items-center gap-2 mb-8">
         <Package className="w-6 h-6" /> سفارش‌های من
       </h1>
 

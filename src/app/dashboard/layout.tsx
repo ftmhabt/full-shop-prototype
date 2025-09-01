@@ -17,10 +17,10 @@ import { useState } from "react";
 
 const links = [
   { href: "/dashboard", label: "پیشخوان" },
-  { href: "/dashboard/orders", label: "سفارش ها" },
-  { href: "/dashboard/downloads", label: "دانلود ها" },
-  { href: "/dashboard/addresses", label: "آدرس" },
-  { href: "/dashboard/payments", label: "روش های پرداخت" },
+  { href: "/dashboard/orders", label: "سفارش‌ها" },
+  // { href: "/dashboard/downloads", label: "دانلود ها" },
+  { href: "/dashboard/addresses", label: "آدرس‌ها" },
+  // { href: "/dashboard/payments", label: "روش های پرداخت" },
   { href: "/dashboard/account", label: "اطلاعات حساب کاربری" },
 ];
 

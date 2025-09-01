@@ -1,6 +1,7 @@
 "use client";
 
 import { Address } from "@/types";
+import { Hash, Home, MapIcon, MapPin, Phone, User } from "lucide-react";
 import { useState } from "react";
 import AddressForm from "./AddressForm";
 import EditAddressForm from "./EditAddressForm";
@@ -16,11 +17,13 @@ export default function AddressList({ addresses }: AddressesPageProps) {
   return (
     <div className="space-y-4 p-4">
       <div className="flex justify-between">
-        <h1 className="text-xl font-bold">آدرس‌های من</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2 mb-4">
+          <MapIcon className="w-6 h-6" /> آدرس‌های من
+        </h1>
 
         <button
-          className="bg-primary text-white px-4 py-2 rounded"
-          onClick={() => setShowForm(true)}
+          className="bg-primary text-white px-4 py-2 rounded-lg"
+          onClick={() => setShowForm(!showForm)}
         >
           افزودن آدرس
         </button>
@@ -35,9 +38,9 @@ export default function AddressList({ addresses }: AddressesPageProps) {
           هیچ آدرسی ثبت نشده است.
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 mt-4 auto-rows-auto">
+        <div className="grid gap-4 md:grid-cols-2 auto-rows-auto">
           {addresses.map((addr) => (
-            <div key={addr.id} className="border p-4 rounded shadow h-fit">
+            <div key={addr.id} className="border p-4 rounded-2xl shadow h-fit ">
               {editingId === addr.id ? (
                 <EditAddressForm
                   address={addr}
@@ -45,19 +48,32 @@ export default function AddressList({ addresses }: AddressesPageProps) {
                 />
               ) : (
                 <>
-                  <h2 className="font-semibold">{addr.title}</h2>
-                  <p>
-                    {addr.fullName} - {addr.phone}
-                  </p>
-                  <p>
-                    {addr.province}, {addr.city}
-                  </p>
-                  <p>{addr.address}</p>
-                  {addr.postalCode && <p>کد پستی: {addr.postalCode}</p>}
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-gray-500" />
+                    <span>{addr.fullName}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-gray-500" />
+                    <span>{addr.phone}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-gray-500" />
+                    <span>
+                      {addr.province}, {addr.city}
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <Home className="w-4 h-4 text-gray-500 mt-0.5" />
+                    <span>{addr.address}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Hash className="w-4 h-4 text-gray-500" />
+                    <span>{addr.postalCode || "ثبت نشده"}</span>
+                  </div>
 
                   <button
                     onClick={() => setEditingId(addr.id)}
-                    className="mt-2 text-primary underline"
+                    className="mt-2 mr-auto block text-primary underline"
                   >
                     ویرایش
                   </button>

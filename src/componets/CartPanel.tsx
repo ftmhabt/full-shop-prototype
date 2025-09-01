@@ -2,8 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { useCartServer } from "@/hooks/useCartServer";
+import { Trash } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import QuantitySelector from "./product details/QuantitySelector";
 
 export default function CartPanel({ onClose }: { onClose?: () => void }) {
   const { items, totalPrice, increase, decrease, remove, clear, isPending } =
@@ -38,30 +40,15 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
             </div>
 
             <div className="flex items-center gap-2">
-              <Button
-                size="icon"
-                variant="outline"
-                onClick={() => decrease(item.id)}
-                disabled={isPending}
-              >
-                -
-              </Button>
-              <span className="w-6 text-center">{item.quantity}</span>
-              <Button
-                size="icon"
-                variant="outline"
-                onClick={() => increase(item.id)}
-                disabled={isPending}
-              >
-                +
-              </Button>
+              <QuantitySelector product={item} quantity={item.quantity} />
               <Button
                 size="sm"
                 variant="destructive"
                 onClick={() => remove(item.id)}
                 disabled={isPending}
+                className="w-8 h-8 p-6 rounded-lg"
               >
-                حذف
+                <Trash className="block" />
               </Button>
             </div>
           </div>

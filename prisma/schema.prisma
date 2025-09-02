@@ -72,8 +72,12 @@ model Product {
   name        String
   description String
   image       String[]
+  badge       String?
+  oldPrice    Int?
+  rating      Int?
   price       Int
-  stock       Int
+  stock       Int                @default(0)
+  soldCount   Int                @default(0)
   categoryId  String
   category    Category           @relation(fields: [categoryId], references: [id])
   attributes  ProductAttribute[]

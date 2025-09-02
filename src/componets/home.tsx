@@ -1,5 +1,3 @@
-"use client";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,9 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 import {
   Cable,
   Camera,
@@ -23,22 +18,17 @@ import {
   Percent,
   RefreshCw,
   Shield,
-  ShoppingCart,
   Siren,
-  Star,
   Truck,
   Wrench,
 } from "lucide-react";
-import Link from "next/link";
 import * as React from "react";
 
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+import CategorySection from "@/components/home/CategorySection";
+import Hero from "@/components/home/Hero";
+import HotProducts from "@/components/home/HotProducts";
+import NewProducts from "@/components/home/NewProducts";
+import db from "@/lib/db";
 import { FallbackImage } from "./FallbackImage";
 
 // ---- Mock Data (replace with API) -----------------------------------------
@@ -58,22 +48,53 @@ const heroSlides = [
 ];
 
 const categories = [
-  { id: 1, label: "دزدگیر اماکن", icon: <Siren className="h-6 w-6" /> },
-  { id: 2, label: "دوربین مداربسته", icon: <Camera className="h-6 w-6" /> },
-  { id: 3, label: "لوازم جانبی", icon: <Cable className="h-6 w-6" /> },
-  { id: 4, label: "کنترل تردد", icon: <Lock className="h-6 w-6" /> },
-  { id: 5, label: "هوشمندسازی", icon: <Shield className="h-6 w-6" /> },
+  {
+    id: 1,
+    label: "دزدگیر اماکن",
+    slug: "alarm-systems",
+    icon: <Siren className="h-6 w-6" />,
+  },
+  {
+    id: 2,
+    label: "دوربین مداربسته",
+    slug: "cctv-cameras",
+    icon: <Camera className="h-6 w-6" />,
+  },
+  {
+    id: 3,
+    label: "لوازم جانبی",
+    slug: "accessories",
+    icon: <Cable className="h-6 w-6" />,
+  },
+  {
+    id: 4,
+    label: "کنترل تردد",
+    slug: "access-control",
+    icon: <Lock className="h-6 w-6" />,
+  },
+  {
+    id: 5,
+    label: "هوشمندسازی",
+    slug: "smart-home",
+    icon: <Shield className="h-6 w-6" />,
+  },
 ];
 
-const products = Array.from({ length: 8 }).map((_, i) => ({
-  id: i + 1,
-  title: `محصول شماره ${i + 1}`,
-  price: 1490000 + i * 120000,
-  oldPrice: i % 2 ? 1690000 + i * 120000 : undefined,
-  image: "/images/product-placeholder.png",
-  rating: 4 + (i % 2 ? 0.5 : 0),
-  badge: i % 3 === 0 ? "پیشنهاد شگفت‌انگیز" : undefined,
-}));
+const products = await db.product.findMany({
+  orderBy: { createdAt: "desc" },
+  take: 8,
+  include: {
+    attributes: {
+      include: {
+        value: {
+          include: {
+            attribute: true,
+          },
+        },
+      },
+    },
+  },
+});
 
 const brands = ["azer", "classic", "futal", "silex", "melsec", "dahua"];
 
@@ -84,87 +105,6 @@ const posts = Array.from({ length: 4 }).map((_, i) => ({
   excerpt:
     "نکات کلیدی انتخاب، نصب و نگهداری سیستم‌های امنیتی برای منازل و اماکن تجاری.",
 }));
-
-// ---- UI Building Blocks ---------------------------------------------------
-function Price({ value, old }: { value: number; old?: number }) {
-  const format = (n: number) => n.toLocaleString("fa-IR");
-  return (
-    <div className="flex items-center gap-2">
-      {old ? (
-        <span className="text-muted-foreground line-through text-sm">
-          {format(old)} تومان
-        </span>
-      ) : null}
-      <span className="font-bold">{format(value)} تومان</span>
-    </div>
-  );
-}
-
-function ProductCard({ p }: { p: (typeof products)[number] }) {
-  return (
-    <Card className="group overflow-hidden rounded-2xl border-muted/40">
-      <CardContent className="p-4">
-        <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-muted">
-          <FallbackImage
-            src={p.image}
-            alt={p.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-          {p.badge && (
-            <Badge className="absolute right-2 top-2 rounded-full px-3 py-1 text-xs">
-              <Percent className="ml-1 h-3 w-3" /> {p.badge}
-            </Badge>
-          )}
-          <Button
-            size="sm"
-            className="absolute bottom-2 left-2 rounded-full"
-            variant="secondary"
-          >
-            <ShoppingCart className="ml-1 h-4 w-4" /> افزودن به سبد
-          </Button>
-        </div>
-        <div className="mt-3 space-y-2">
-          <Link href="#" className="line-clamp-2 text-sm font-medium leading-6">
-            {p.title}
-          </Link>
-          <div className="flex items-center justify-between">
-            <Price value={p.price} old={p.oldPrice} />
-            <div className="flex items-center gap-0.5 text-amber-500">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={cn(
-                    "h-4 w-4",
-                    i < Math.round(p.rating) ? "fill-current" : "opacity-30"
-                  )}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function IconCategory({
-  label,
-  icon,
-}: {
-  label: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <Button
-      variant="ghost"
-      className="flex h-auto flex-col items-center gap-3 rounded-2xl p-4"
-    >
-      <div className="rounded-2xl bg-primary/10 p-3 text-primary">{icon}</div>
-      <span className="text-xs">{label}</span>
-    </Button>
-  );
-}
 
 function FeatureItem({
   icon,
@@ -187,68 +127,6 @@ function FeatureItem({
 }
 
 // ---- Sections -------------------------------------------------------------
-function Hero() {
-  return (
-    <section className="relative w-full">
-      <Carousel opts={{ align: "start" }}>
-        <CarouselContent>
-          {heroSlides.map((s) => (
-            <CarouselItem key={s.id}>
-              <Card className="overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-violet-600/10 to-indigo-600/10 p-0">
-                <div className="relative h-[260px] w-full sm:h-[360px] md:h-[420px]">
-                  <FallbackImage
-                    src={s.image}
-                    alt={s.title}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <div className="absolute right-6 top-6 max-w-xl text-right text-white drop-shadow">
-                    <motion.h1
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-2xl font-extrabold sm:text-3xl md:text-4xl"
-                    >
-                      {s.title}
-                    </motion.h1>
-                    <p className="mt-2 text-sm opacity-90">{s.subtitle}</p>
-                    <div className="mt-4 flex items-center gap-3">
-                      <Button
-                        asChild
-                        size="sm"
-                        variant="secondary"
-                        className="rounded-full"
-                      >
-                        <Link href="#">مشاهده پیشنهادها</Link>
-                      </Button>
-                      <Button asChild size="sm" className="rounded-full">
-                        <Link href="#">خرید کنید</Link>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
-    </section>
-  );
-}
-
-function CategoryIcons() {
-  return (
-    <section className="mt-6">
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
-        {categories.map((c) => (
-          <IconCategory key={c.id} label={c.label} icon={c.icon} />
-        ))}
-      </div>
-    </section>
-  );
-}
 
 function DealStrip() {
   return (
@@ -264,57 +142,6 @@ function DealStrip() {
           </Button>
         </CardContent>
       </Card>
-    </section>
-  );
-}
-
-function NewProducts() {
-  return (
-    <section className="mt-8">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold">جدیدترین محصولات</h2>
-        <Button variant="ghost" size="sm" className="gap-1">
-          مشاهده همه <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-        {products.slice(0, 8).map((p) => (
-          <ProductCard key={p.id} p={p} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function HotThisWeek() {
-  return (
-    <section className="mt-10">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold">داغ‌ترین های هفته گذشته</h2>
-        <Tabs defaultValue="cctv" className="hidden sm:block">
-          <TabsList>
-            <TabsTrigger value="cctv">دوربین</TabsTrigger>
-            <TabsTrigger value="alarm">دزدگیر</TabsTrigger>
-            <TabsTrigger value="access">کنترل تردد</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-      <Carousel opts={{ align: "start" }}>
-        <CarouselContent>
-          {products.map((p) => (
-            <CarouselItem
-              key={p.id}
-              className="basis-1/2 sm:basis-1/3 md:basis-1/4"
-            >
-              <ProductCard p={p} />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-
-        <CarouselPrevious />
-
-        <CarouselNext />
-      </Carousel>
     </section>
   );
 }
@@ -359,13 +186,13 @@ function Collections() {
                 <div key={p.id} className="space-y-2">
                   <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-muted">
                     <FallbackImage
-                      src={p.image}
+                      src={p.image[0]}
                       alt=""
                       fill
                       className="object-cover"
                     />
                   </div>
-                  <div className="text-xs leading-5">{p.title}</div>
+                  <div className="text-xs leading-5">{p.name}</div>
                 </div>
               ))}
             </CardContent>
@@ -499,14 +326,31 @@ function Newsletter() {
 }
 
 // ---- Page -----------------------------------------------------------------
-export default function HomePage() {
+export default async function HomePage() {
+  const [newProducts, popularProducts] = await Promise.all([
+    db.product.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 8,
+      include: {
+        attributes: { include: { value: { include: { attribute: true } } } },
+      },
+    }),
+    db.product.findMany({
+      orderBy: { soldCount: "desc" },
+      take: 8,
+      include: {
+        attributes: { include: { value: { include: { attribute: true } } } },
+      },
+    }),
+  ]);
+
   return (
     <main dir="rtl" className="container mx-auto max-w-7xl px-3 py-6">
-      <Hero />
-      <CategoryIcons />
+      <Hero heroSlides={heroSlides} />
+      <CategorySection categories={categories} />
       <DealStrip />
-      <NewProducts />
-      <HotThisWeek />
+      <NewProducts products={newProducts} />
+      <HotProducts products={popularProducts} />
       <PromoRow />
       <Collections />
       <BrandStrip />

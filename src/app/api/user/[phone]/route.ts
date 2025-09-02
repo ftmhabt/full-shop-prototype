@@ -25,11 +25,9 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(user);
 }
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { phone: string } }
-) {
-  const { phone } = params;
+export async function PATCH(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  const phone = pathname.split("/").pop();
   const data = await req.json();
 
   const updatedUser = await db.user.update({

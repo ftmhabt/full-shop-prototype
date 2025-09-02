@@ -168,11 +168,10 @@ async function main() {
     data: [
       { name: "پست پیشتاز", cost: 25000 },
       { name: "تیپاکس", cost: 35000 },
-      { name: "ارسال رایگان", cost: 0 },
     ],
   });
 
-  console.log("Seed پرمحصول با موفقیت وارد شد!");
+  console.log("Seed data successfully inserted!");
 }
 
 main()

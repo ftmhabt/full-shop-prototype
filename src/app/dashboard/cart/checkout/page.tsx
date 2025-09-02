@@ -7,6 +7,11 @@ export default async function page() {
   if (!userId) return <p>کاربر وارد نشده است</p>;
 
   const addresses = await getUserAddresses(userId);
+  const serializedAddresses = addresses.map((a) => ({
+    ...a,
+    createdAt: a.createdAt.toISOString(),
+    updatedAt: a.updatedAt.toISOString(),
+  }));
 
-  return <CheckoutStepper addresses={addresses} />;
+  return <CheckoutStepper addresses={serializedAddresses} />;
 }

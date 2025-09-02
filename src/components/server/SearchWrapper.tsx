@@ -1,11 +1,7 @@
 import { getCategoriesBySearch } from "@/app/actions/search";
 
-export default async function SearchWrapper({
-  searchParams,
-}: {
-  searchParams: Record<string, string | string[]>;
-}) {
-  const sp = await searchParams;
+export default async function SearchWrapper({ searchParams }: any) {
+  const sp = searchParams;
   const q = sp.q as string;
 
   // یه فانکشن جدید که دسته‌بندی‌های مرتبط با سرچ رو میاره

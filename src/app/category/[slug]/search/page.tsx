@@ -9,12 +9,9 @@ import { Suspense } from "react";
 export default async function CategorySearchPage({
   params,
   searchParams,
-}: {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const { slug } = await params;
-  const resolvedSearchParams = await searchParams;
+}: any) {
+  const { slug } = params;
+  const resolvedSearchParams = searchParams;
 
   const filters: Record<string, string[]> = {};
   Object.entries(resolvedSearchParams || {}).forEach(([key, value]) => {

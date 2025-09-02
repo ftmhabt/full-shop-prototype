@@ -2,12 +2,8 @@ import { getProductBySlug } from "@/app/actions/products";
 import ProductDetails from "@/componets/product details/ProductDetails";
 import { Metadata } from "next";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata> {
-  const { slug } = await params;
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const { slug } = params;
   const product = await getProductBySlug(slug);
 
   return {
@@ -27,12 +23,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProductPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  const { slug } = await params;
+export default async function ProductPage({ params }: any) {
+  const { slug } = params;
   const product = await getProductBySlug(slug);
 
   return (

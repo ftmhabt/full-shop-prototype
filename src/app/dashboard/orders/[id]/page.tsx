@@ -2,13 +2,7 @@ import OrderDetailsClient from "@/components/order/OrderDetails";
 import { getCurrentUserId } from "@/lib/auth";
 import { db } from "@/lib/db";
 
-interface Props {
-  params: {
-    id: string;
-  };
-}
-
-export default async function OrderDetailsPage({ params }: Props) {
+export default async function OrderDetailsPage({ params }: any) {
   const userId = await getCurrentUserId();
   if (!userId) throw new Error("کاربر یافت نشد");
 

@@ -6,15 +6,9 @@ import FiltersForm from "@/componets/FiltersForm";
 import SortBar from "@/componets/SortBar";
 import { Suspense } from "react";
 
-export default async function CategoryPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const { slug } = await params;
-  const resolvedSearchParams = await searchParams;
+export default async function CategoryPage({ params, searchParams }: any) {
+  const { slug } = params;
+  const resolvedSearchParams = searchParams;
 
   const filters: Record<string, string[]> = {};
   Object.entries(resolvedSearchParams || {}).forEach(([key, value]) => {

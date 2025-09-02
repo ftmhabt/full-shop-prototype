@@ -49,3 +49,5 @@ export async function getUserAddresses(userId: string) {
   });
   return addresses;
 }
+
+export type UserAddress = Awaited<ReturnType<typeof getUserAddresses>>;

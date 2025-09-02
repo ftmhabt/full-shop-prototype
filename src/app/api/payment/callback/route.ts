@@ -1,4 +1,7 @@
-import { updateOrderStatus } from "@/app/actions/orders";
+import {
+  updateOrderPaymentStatus,
+  updateOrderStatus,
+} from "@/app/actions/orders";
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -41,7 +44,7 @@ export async function GET(req: NextRequest) {
 
     if (data.data && data.data.code === 100) {
       await updateOrderStatus(orderId, "PAID");
-
+      await updateOrderPaymentStatus(orderId, "PAID");
       return NextResponse.redirect(
         `${origin}/dashboard/payment/success?orderId=${orderId}&refId=${data.data.ref_id}`
       );

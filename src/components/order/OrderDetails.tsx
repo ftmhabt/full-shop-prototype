@@ -4,6 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatPrice } from "@/lib/format";
+import {
+  orderStatusColor,
+  orderStatusLabel,
+  paymentStatusColor,
+  paymentStatusLabel,
+} from "@/lib/orderStatus";
 import { Prisma } from "@prisma/client";
 import { Hash, Home, MapPin, Package, Phone, Truck, User } from "lucide-react";
 import Link from "next/link";
@@ -37,24 +43,21 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
     }
   };
 
-  const statusColor: Record<typeof order.status, string> = {
-    PENDING: "bg-yellow-100 text-yellow-800",
-    PAID: "bg-blue-100 text-blue-800",
-    SHIPPED: "bg-purple-100 text-purple-800",
-    COMPLETED: "bg-green-100 text-green-800",
-    CANCELED: "bg-red-100 text-red-800",
-  };
-
   return (
     <div className="p-4 space-y-6">
       {/* اطلاعات سفارش */}
       <Card className="border rounded-xl shadow-sm hover:shadow-md transition">
-        <CardHeader className="flex justify-between items-center">
-          <CardTitle className="text-base flex items-center gap-2">
+        <CardHeader className="flex gap-2 items-center">
+          <CardTitle className="text-base flex items-center gap-2 ml-auto">
             <Package className="w-5 h-5 text-gray-500" />
             سفارش #{order.id}
           </CardTitle>
-          <Badge className={statusColor[order.status]}>{order.status}</Badge>
+          <Badge className={orderStatusColor[order.status]}>
+            {orderStatusLabel[order.status]}
+          </Badge>
+          <Badge className={paymentStatusColor[order.paymentStatus]}>
+            {paymentStatusLabel[order.paymentStatus]}
+          </Badge>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-gray-700">
           <p>تاریخ ثبت: {new Date(order.createdAt).toLocaleString("fa-IR")}</p>

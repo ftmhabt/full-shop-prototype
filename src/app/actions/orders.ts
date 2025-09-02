@@ -72,6 +72,16 @@ export async function updateOrderStatus(
   });
 }
 
+export async function updateOrderPaymentStatus(
+  orderId: string,
+  paymentStatus: "PENDING" | "PAID" | "FAILED"
+) {
+  return db.order.update({
+    where: { id: orderId },
+    data: { paymentStatus },
+  });
+}
+
 export async function getUserOrders() {
   const userId = await getCurrentUserId();
   if (!userId) throw new Error("کاربر یافت نشد");

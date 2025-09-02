@@ -2,6 +2,12 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  orderStatusColor,
+  orderStatusLabel,
+  paymentStatusColor,
+  paymentStatusLabel,
+} from "@/lib/orderStatus";
 import { Order, OrderItem } from "@prisma/client";
 import { ArrowRight, Package } from "lucide-react";
 import Link from "next/link";
@@ -11,14 +17,6 @@ type OrderWithItems = Order & {
 };
 
 export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
-  const statusColor: Record<Order["status"], string> = {
-    PENDING: "bg-yellow-100 text-yellow-800",
-    PAID: "bg-blue-100 text-blue-800",
-    SHIPPED: "bg-purple-100 text-purple-800",
-    COMPLETED: "bg-green-100 text-green-800",
-    CANCELED: "bg-red-100 text-red-800",
-  };
-
   if (orders.length === 0) {
     return (
       <div className="text-center p-6">
@@ -38,11 +36,19 @@ export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
           key={order.id}
           className="rounded-xl shadow-sm hover:shadow-lg transition p-4"
         >
-          <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-2">
+          <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-2 pl-2">
             <CardTitle className="text-base">
               سفارش #{order.id.slice(0, 8)}
             </CardTitle>
-            <Badge className={statusColor[order.status]}>{order.status}</Badge>
+            <div className="flex gap-2">
+              <Badge className={orderStatusColor[order.status]}>
+                {orderStatusLabel[order.status]}
+              </Badge>
+
+              <Badge className={paymentStatusColor[order.paymentStatus]}>
+                {paymentStatusLabel[order.paymentStatus]}
+              </Badge>
+            </div>
           </CardHeader>
 
           <CardContent className="text-sm text-gray-600 space-y-3 px-2">

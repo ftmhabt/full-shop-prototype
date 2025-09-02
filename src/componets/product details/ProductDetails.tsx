@@ -4,9 +4,9 @@ import { ProductWithAttribute } from "@/app/actions/products";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { useCartServer } from "@/hooks/useCartServer";
-import Image from "next/image";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { FallbackImage } from "../FallbackImage";
 import QuantitySelector from "./QuantitySelector";
 import RelatedProducts from "./RelatedProducts";
 import TabsSection from "./TabsSection";
@@ -51,7 +51,7 @@ export default function ProductDetails({
         {/* سمت چپ: تصویر */}
         <div>
           <div className="aspect-square relative border mb-2 rounded-2xl">
-            <Image
+            <FallbackImage
               src={activeImage}
               alt={product.name}
               fill
@@ -68,7 +68,7 @@ export default function ProductDetails({
                   activeImage === img ? "border-blue-500" : ""
                 }`}
               >
-                <Image
+                <FallbackImage
                   src={img}
                   alt={`تصویر کوچک ${i + 1}`}
                   fill

@@ -40,7 +40,7 @@ function IconCategory({
   link: string;
 }) {
   return (
-    <Link href={link}>
+    <Link href={link} className=" flex items-center justify-center">
       <Button
         variant="ghost"
         className="flex h-auto flex-col items-center gap-3 rounded-2xl p-4"

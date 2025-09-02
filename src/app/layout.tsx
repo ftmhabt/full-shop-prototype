@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { FallbackImage } from "@/componets/FallbackImage";
 import ResponsiveCart from "@/componets/ResponsiveCart";
-import { Phone, Search } from "lucide-react";
+import { Phone, Search, User } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Toaster } from "react-hot-toast";
@@ -58,6 +58,12 @@ export default function RootLayout({
 
             {/* Icons */}
             <div className="flex items-center gap-4">
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-1 text-sm text-primary"
+              >
+                <User className="h-4 w-4" />
+              </Link>
               <ResponsiveCart />
               <a
                 href="tel:09123456789"

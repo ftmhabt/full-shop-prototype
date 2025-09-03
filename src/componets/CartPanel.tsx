@@ -8,8 +8,7 @@ import { useRouter } from "next/navigation";
 import QuantitySelector from "./product details/QuantitySelector";
 
 export default function CartPanel({ onClose }: { onClose?: () => void }) {
-  const { items, totalPrice, increase, decrease, remove, clear, isPending } =
-    useCartServer();
+  const { items, totalPrice, remove, clear, isPending } = useCartServer();
   const router = useRouter();
   if (items.length === 0) {
     return <p className="text-center py-8">سبد خرید خالی است</p>;
@@ -21,7 +20,7 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
         {items.map((item) => (
           <div
             key={item.id}
-            className="flex items-center justify-between border rounded-lg p-2"
+            className="flex flex-col sm:flex-row gap-3 items-center justify-between border rounded-lg p-2"
           >
             <div className="flex items-center gap-3">
               <Image
@@ -46,7 +45,7 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
                 variant="destructive"
                 onClick={() => remove(item.id)}
                 disabled={isPending}
-                className="w-8 h-8 p-6 rounded-lg"
+                className="w-10 h-10 rounded-lg"
               >
                 <Trash className="block" />
               </Button>
@@ -55,11 +54,11 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
         ))}
       </div>
 
-      <div className="border-t mt-3 pt-3 space-y-3">
+      <div className="sticky bottom-0 border-t mt-3 pt-3 space-y-3 bg-white">
         <p className="font-bold text-lg">
           مجموع: {new Intl.NumberFormat("fa-IR").format(totalPrice)} تومان
         </p>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <Button
             className="flex-1"
             disabled={isPending}

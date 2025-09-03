@@ -1,5 +1,5 @@
 import { getAttributesByCategorySlug } from "@/app/actions/products";
-import { ProductsSkeleton } from "@/components/loading/ProductSkeleton";
+import ProductsSkeleton from "@/components/loading/ProductSkeleton";
 import { Spinner } from "@/components/loading/Spinner";
 import ProductsWrapper from "@/components/server/ProductsWrapper";
 import FiltersForm from "@/componets/FiltersForm";
@@ -19,6 +19,7 @@ export default async function CategoryPage({ params, searchParams }: any) {
   const orderBy = resolvedSearchParams.orderBy as string | undefined;
   const attributes = await getAttributesByCategorySlug(slug);
   const query = resolvedSearchParams.q as string | undefined;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 p-4 lg:p-6 w-full">
       {/* Sidebar */}

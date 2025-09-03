@@ -54,11 +54,11 @@ export default function ResponsiveCart() {
     return (
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>{Trigger}</SheetTrigger>
-        <SheetContent side="right" className="p-6 !max-w-xl gap-0">
+        <SheetContent side="right" className="p-6 !max-w-xl flex flex-col">
           <SheetHeader>
-            <SheetTitle className="">سبد خرید</SheetTitle>
+            <SheetTitle>سبد خرید</SheetTitle>
           </SheetHeader>
-          <div className="mt-4">
+          <div className="flex-1 overflow-y-auto mt-4">
             <CartPanel onClose={() => setOpen(false)} />
           </div>
         </SheetContent>
@@ -70,11 +70,13 @@ export default function ResponsiveCart() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{Trigger}</DrawerTrigger>
-      <DrawerContent className="p-4 mb-4">
+      <DrawerContent className="p-4 mb-4 flex flex-col max-h-[90vh]">
         <DrawerHeader className="px-0">
           <DrawerTitle>سبد خرید</DrawerTitle>
         </DrawerHeader>
-        <CartPanel onClose={() => setOpen(false)} />
+        <div className="flex-1 overflow-y-auto">
+          <CartPanel onClose={() => setOpen(false)} />
+        </div>
       </DrawerContent>
     </Drawer>
   );

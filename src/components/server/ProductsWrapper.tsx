@@ -1,7 +1,7 @@
 import { getProductsByCategorySlug } from "@/app/actions/products";
 import { getProductsBySearch } from "@/app/actions/search";
-import ProductCard from "@/componets/ProductCard";
 import type { ProductWithAttributes } from "@/types";
+import ProductCard from "../home/ProductCard";
 
 interface ProductsWrapperProps {
   slug?: string;
@@ -31,9 +31,9 @@ export default async function ProductsWrapper({
   if (!data.length) return <p>هیچ محصولی یافت نشد</p>;
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
       {data?.map((p) => (
-        <ProductCard key={p.id} product={p} />
+        <ProductCard key={p.id} p={p} />
       ))}
     </div>
   );

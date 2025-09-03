@@ -1,9 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import SearchBar from "@/components/home/SearchBar";
 import { Separator } from "@/components/ui/separator";
 import { FallbackImage } from "@/componets/FallbackImage";
 import ResponsiveCart from "@/componets/ResponsiveCart";
-import { Phone, Search, User } from "lucide-react";
+import { Phone, User } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Toaster } from "react-hot-toast";
@@ -28,7 +27,7 @@ export default function RootLayout({
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center gap-2 font-bold text-lg"
+              className="flex items-center gap-2 font-bold text-lg ml-auto sm:ml-0"
             >
               <FallbackImage
                 src="/logo.png"
@@ -40,21 +39,7 @@ export default function RootLayout({
             </Link>
 
             {/* Search Bar */}
-            <form
-              action="/search"
-              method="get"
-              className="flex flex-1 max-w-xl items-center gap-2"
-            >
-              <Input
-                type="text"
-                name="q"
-                placeholder="جستجوی محصولات..."
-                className="rounded-full"
-              />
-              <Button type="submit" size="icon" className="rounded-full">
-                <Search className="h-4 w-4" />
-              </Button>
-            </form>
+            <SearchBar />
 
             {/* Icons */}
             <div className="flex items-center gap-4">
@@ -69,7 +54,8 @@ export default function RootLayout({
                 href="tel:09123456789"
                 className="flex items-center gap-1 text-sm text-primary"
               >
-                <Phone className="h-4 w-4" /> ۰۹۱۲۳۴۵۶۷۸۹
+                <Phone className="h-4 w-4" />
+                <span className="hidden sm:inline-block">۰۹۱۲۳۴۵۶۷۸۹</span>
               </a>
             </div>
           </div>
@@ -78,10 +64,10 @@ export default function RootLayout({
           <nav className="border-t">
             <div className="container mx-auto flex items-center gap-6 overflow-x-auto p-3 text-sm *:text-nowrap">
               <Link href="/">خانه</Link>
-              <Link href="/alarms">دزدگیر اماکن</Link>
-              <Link href="/cctv">دوربین مداربسته</Link>
-              <Link href="/access-control">کنترل تردد</Link>
-              <Link href="/smart-home">هوشمندسازی</Link>
+              <Link href="/category/alarm-systems">دزدگیر اماکن</Link>
+              <Link href="/category/cctv-cameras">دوربین مداربسته</Link>
+              <Link href="/category/access-control">کنترل تردد</Link>
+              <Link href="/category/smart-home">هوشمندسازی</Link>
               <Link href="/blog">مقالات</Link>
               <Link href="/contact">تماس با ما</Link>
             </div>

@@ -1,14 +1,20 @@
+"use client";
 import { FallbackImage } from "@/componets/FallbackImage";
+import QuantitySelector from "@/componets/product details/QuantitySelector";
+import { useCartServer } from "@/hooks/useCartServer";
 import { cn } from "@/lib/utils";
 import { ProductWithAttributes } from "@/types";
-import { Percent, ShoppingCart, Star } from "lucide-react";
+import { Percent, Star } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import Price from "./Price";
 
 function ProductCard({ p }: { p: ProductWithAttributes }) {
+  const { items } = useCartServer();
+
+  const cartItem = items.find((i) => i.id === p.id);
+  const quantity = cartItem?.quantity || 0;
   return (
     <Card className="group overflow-hidden rounded-2xl border-muted/40">
       <CardContent className="p-4">
@@ -24,19 +30,16 @@ function ProductCard({ p }: { p: ProductWithAttributes }) {
               <Percent className="ml-1 h-3 w-3" /> {p.badge}
             </Badge>
           )}
-          <Button
-            size="sm"
-            className="absolute bottom-2 left-2 rounded-full"
-            variant="secondary"
-          >
-            <ShoppingCart className="ml-1 h-4 w-4" /> افزودن به سبد
-          </Button>
+          <QuantitySelector product={p} quantity={quantity} size="sm" />
         </div>
         <div className="mt-3 space-y-2">
-          <Link href="#" className="line-clamp-2 text-sm font-medium leading-6">
+          <Link
+            href={"/product/" + p.slug}
+            className="line-clamp-2 text-sm font-medium leading-6 h-12 flex items-center"
+          >
             {p.name}
           </Link>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-2 items-center justify-between">
             <Price value={p.price} old={p.oldPrice} />
             <div className="flex items-center gap-0.5 text-amber-500">
               {Array.from({ length: 5 }).map((_, i) => (

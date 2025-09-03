@@ -17,9 +17,15 @@ interface PasswordFormProps {
   phone: string;
   setStep: (step: "phone" | "otp" | "password") => void;
   mode: "set" | "enter";
+  setReturnedCode: (val: string | undefined) => void;
 }
 
-export const PasswordForm = ({ phone, setStep, mode }: PasswordFormProps) => {
+export const PasswordForm = ({
+  phone,
+  setStep,
+  mode,
+  setReturnedCode,
+}: PasswordFormProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -73,6 +79,7 @@ export const PasswordForm = ({ phone, setStep, mode }: PasswordFormProps) => {
           return res.message || "خطا در ارسال کد";
         }
         setStep("otp");
+        setReturnedCode(res.code);
         return "کد بازیابی ارسال شد";
       },
       error: (err: unknown) => getErrorMessage(err) || "مشکل در ارسال کد",

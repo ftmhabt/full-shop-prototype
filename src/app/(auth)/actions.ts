@@ -28,7 +28,7 @@ export async function requestOtp(phone: string) {
 
   const user = await db.user.findUnique({ where: { phone } });
 
-  if (user) return { status: "EXISTING" };
+  if (user) return { status: "EXISTING", code };
 
   const smsResult = await sendOtpSms(phone, code);
   console.log("SMS Result:", smsResult);

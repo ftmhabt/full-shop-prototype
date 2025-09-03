@@ -11,6 +11,9 @@ export default function LoginPage() {
   const [passwordMode, setPasswordMode] = useState<"set" | "enter">("enter");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
+  const [returnedCode, setReturnedCode] = useState<string | undefined>(
+    undefined
+  );
   const { timer, canResend, resetTimer } = useOtpTimer(step);
 
   return (
@@ -22,6 +25,7 @@ export default function LoginPage() {
           phone={phone}
           setPhone={setPhone}
           setStep={setStep}
+          setReturnedCode={setReturnedCode}
           setPasswordMode={setPasswordMode}
         />
       )}
@@ -30,6 +34,8 @@ export default function LoginPage() {
           phone={phone}
           code={code}
           setCode={setCode}
+          returnedCode={returnedCode}
+          setReturnedCode={setReturnedCode}
           setStep={setStep}
           timer={timer}
           canResend={canResend}

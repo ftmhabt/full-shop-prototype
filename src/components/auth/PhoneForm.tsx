@@ -12,6 +12,7 @@ interface PhoneFormProps {
   setPhone: (val: string) => void;
   setStep: (step: "phone" | "otp" | "password") => void;
   setPasswordMode: (mode: "set" | "enter") => void;
+  setReturnedCode: (val: string | undefined) => void;
 }
 
 const iranPhoneRegex = /^(?:\+98|0)?9\d{9}$/;
@@ -20,6 +21,7 @@ export const PhoneForm = ({
   phone,
   setPhone,
   setStep,
+  setReturnedCode,
   setPasswordMode,
 }: PhoneFormProps) => {
   const [isPending, startTransition] = useTransition();
@@ -35,7 +37,7 @@ export const PhoneForm = ({
       const loadingToast = toast.loading("در حال ارسال کد...");
       try {
         const res = await requestOtp(phone);
-
+        setReturnedCode(res.code);
         toast.dismiss(loadingToast);
 
         if (res?.status === "ERROR") {

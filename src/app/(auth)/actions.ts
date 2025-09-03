@@ -31,13 +31,14 @@ export async function requestOtp(phone: string) {
   if (user) return { status: "EXISTING" };
 
   const smsResult = await sendOtpSms(phone, code);
+  console.log("SMS Result:", smsResult);
   console.log(`DEBUG OTP for ${phone}:`, code);
 
   if (!smsResult.success) {
-    return { status: "ERROR", message: smsResult.message, code };
+    return { status: "ERROR", message: smsResult.message };
   }
 
-  return { status: "NEW" };
+  return { status: "NEW", code };
 }
 
 export async function verifyOtp(phone: string, code: string) {

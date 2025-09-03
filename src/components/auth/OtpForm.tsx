@@ -12,6 +12,8 @@ interface OtpFormProps {
   phone: string;
   code: string;
   setCode: (val: string) => void;
+  returnedCode: string | undefined;
+  setReturnedCode: (val: string | undefined) => void;
   setStep: (step: "phone" | "otp" | "password") => void;
   timer: number;
   canResend: boolean;
@@ -23,6 +25,8 @@ export const OtpForm = ({
   phone,
   code,
   setCode,
+  returnedCode,
+  setReturnedCode,
   setStep,
   timer,
   canResend,
@@ -30,6 +34,7 @@ export const OtpForm = ({
   setPasswordMode,
 }: OtpFormProps) => {
   const [isPending, startTransition] = useTransition();
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
@@ -60,14 +65,13 @@ export const OtpForm = ({
         phoneSchema.parse(phone);
         toast.loading("در حال ارسال مجدد کد...");
         const res = await requestOtp(phone);
-
+        setReturnedCode(res.code);
         toast.dismiss();
 
         if (res.status === "ERROR") {
           toast.error(res.message || "خطا در ارسال کد");
           return;
         }
-        setCode(res.code || "");
         toast.success("کد جدید ارسال شد");
 
         if (res.status === "PASSWORD") {
@@ -122,7 +126,7 @@ export const OtpForm = ({
           ارسال مجدد کد
         </Button>
       )}
-      {code && <div>تست کد تایید پیامکی: {code}</div>}
+      {returnedCode && <div>تست کد تایید پیامکی: {returnedCode}</div>}
     </form>
   );
 };

@@ -34,7 +34,7 @@ export async function requestOtp(phone: string) {
   console.log(`DEBUG OTP for ${phone}:`, code);
 
   if (!smsResult.success) {
-    return { status: "ERROR", message: smsResult.message };
+    return { status: "ERROR", message: smsResult.message, code };
   }
 
   return { status: "NEW" };

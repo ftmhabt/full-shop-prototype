@@ -30,7 +30,6 @@ export const OtpForm = ({
   setPasswordMode,
 }: OtpFormProps) => {
   const [isPending, startTransition] = useTransition();
-
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
@@ -68,7 +67,7 @@ export const OtpForm = ({
           toast.error(res.message || "خطا در ارسال کد");
           return;
         }
-
+        setCode(res.code || "");
         toast.success("کد جدید ارسال شد");
 
         if (res.status === "PASSWORD") {
@@ -123,6 +122,7 @@ export const OtpForm = ({
           ارسال مجدد کد
         </Button>
       )}
+      {code && <div>تست کد تایید پیامکی: {code}</div>}
     </form>
   );
 };

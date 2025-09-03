@@ -44,7 +44,12 @@ export default function LoginPage() {
         />
       )}
       {step === "password" && (
-        <PasswordForm phone={phone} setStep={setStep} mode={passwordMode} />
+        <PasswordForm
+          phone={phone}
+          setStep={setStep}
+          setReturnedCode={setReturnedCode}
+          mode={passwordMode}
+        />
       )}
     </div>
   );

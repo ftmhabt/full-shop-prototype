@@ -1,3 +1,4 @@
+import "@/app/globals.css";
 import SearchBar from "@/components/home/SearchBar";
 import { Separator } from "@/components/ui/separator";
 import { FallbackImage } from "@/componets/FallbackImage";
@@ -6,7 +7,6 @@ import { Phone, User } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Toaster } from "react-hot-toast";
-import "./globals.css";
 
 export const metadata: Metadata = {
   title: "فروشگاه سیستم‌های حفاظتی",

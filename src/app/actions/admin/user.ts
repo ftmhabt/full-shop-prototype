@@ -1,43 +1,39 @@
 "use server";
 
-import db from "@/lib/db";
+import { db } from "@/lib/db";
+import { Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-export async function adminLogin(formData: {
-  email: string;
-  password: string;
-}) {
-  const { email, password } = formData;
+export async function adminLogin(email: string, password: string) {
+  try {
+    const admin = await db.user.findFirst({ where: { email } });
 
-  // پیدا کردن کاربر
-  const user = await db.user.findFirst({ where: { email } });
-  if (!user || user.role !== "ADMIN") {
-    return { success: false, message: "ایمیل یا رمز اشتباه است" };
-  }
-
-  // چک کردن پسورد
-  const isValid = await bcrypt.compare(password, user.password);
-  if (!isValid) {
-    return { success: false, message: "ایمیل یا رمز اشتباه است" };
-  }
-
-  // ساخت JWT
-  const token = jwt.sign(
-    { id: user.id, role: user.role },
-    process.env.JWT_SECRET!,
-    {
-      expiresIn: "1d",
+    if (!admin || admin.role !== Role.ADMIN) {
+      return { success: false, message: "ادمین یافت نشد یا دسترسی ندارد" };
     }
-  );
 
-  (await cookies()).set("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 3 * 60 * 60 * 24, // 3 روز
-  });
+    console.log("Found admin:", admin);
+    console.log("Password input:", password);
+    const valid = await bcrypt.compare(password, admin.password);
+    console.log("Password valid?", valid);
+    if (!valid) {
+      return { success: false, message: "ایمیل یا رمز عبور اشتباه است" };
+    }
 
-  return { success: true };
+    const token = jwt.sign(
+      { userId: admin.id, role: admin.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: "7d" }
+    );
+
+    const allCookies = await cookies();
+    allCookies.set("token", token, { httpOnly: true });
+
+    return { success: true, message: "ورود موفقیت‌آمیز بود", admin };
+  } catch (err) {
+    console.error("Admin login error:", err);
+    return { success: false, message: "خطا در ورود به پنل ادمین" };
+  }
 }

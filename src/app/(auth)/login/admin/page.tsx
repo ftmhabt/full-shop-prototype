@@ -43,7 +43,7 @@ export default function AdminLoginPage() {
     setIsLoading(true);
     setError(null);
 
-    const res = await adminLogin(values);
+    const res = await adminLogin(values.email, values.password);
     if (!res.success) {
       setError(res.message);
     } else {

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package } from "lucide-react";
-import { getUserOrders } from "../actions/orders";
+import { getUserOrders } from "../../actions/orders";
 
 export default async function DashboardPage() {
   const orders = await getUserOrders();

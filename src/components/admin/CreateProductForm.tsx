@@ -2,7 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
+import type { Resolver } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -29,7 +30,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
-// Schema
 const formSchema = z.object({
   name: z.string().min(2),
   slug: z.string().min(2),
@@ -41,14 +41,22 @@ const formSchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
   images: z.array(z.string()).min(1, "At least one image is required"),
   mainImage: z.string().min(1, "Main image must be selected"),
+  attributeValueIds: z.array(z.string()).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 export default function CreateProductForm({
   categories,
+  attributes,
 }: {
   categories: { id: string; name: string }[];
+  attributes: {
+    id: string;
+    name: string;
+    categoryId: string;
+    values: { id: string; value: string }[];
+  }[];
 }) {
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [mainImage, setMainImage] = useState<string>("");
@@ -56,7 +64,7 @@ export default function CreateProductForm({
   const router = useRouter();
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as Resolver<FormValues>,
     defaultValues: {
       name: "",
       slug: "",
@@ -68,47 +76,51 @@ export default function CreateProductForm({
       categoryId: "",
       images: [],
       mainImage: "",
+      attributeValueIds: [],
     },
   });
 
-  // Handle file uploads
+  const selectedAttributes = useMemo(() => {
+    return attributes.filter((a) => a.categoryId === form.watch("categoryId"));
+  }, [attributes, form.watch("categoryId")]);
+
+  // Handle file uploads (multi-upload)
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
-    if (!files) return;
+    if (!files || files.length === 0) return;
 
-    const uploaded: string[] = [];
-
+    const formData = new FormData();
     for (const file of Array.from(files)) {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      // Example API route: /api/upload
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-      uploaded.push(data.url); // server should return { url }
+      formData.append("file", file); // 👈 چندتا فایل
     }
 
-    const newImages = [...form.getValues("images"), ...uploaded];
-    form.setValue("images", newImages);
-    setPreviewImages(newImages);
+    // ارسال به API
+    const res = await fetch("/api/admin/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (data.urls) {
+      const newImages = [...form.getValues("images"), ...data.urls];
+      form.setValue("images", newImages);
+      setPreviewImages(newImages);
+
+      // اولین آپلود = main image پیش‌فرض
+      if (!form.getValues("mainImage") && newImages.length > 0) {
+        form.setValue("mainImage", newImages[0]);
+        setMainImage(newImages[0]);
+      }
+    }
   }
 
   function onSubmit(values: FormValues) {
     startTransition(async () => {
       await createProduct({
-        name: values.name,
-        slug: values.slug,
-        description: values.description,
-        price: values.price,
-        oldPrice: values.oldPrice,
-        stock: values.stock,
-        badge: values.badge,
-        categoryId: values.categoryId,
+        ...values,
         image: values.images,
+        attributeValueIds: values.attributeValueIds || [],
       });
 
       router.push("/admin/products");
@@ -189,7 +201,53 @@ export default function CreateProductForm({
               </FormItem>
             )}
           />
-
+          {/* Attribute Selector */}
+          {selectedAttributes.length > 0 && (
+            <div>
+              <FormLabel>ویژگی‌ها</FormLabel>
+              <div className="space-y-4 mt-2">
+                {selectedAttributes.map((attr) => (
+                  <div key={attr.id}>
+                    <p className="font-medium mb-2">{attr.name}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {attr.values.map((val) => {
+                        const selected = form
+                          .watch("attributeValueIds")
+                          ?.includes(val.id);
+                        return (
+                          <button
+                            type="button"
+                            key={val.id}
+                            className={cn(
+                              "px-3 py-1 rounded border",
+                              selected ? "bg-primary text-white" : "bg-white"
+                            )}
+                            onClick={() => {
+                              const current =
+                                form.getValues("attributeValueIds") || [];
+                              if (selected) {
+                                form.setValue(
+                                  "attributeValueIds",
+                                  current.filter((v) => v !== val.id)
+                                );
+                              } else {
+                                form.setValue("attributeValueIds", [
+                                  ...current,
+                                  val.id,
+                                ]);
+                              }
+                            }}
+                          >
+                            {val.value}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           {/* Price */}
           <FormField
             control={form.control}

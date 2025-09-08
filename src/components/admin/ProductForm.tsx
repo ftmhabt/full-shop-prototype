@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
 import Image from "next/image";
 
 const formSchema = z.object({
@@ -329,32 +330,46 @@ export default function ProductForm({
             />
             <div className="grid grid-cols-3 gap-4 mt-4">
               {previewImages.map((img, index) => (
-                <Card
-                  key={img}
-                  className={cn(
-                    "cursor-pointer relative overflow-hidden",
-                    index === 0 && "ring-2 ring-primary" // 👈 main image is always images[0]
-                  )}
-                  onClick={() => {
-                    // move clicked image to index 0
-                    const reordered = [
-                      img,
-                      ...previewImages.filter((i) => i !== img),
-                    ];
-                    form.setValue("images", reordered);
-                    setPreviewImages(reordered);
-                  }}
-                >
-                  <CardContent className="p-0">
-                    <Image
-                      src={img}
-                      alt="preview"
-                      width={200}
-                      height={200}
-                      className="object-cover w-full h-32"
-                    />
-                  </CardContent>
-                </Card>
+                <div key={img} className="relative">
+                  {/* Remove button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newImages = previewImages.filter((i) => i !== img);
+                      setPreviewImages(newImages);
+                      form.setValue("images", newImages);
+                    }}
+                    className="absolute top-1 right-1 z-10 bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                  >
+                    <X size={12} />
+                  </button>
+
+                  <Card
+                    className={cn(
+                      "cursor-pointer overflow-hidden",
+                      index === 0 && "ring-2 ring-primary"
+                    )}
+                    onClick={() => {
+                      // move clicked image to index 0
+                      const reordered = [
+                        img,
+                        ...previewImages.filter((i) => i !== img),
+                      ];
+                      form.setValue("images", reordered);
+                      setPreviewImages(reordered);
+                    }}
+                  >
+                    <CardContent className="p-0">
+                      <Image
+                        src={img}
+                        alt="preview"
+                        width={200}
+                        height={200}
+                        className="object-cover w-full h-32"
+                      />
+                    </CardContent>
+                  </Card>
+                </div>
               ))}
             </div>
 

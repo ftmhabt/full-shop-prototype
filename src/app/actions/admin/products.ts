@@ -44,30 +44,68 @@ export async function createProduct(data: {
 }
 
 // Update Product
-export async function updateProduct(
-  id: string,
-  data: Partial<{
-    name: string;
-    slug: string;
-    description: string;
-    price: number;
-    oldPrice?: number;
-    stock: number;
-    badge?: string;
-    categoryId: string;
-    image?: string[];
-  }>
-) {
-  const product = await db.product.update({
-    where: { id },
-    data: {
-      ...data,
-      ...(data.image ? { image: data.image } : {}),
-    },
-  });
 
-  revalidatePath("/admin/products");
-  return product;
+interface UpdateProductInput {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  oldPrice?: number;
+  stock: number;
+  badge?: string;
+  categoryId: string;
+  image: string[]; // all images
+  attributeValueIds?: string[];
+}
+
+export async function updateProduct(data: UpdateProductInput) {
+  const {
+    id,
+    name,
+    slug,
+    description,
+    price,
+    oldPrice,
+    stock,
+    badge,
+    categoryId,
+    image,
+    attributeValueIds = [],
+  } = data;
+
+  // Start a transaction to update product and attributes together
+  return db.$transaction(async (tx) => {
+    // Update main product fields
+    const product = await tx.product.update({
+      where: { id },
+      data: {
+        name,
+        slug,
+        description,
+        price,
+        oldPrice,
+        stock,
+        badge,
+        categoryId,
+        image,
+      },
+    });
+
+    // Remove existing product attributes
+    await tx.productAttribute.deleteMany({ where: { productId: id } });
+
+    // Add new attribute relations
+    if (attributeValueIds.length > 0) {
+      const attributeRelations = attributeValueIds.map((valueId) => ({
+        productId: id,
+        valueId,
+      }));
+      await tx.productAttribute.createMany({ data: attributeRelations });
+    }
+
+    return product;
+  });
 }
 
 // Delete Product

@@ -1,5 +1,4 @@
-// app/admin/products/create/page.tsx
-import CreateProductForm from "@/components/admin/CreateProductForm";
+import ProductForm from "@/components/admin/ProductForm";
 import { db } from "@/lib/db";
 
 export default async function Page() {
@@ -16,5 +15,5 @@ export default async function Page() {
     },
   });
 
-  return <CreateProductForm categories={categories} attributes={attributes} />;
+  return <ProductForm categories={categories} attributes={attributes} />;
 }

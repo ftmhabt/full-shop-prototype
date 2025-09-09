@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { FallbackImage } from "@/componets/FallbackImage";
 import { Trash } from "lucide-react";
-import Image from "next/image";
 import { ConfirmDialogButton } from "../common/ConfirmDialogButton";
 
 type ProductCardProps = {
@@ -21,7 +21,7 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
   return (
     <div className="border rounded-lg overflow-hidden shadow hover:shadow-lg transition">
       {product.image[0] && (
-        <Image
+        <FallbackImage
           src={product.image[0]}
           alt={product.name}
           width={400}
@@ -29,7 +29,7 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
           className="w-full h-48 object-cover"
         />
       )}
-      <div className="p-4 flex flex-col justify-between h-32">
+      <div className="p-4 flex flex-col justify-between h-40">
         <div>
           <h3 className="font-bold text-lg">{product.name}</h3>
           <p className="text-sm text-muted-foreground">

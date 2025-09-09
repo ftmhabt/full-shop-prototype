@@ -136,7 +136,7 @@ export default function ProductForm({
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <div className="max-w-3xl mx-auto">
       <h1 className="text-2xl font-semibold mb-6">
         {initialData ? "Edit Product" : "Create Product"}
       </h1>
@@ -326,9 +326,9 @@ export default function ProductForm({
               multiple
               accept="image/*"
               onChange={handleUpload}
-              className="mt-2"
+              className="mt-2 border border-dashed border-gray-300 rounded-md p-2 w-full"
             />
-            <div className="grid grid-cols-3 gap-4 mt-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
               {previewImages.map((img, index) => (
                 <div key={img} className="relative">
                   {/* Remove button */}

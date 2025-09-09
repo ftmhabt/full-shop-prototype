@@ -2,6 +2,7 @@
 
 import { deleteCategory } from "@/app/actions/admin/categories";
 import { Button } from "@/components/ui/button";
+import { Trash } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { ConfirmDialogButton } from "../common/ConfirmDialogButton";
@@ -34,7 +35,7 @@ export function CategoriesList({ categories }: { categories: any[] }) {
             </Link>
 
             <ConfirmDialogButton
-              buttonText="حذف"
+              buttonText={<Trash color="white" />}
               dialogTitle="حذف دسته"
               dialogDescription="آیا از حذف این دسته مطمئنید؟"
               onConfirm={() => handleDelete(cat.id)}

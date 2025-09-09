@@ -1,8 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Trash } from "lucide-react";
 import Image from "next/image";
-import { ConfirmDelete } from "../common/ConfirmDelete";
+import { ConfirmDialogButton } from "../common/ConfirmDialogButton";
 
 type ProductCardProps = {
   product: {
@@ -42,7 +43,13 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
           <Button size="sm" onClick={() => onEdit(product.id)}>
             ویرایش
           </Button>
-          <ConfirmDelete onConfirm={() => onDelete(product.id)} />
+          <ConfirmDialogButton
+            buttonText={<Trash color="white" />}
+            dialogTitle="حذف محصول"
+            dialogDescription="آیا از حذف این محصول مطمئن هستید؟ این عملیات قابل بازگشت نیست."
+            onConfirm={() => onDelete(product.id)}
+            size="sm"
+          />
         </div>
       </div>
     </div>

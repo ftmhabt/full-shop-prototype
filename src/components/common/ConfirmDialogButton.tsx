@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,28 +8,35 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import * as React from "react";
+import type { VariantProps } from "class-variance-authority";
+import { ReactNode, useState } from "react";
 
-type ConfirmButtonProps = {
-  buttonText: string;
+type ButtonProps = React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+  };
+
+type ConfirmDialogButtonProps = {
+  buttonText: string | ReactNode;
   dialogTitle?: string;
   dialogDescription?: string;
   confirmText?: string;
   cancelText?: string;
   onConfirm: () => void;
-  variant?: "default" | "destructive";
-};
+} & ButtonProps;
 
 export function ConfirmDialogButton({
   buttonText,
   dialogTitle = "تأیید عملیات",
   dialogDescription,
-  confirmText = "تأیید",
-  cancelText = "لغو",
+  confirmText = "تایید",
+  cancelText = "انصراف",
   onConfirm,
   variant = "destructive",
-}: ConfirmButtonProps) {
-  const [open, setOpen] = React.useState(false);
+  className,
+  ...props
+}: ConfirmDialogButtonProps) {
+  const [open, setOpen] = useState(false);
 
   const handleConfirm = () => {
     onConfirm();
@@ -38,12 +45,17 @@ export function ConfirmDialogButton({
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} variant={variant}>
+      <Button
+        onClick={() => setOpen(true)}
+        variant={variant}
+        className={className}
+        {...props}
+      >
         {buttonText}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md text-right">
           <DialogHeader>
             <DialogTitle>{dialogTitle}</DialogTitle>
             {dialogDescription && (
@@ -56,7 +68,7 @@ export function ConfirmDialogButton({
             <Button variant="outline" onClick={() => setOpen(false)}>
               {cancelText}
             </Button>
-            <Button variant={variant} onClick={handleConfirm}>
+            <Button variant="destructive" onClick={handleConfirm}>
               {confirmText}
             </Button>
           </DialogFooter>

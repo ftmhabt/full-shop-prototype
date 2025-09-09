@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, Home, Package, Users, X } from "lucide-react";
+import { CreditCard, Home, Package, Tags, Users, X } from "lucide-react";
 import Link from "next/link";
 
 interface SidebarProps {
@@ -25,6 +25,11 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       label: "محصولات",
       href: "/admin/products",
       icon: <Package className="w-4 h-4" />,
+    },
+    {
+      label: "دسته‌بندی‌ها",
+      href: "/admin/categories",
+      icon: <Tags className="w-4 h-4" />,
     },
   ];
 

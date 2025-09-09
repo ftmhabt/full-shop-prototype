@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { ConfirmDelete } from "../common/ConfirmDelete";
 
 type ProductCardProps = {
   product: {
@@ -41,13 +42,7 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
           <Button size="sm" onClick={() => onEdit(product.id)}>
             ویرایش
           </Button>
-          <Button
-            size="sm"
-            variant="destructive"
-            onClick={() => onDelete(product.id)}
-          >
-            حذف
-          </Button>
+          <ConfirmDelete onConfirm={() => onDelete(product.id)} />
         </div>
       </div>
     </div>

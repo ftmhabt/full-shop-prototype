@@ -110,6 +110,13 @@ export async function updateProduct(data: UpdateProductInput) {
 
 // Delete Product
 export async function deleteProduct(id: string) {
-  await db.product.delete({ where: { id } });
+  try {
+    await db.product.delete({ where: { id } });
+  } catch (error) {
+    console.error(error);
+    throw new Error(
+      "این محصول نمی‌تواند حذف شود زیرا سفارش‌هایی به آن مرتبط هستند."
+    );
+  }
   revalidatePath("/admin/products");
 }

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import * as React from "react";
+import toast from "react-hot-toast";
 import { ProductCard } from "./ProductCard";
 
 export default function ProductsGrid({ products }: { products: any[] }) {
@@ -12,9 +13,19 @@ export default function ProductsGrid({ products }: { products: any[] }) {
   const [localProducts, setLocalProducts] = React.useState(products);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("آیا از حذف محصول مطمئن هستید؟")) return;
-    await deleteProduct(id);
-    setLocalProducts(localProducts.filter((p) => p.id !== id));
+    if (!id) return;
+
+    try {
+      await deleteProduct(id);
+      toast.success("محصول با موفقیت حذف شد!");
+      setLocalProducts(localProducts.filter((p) => p.id !== id));
+    } catch (error: any) {
+      console.error(error);
+      toast.error(
+        error?.message ||
+          "حذف محصول با مشکل مواجه شد. بررسی کنید آیا محصول در سفارش‌ها استفاده شده است."
+      );
+    }
   };
 
   const handleEdit = (id: string) => {

@@ -2,8 +2,9 @@
 
 import { db } from "@/lib/db";
 import { Role } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import bcrypt, { hash } from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 export async function adminLogin(email: string, password: string) {
@@ -36,4 +37,37 @@ export async function adminLogin(email: string, password: string) {
     console.error("Admin login error:", err);
     return { success: false, message: "خطا در ورود به پنل ادمین" };
   }
+}
+
+export async function createUser(data: {
+  firstName?: string;
+  lastName?: string;
+  displayName?: string;
+  email?: string;
+  phone: string;
+  password: string;
+  role: "USER" | "ADMIN" | "EDITOR";
+}) {
+  const hashedPassword = await hash(data.password, 12);
+
+  await db.user.create({
+    data: {
+      ...data,
+      password: hashedPassword,
+    },
+  });
+
+  revalidatePath("/admin/users");
+}
+
+export async function updateUserRole(
+  userId: string,
+  role: "USER" | "ADMIN" | "EDITOR"
+) {
+  await db.user.update({
+    where: { id: userId },
+    data: { role },
+  });
+
+  revalidatePath("/admin/users");
 }

@@ -11,19 +11,15 @@ import {
 import type { VariantProps } from "class-variance-authority";
 import { ReactNode, useState } from "react";
 
-type ButtonProps = React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-  };
-
 type ConfirmDialogButtonProps = {
-  buttonText: string | ReactNode;
+  buttonText?: string | ReactNode;
   dialogTitle?: string;
   dialogDescription?: string;
   confirmText?: string;
   cancelText?: string;
   onConfirm: () => void;
-} & ButtonProps;
+  children?: ReactNode; // ⬅️ اضافه شد
+} & VariantProps<typeof buttonVariants>;
 
 export function ConfirmDialogButton({
   buttonText,
@@ -32,8 +28,8 @@ export function ConfirmDialogButton({
   confirmText = "تایید",
   cancelText = "انصراف",
   onConfirm,
+  children,
   variant = "destructive",
-  className,
   ...props
 }: ConfirmDialogButtonProps) {
   const [open, setOpen] = useState(false);
@@ -45,14 +41,11 @@ export function ConfirmDialogButton({
 
   return (
     <>
-      <Button
-        onClick={() => setOpen(true)}
-        variant={variant}
-        className={className}
-        {...props}
-      >
-        {buttonText}
-      </Button>
+      {buttonText && (
+        <Button onClick={() => setOpen(true)} variant={variant} {...props}>
+          {buttonText}
+        </Button>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-md text-right">
@@ -64,7 +57,10 @@ export function ConfirmDialogButton({
               </p>
             )}
           </DialogHeader>
-          <DialogFooter className="flex justify-end gap-2">
+
+          {children}
+
+          <DialogFooter className="flex justify-end gap-2 mt-2">
             <Button variant="outline" onClick={() => setOpen(false)}>
               {cancelText}
             </Button>

@@ -4,6 +4,7 @@ import { AddressSnapshot } from "@/components/checkout/types";
 import { getCurrentUserId } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { CartItem } from "@/types";
+import { revalidatePath } from "next/cache";
 
 export async function createOrder(
   items: CartItem[],
@@ -59,27 +60,60 @@ export async function createOrder(
     include: { items: true, ShippingMethod: true },
   });
 
+  // اولین لاگ (PENDING)
+  await db.orderLog.create({
+    data: {
+      orderId: order.id,
+      status: "PENDING",
+      note: "سفارش ایجاد شد",
+    },
+  });
+
   return order;
 }
 
 export async function updateOrderStatus(
   orderId: string,
-  status: "PAID" | "CANCELED" | "SHIPPED" | "COMPLETED"
+  status: "PENDING" | "PAID" | "CANCELED" | "SHIPPED" | "COMPLETED",
+  note?: string
 ) {
-  return db.order.update({
+  const order = await db.order.update({
     where: { id: orderId },
     data: { status },
   });
+
+  // ثبت در لاگ تغییر وضعیت
+  await db.orderLog.create({
+    data: {
+      orderId,
+      status,
+      note,
+    },
+  });
+
+  return order;
 }
 
 export async function updateOrderPaymentStatus(
   orderId: string,
-  paymentStatus: "PENDING" | "PAID" | "FAILED"
+  paymentStatus: "PENDING" | "PAID" | "FAILED",
+  note?: string
 ) {
-  return db.order.update({
+  const order = await db.order.update({
     where: { id: orderId },
     data: { paymentStatus },
   });
+
+  // ثبت لاگ تغییر وضعیت پرداخت (اختیاری)
+  await db.orderLog.create({
+    data: {
+      orderId,
+      status: order.status, // وضعیت اصلی رو هم نگه می‌داریم
+      note: `تغییر وضعیت پرداخت به ${paymentStatus}${note ? ` - ${note}` : ""}`,
+    },
+  });
+
+  return order;
 }
 
 export async function getUserOrders() {
@@ -89,7 +123,84 @@ export async function getUserOrders() {
   const orders = await db.order.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
+    include: {
+      items: { include: { product: true } },
+      ShippingMethod: true,
+      OrderLog: { orderBy: { createdAt: "desc" } },
+    },
   });
 
   return orders;
+}
+
+export async function changeOrderStatus(
+  orderId: string,
+  newStatus: "PAID" | "SHIPPED" | "COMPLETED" | "CANCELED",
+  trackingCode?: string,
+  inDetails?: boolean = true
+) {
+  const now = new Date();
+
+  // سفارش فعلی
+  const order = await db.order.findUnique({
+    where: { id: orderId },
+  });
+  if (!order) throw new Error("سفارش پیدا نشد");
+
+  const data: any = { status: newStatus };
+
+  // بر اساس وضعیت جدید، تایم‌ها و کد رهگیری ثبت میشه
+  if (newStatus === "PAID") {
+    data.paidAt = now;
+  }
+  if (newStatus === "SHIPPED") {
+    data.shippedAt = now;
+    if (trackingCode) data.trackingCode = trackingCode;
+  }
+  if (newStatus === "COMPLETED") {
+    data.deliveredAt = now;
+  }
+
+  // آپدیت سفارش
+  const updatedOrder = await db.order.update({
+    where: { id: orderId },
+    data,
+  });
+
+  // لاگ
+  await db.orderLog.create({
+    data: {
+      orderId,
+      status: newStatus,
+      note:
+        newStatus === "SHIPPED" && trackingCode
+          ? `سفارش ارسال شد - کد رهگیری: ${trackingCode}`
+          : undefined,
+    },
+  });
+  if (inDetails) revalidatePath(`/admin/orders/${orderId}`);
+  else revalidatePath(`/admin/orders`);
+  return updatedOrder;
+}
+
+export async function changePaymentStatus(
+  orderId: string,
+  newStatus: "PENDING" | "PAID" | "FAILED"
+) {
+  const now = new Date();
+
+  const order = await db.order.findUnique({ where: { id: orderId } });
+  if (!order) throw new Error("سفارش پیدا نشد");
+
+  const data: any = { paymentStatus: newStatus };
+  if (newStatus === "PAID") data.paidAt = now;
+
+  const updatedOrder = await db.order.update({
+    where: { id: orderId },
+    data,
+  });
+
+  revalidatePath(`/orders/${orderId}`);
+
+  return updatedOrder;
 }

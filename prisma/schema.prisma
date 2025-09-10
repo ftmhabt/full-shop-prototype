@@ -126,6 +126,7 @@ model Order {
   items            OrderItem[]
   ShippingMethod   ShippingMethod? @relation(fields: [shippingMethodId], references: [id])
   shippingMethodId String?
+  OrderLog         OrderLog[]
 }
 
 model OrderItem {
@@ -204,4 +205,15 @@ model ShippingMethod {
   updatedAt DateTime @updatedAt
 
   orders Order[]
+}
+
+model OrderLog {
+  id        String      @id @default(cuid())
+  orderId   String
+  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status    OrderStatus
+  note      String?
+  createdAt DateTime    @default(now())
+
+  @@index([orderId])
 }

@@ -1,14 +1,6 @@
 "use client";
 
-import { changeOrderStatus } from "@/app/actions/orders";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -27,7 +19,8 @@ import {
 } from "@/components/ui/table";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useState } from "react";
+import OrderStatusDialog from "./OrderStatusDropdown";
 
 // --- نوع سفارش با اطلاعات کاربر و روش ارسال ---
 type OrderWithUserAndShipping = Prisma.OrderGetPayload<{
@@ -37,100 +30,6 @@ type OrderWithUserAndShipping = Prisma.OrderGetPayload<{
   };
 }>;
 
-// --- کامپوننت ConfirmDropdown برای تغییر وضعیت سفارش ---
-interface ConfirmDropdownProps {
-  orderId: string;
-  currentStatus: string;
-  onUpdated: (newStatus: string) => void;
-}
-
-function ConfirmDropdown({
-  orderId,
-  currentStatus,
-  onUpdated,
-}: ConfirmDropdownProps) {
-  const [open, setOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState(currentStatus);
-  const [pendingStatus, setPendingStatus] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
-
-  const statusOptions = [
-    { value: "PENDING", label: "در انتظار" },
-    { value: "PAID", label: "پرداخت شده" },
-    { value: "SHIPPED", label: "ارسال شده" },
-    { value: "COMPLETED", label: "تکمیل شده" },
-    { value: "CANCELED", label: "لغو شده" },
-  ];
-
-  const handleChange = (newStatus: string) => {
-    if (newStatus === selectedStatus) return;
-    setPendingStatus(newStatus);
-    setOpen(true);
-  };
-
-  const handleConfirm = async () => {
-    if (!pendingStatus) return;
-    startTransition(async () => {
-      await changeOrderStatus(orderId, pendingStatus as any);
-      setSelectedStatus(pendingStatus);
-      onUpdated(pendingStatus);
-      setPendingStatus(null);
-      setOpen(false);
-    });
-  };
-
-  const handleCancel = () => {
-    setPendingStatus(null);
-    setOpen(false);
-  };
-
-  return (
-    <>
-      <Select
-        value={selectedStatus}
-        onValueChange={handleChange}
-        disabled={isPending}
-      >
-        <SelectTrigger className="w-[140px]">
-          <SelectValue placeholder="وضعیت سفارش" />
-        </SelectTrigger>
-        <SelectContent>
-          {statusOptions.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md text-right">
-          <DialogHeader>
-            <DialogTitle>تغییر وضعیت سفارش</DialogTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              آیا مطمئن هستید می‌خواهید وضعیت سفارش را به "{pendingStatus}"
-              تغییر دهید؟
-            </p>
-          </DialogHeader>
-          <DialogFooter className="flex justify-end gap-2 mt-2">
-            <Button variant="outline" onClick={handleCancel}>
-              انصراف
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleConfirm}
-              disabled={isPending}
-            >
-              تایید
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
-  );
-}
-
-// --- کامپوننت اصلی OrdersList ---
 export default function OrdersList({
   orders,
 }: {
@@ -279,11 +178,7 @@ export default function OrdersList({
                     {new Date(order.createdAt).toLocaleDateString("fa-IR")}
                   </TableCell>
                   <TableCell>
-                    <ConfirmDropdown
-                      orderId={order.id}
-                      currentStatus={order.status}
-                      onUpdated={() => {}}
-                    />
+                    <OrderStatusDialog order={order} />
                   </TableCell>
                   <TableCell>{order.paymentStatus}</TableCell>
                   <TableCell>
@@ -342,11 +237,7 @@ export default function OrdersList({
               <p>💰 مبلغ نهایی: {order.finalPrice.toLocaleString()} تومان</p>
               <p>🚚 ارسال: {order.ShippingMethod?.name ?? "-"}</p>
               <div className="flex gap-2">
-                <ConfirmDropdown
-                  orderId={order.id}
-                  currentStatus={order.status}
-                  onUpdated={() => {}}
-                />
+                <OrderStatusDialog order={order} />
                 <Link href={`/admin/orders/${order.id}`}>
                   <Button variant="default" size="sm">
                     جزئیات

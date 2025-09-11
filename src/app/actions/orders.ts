@@ -3,6 +3,7 @@
 import { AddressSnapshot } from "@/components/checkout/types";
 import { getCurrentUserId } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { generateOrderId } from "@/lib/generateId";
 import { CartItem } from "@/types";
 import { revalidatePath } from "next/cache";
 
@@ -30,6 +31,7 @@ export async function createOrder(
 
   const order = await db.order.create({
     data: {
+      id: generateOrderId(),
       userId,
       status: "PENDING",
 

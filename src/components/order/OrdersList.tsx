@@ -37,9 +37,7 @@ export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
           className="rounded-xl shadow-sm hover:shadow-lg transition p-4"
         >
           <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-2 pl-2">
-            <CardTitle className="text-base">
-              سفارش #{order.id.slice(0, 8)}
-            </CardTitle>
+            <CardTitle className="text-base">سفارش #{order.id}</CardTitle>
             <div className="flex gap-2">
               <Badge className={orderStatusColor[order.status]}>
                 {orderStatusLabel[order.status]}

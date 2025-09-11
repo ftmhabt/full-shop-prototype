@@ -16,7 +16,7 @@ export function Topbar({ toggleSidebar }: TopbarProps) {
   };
 
   return (
-    <header className="h-16 px-4 md:px-6 bg-white border-b border-gray-200 flex items-center justify-between">
+    <header className="min-h-16 px-4 md:px-6 bg-white border-b border-gray-200 flex items-center justify-between">
       <Button
         variant="ghost"
         size="sm"

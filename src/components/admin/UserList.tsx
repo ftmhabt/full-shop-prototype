@@ -38,22 +38,18 @@ export function UsersList({ users }: { users: UserWithRole[] }) {
   };
 
   return (
-    <Table className="w-full">
+    <Table className="w-full" dir="rtl">
       <TableHeader>
         <TableRow>
-          <TableHead>نام</TableHead>
-          <TableHead>نام خانوادگی</TableHead>
-          <TableHead>نام نمایش</TableHead>
-          <TableHead>ایمیل</TableHead>
-          <TableHead>شماره تماس</TableHead>
-          <TableHead>نقش</TableHead>
+          <TableHead className="text-right">نام نمایش</TableHead>
+          <TableHead className="text-right">ایمیل</TableHead>
+          <TableHead className="text-right">شماره تماس</TableHead>
+          <TableHead className="text-right">نقش</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {localUsers.map((user) => (
           <TableRow key={user.id}>
-            <TableCell>{user.firstName || "-"}</TableCell>
-            <TableCell>{user.lastName || "-"}</TableCell>
             <TableCell>{user.displayName || "-"}</TableCell>
             <TableCell>{user.email || "-"}</TableCell>
             <TableCell>{user.phone}</TableCell>

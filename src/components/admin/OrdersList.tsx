@@ -249,18 +249,18 @@ export default function OrdersList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>شماره سفارش</TableHead>
-              <TableHead>نام مشتری</TableHead>
-              <TableHead>شماره تماس</TableHead>
-              <TableHead>تاریخ ثبت</TableHead>
-              <TableHead>وضعیت سفارش</TableHead>
-              <TableHead>وضعیت پرداخت</TableHead>
-              <TableHead>مبلغ کل</TableHead>
-              <TableHead>تخفیف</TableHead>
-              <TableHead>مبلغ نهایی</TableHead>
-              <TableHead>روش ارسال</TableHead>
-              <TableHead>روش پرداخت</TableHead>
-              <TableHead>اکشن‌ها</TableHead>
+              <TableHead className="text-right">شماره سفارش</TableHead>
+              <TableHead className="text-right">نام مشتری</TableHead>
+              <TableHead className="text-right">شماره تماس</TableHead>
+              <TableHead className="text-right">تاریخ ثبت</TableHead>
+              <TableHead className="text-right">وضعیت سفارش</TableHead>
+              <TableHead className="text-right">وضعیت پرداخت</TableHead>
+              <TableHead className="text-right">مبلغ کل</TableHead>
+              <TableHead className="text-right">تخفیف</TableHead>
+              <TableHead className="text-right">مبلغ نهایی</TableHead>
+              <TableHead className="text-right">روش ارسال</TableHead>
+              <TableHead className="text-right">روش پرداخت</TableHead>
+              <TableHead className="text-right">اکشن‌ها</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

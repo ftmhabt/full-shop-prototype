@@ -74,50 +74,6 @@ export async function createOrder(
   return order;
 }
 
-export async function updateOrderStatus(
-  orderId: string,
-  status: "PENDING" | "PAID" | "CANCELED" | "SHIPPED" | "COMPLETED",
-  note?: string
-) {
-  const order = await db.order.update({
-    where: { id: orderId },
-    data: { status },
-  });
-
-  // ثبت در لاگ تغییر وضعیت
-  await db.orderLog.create({
-    data: {
-      orderId,
-      status,
-      note,
-    },
-  });
-
-  return order;
-}
-
-export async function updateOrderPaymentStatus(
-  orderId: string,
-  paymentStatus: "PENDING" | "PAID" | "FAILED",
-  note?: string
-) {
-  const order = await db.order.update({
-    where: { id: orderId },
-    data: { paymentStatus },
-  });
-
-  // ثبت لاگ تغییر وضعیت پرداخت (اختیاری)
-  await db.orderLog.create({
-    data: {
-      orderId,
-      status: order.status, // وضعیت اصلی رو هم نگه می‌داریم
-      note: `تغییر وضعیت پرداخت به ${paymentStatus}${note ? ` - ${note}` : ""}`,
-    },
-  });
-
-  return order;
-}
-
 export async function getUserOrders() {
   const userId = await getCurrentUserId();
   if (!userId) throw new Error("کاربر یافت نشد");

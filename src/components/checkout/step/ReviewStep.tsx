@@ -10,12 +10,14 @@ import { ShippingMethod } from "@prisma/client";
 import {
   Hash,
   Home,
+  Loader,
   MapPin,
   Phone,
   ShoppingCart,
   Truck,
   User,
 } from "lucide-react";
+import { useState } from "react";
 
 export default function ReviewStep({
   selectedAddress,
@@ -29,22 +31,37 @@ export default function ReviewStep({
   onBack: () => void;
 }) {
   const { items } = useCartServer();
-  const handlePayment = async () => {
-    const url = await createOrderAndStartPayment(
-      items,
-      {
-        fullName: selectedAddress?.fullName || "",
-        phone: selectedAddress?.phone || "",
-        province: selectedAddress?.province || "",
-        city: selectedAddress?.city || "",
-        address: selectedAddress?.address || "",
-        postalCode: selectedAddress?.postalCode || "",
-      },
-      discount,
-      shippingMethod?.id || ""
-    );
+  const [loading, setLoading] = useState(false);
+  // ✅ Calculate totals
+  const itemsTotal = items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const shippingCost = shippingMethod?.cost || 0;
+  const totalToPay = itemsTotal + shippingCost - discount;
 
-    window.location.href = url; // هدایت کاربر به درگاه زرین‌پال
+  const handlePayment = async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const url = await createOrderAndStartPayment(
+        items,
+        {
+          fullName: selectedAddress?.fullName || "",
+          phone: selectedAddress?.phone || "",
+          province: selectedAddress?.province || "",
+          city: selectedAddress?.city || "",
+          address: selectedAddress?.address || "",
+          postalCode: selectedAddress?.postalCode || "",
+        },
+        discount,
+        shippingMethod?.id || ""
+      );
+
+      window.location.href = url;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -134,14 +151,27 @@ export default function ReviewStep({
           )}
         </CardContent>
       </Card>
-
+      {/* آیتم‌های سبد خرید */}
+      <Card className="bg-gray-50 border">
+        <CardContent className="text-sm text-gray-800 space-y-2">
+          {/* ✅ Total to pay */}
+          <div className="flex justify-between font-bold ">
+            <span>جمع کل قابل پرداخت</span>
+            <span>{formatPrice(totalToPay)} تومان</span>
+          </div>
+        </CardContent>
+      </Card>
       {/* دکمه‌ها */}
       <div className="flex gap-2 mt-4">
         <Button variant="outline" className="flex-1" onClick={onBack}>
           بازگشت
         </Button>
-        <Button className="flex-1" onClick={handlePayment}>
-          پرداخت
+        <Button
+          className="flex-1 flex items-center justify-center"
+          onClick={handlePayment}
+          disabled={loading}
+        >
+          {loading ? <Loader className="w-5 h-5 animate-spin" /> : "پرداخت"}
         </Button>
       </div>
     </div>

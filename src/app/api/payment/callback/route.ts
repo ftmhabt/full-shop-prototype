@@ -1,7 +1,3 @@
-import {
-  updateOrderPaymentStatus,
-  updateOrderStatus,
-} from "@/app/actions/orders";
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -43,15 +39,24 @@ export async function GET(req: NextRequest) {
     const data = await verify.json();
 
     if (data.data && data.data.code === 100) {
-      await updateOrderStatus(orderId, "PAID");
-      await updateOrderPaymentStatus(orderId, "PAID");
+      await db.order.update({
+        where: { id: orderId },
+        data: { status: "PAID", paymentStatus: "PAID" },
+      });
+
+      await db.orderLog.create({
+        data: { orderId, status: "PAID", note: "پرداخت با موفقیت تایید شد" },
+      });
+
       return NextResponse.redirect(
         `${origin}/dashboard/payment/success?orderId=${orderId}&refId=${data.data.ref_id}`
       );
     }
   }
 
-  return NextResponse.redirect(
-    `${origin}/dashboard/payment/fail?orderId=${orderId}`
-  );
+  if (order.status === "PAID") {
+    return NextResponse.redirect(
+      `${origin}/dashboard/payment/success?orderId=${orderId}`
+    );
+  }
 }

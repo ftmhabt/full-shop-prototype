@@ -1,6 +1,7 @@
 "use client";
 
 import { createAddress } from "@/app/actions/addresses";
+import { getCurrentUser } from "@/app/actions/user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -50,6 +51,19 @@ export default function AddressForm({
     }
   }, [isVisible, controls]);
 
+  useEffect(() => {
+    async function loadUserDefaults() {
+      const user = await getCurrentUser();
+      if (user) {
+        setForm((f) => ({
+          ...f,
+          fullName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+          phone: user.phone || "",
+        }));
+      }
+    }
+    loadUserDefaults();
+  }, []);
   const handleProvinceChange = (value: string) => {
     setForm((f) => ({ ...f, province: value, city: "" }));
     const selected = provinces.find((p) => p.province === value);

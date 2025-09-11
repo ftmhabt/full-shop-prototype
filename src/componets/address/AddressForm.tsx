@@ -1,6 +1,7 @@
 "use client";
 
 import { createAddress } from "@/app/actions/addresses";
+import { getCurrentUser } from "@/app/actions/user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,8 +13,7 @@ import {
 } from "@/components/ui/select";
 import { provinces } from "@/lib/locations";
 import { AddressInput, addressSchema } from "@/lib/validations";
-import { useUser } from "@/store/useUser";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 
 interface AddressFormProps {
@@ -25,7 +25,6 @@ export default function AddressForm({
   onClose,
   isVisible = true,
 }: AddressFormProps) {
-  const userId = useUser((state) => state.userId);
   const [form, setForm] = useState<AddressInput>({
     title: "",
     fullName: "",
@@ -36,6 +35,19 @@ export default function AddressForm({
     postalCode: "",
   });
 
+  useEffect(() => {
+    async function loadUserDefaults() {
+      const user = await getCurrentUser();
+      if (user) {
+        setForm((f) => ({
+          ...f,
+          fullName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+          phone: user.phone || "",
+        }));
+      }
+    }
+    loadUserDefaults();
+  }, []);
   const [cities, setCities] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
 

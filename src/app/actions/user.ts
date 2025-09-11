@@ -1,5 +1,6 @@
 "use server";
 
+import { getCurrentUserId } from "@/lib/auth";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
@@ -47,4 +48,24 @@ export async function updateUser(data: UpdateUserProps) {
     where: { id: userId },
     data: updateData,
   });
+}
+
+export async function getCurrentUser() {
+  const userId = await getCurrentUserId();
+  if (!userId) return null;
+
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      displayName: true,
+      email: true,
+      phone: true,
+      role: true,
+    },
+  });
+
+  return user;
 }

@@ -92,6 +92,7 @@ model Category {
   id         String      @id @default(cuid())
   name       String
   slug       String      @unique
+  icon       String?
   products   Product[]
   attributes Attribute[]
 }
@@ -243,4 +244,15 @@ model CartItem {
   @@unique([cartId, productId])
   @@index([cartId])
   @@index([productId])
+}
+
+model HeroSlide {
+  id        String   @id @default(cuid())
+  title     String
+  subtitle  String?
+  image     String
+  order     Int      @default(0) // determines the display order
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

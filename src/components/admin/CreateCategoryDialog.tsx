@@ -11,23 +11,28 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import toast from "react-hot-toast";
+
+const IconPicker = dynamic(() => import("./IconPicker"), { ssr: false });
 
 export function CreateCategoryDialog() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
+  const [icon, setIcon] = useState("Box");
 
   const handleCreate = async () => {
     if (!name || !slug) return toast.error("نام و slug الزامی است");
 
     try {
-      await createCategory({ name, slug });
+      await createCategory({ name, slug, icon });
       toast.success("دسته با موفقیت ایجاد شد");
       setOpen(false);
       setName("");
       setSlug("");
+      setIcon("Box");
     } catch (err: any) {
       toast.error(err.message || "خطایی رخ داد");
     }
@@ -53,6 +58,7 @@ export function CreateCategoryDialog() {
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
           />
+          <IconPicker value={icon} onChange={setIcon} />
         </div>
         <DialogFooter>
           <Button onClick={handleCreate}>ایجاد</Button>

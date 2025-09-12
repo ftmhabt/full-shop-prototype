@@ -9,92 +9,72 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-  Cable,
   Camera,
   ChevronRight,
   CreditCard,
   Headphones,
-  Lock,
   Percent,
   RefreshCw,
-  Shield,
   Siren,
   Truck,
   Wrench,
 } from "lucide-react";
 import * as React from "react";
 
-import CategorySection from "@/components/home/CategorySection";
+import CategorySection, { IconName } from "@/components/home/CategorySection";
 import Hero from "@/components/home/Hero";
 import HotProducts from "@/components/home/HotProducts";
 import NewProducts from "@/components/home/NewProducts";
 import db from "@/lib/db";
 import { FallbackImage } from "./FallbackImage";
 
-// ---- Mock Data (replace with API) -----------------------------------------
-const heroSlides = [
-  {
-    id: 1,
-    title: "امنیت با اطمینان، آرامش با حس خوب!",
-    subtitle: "تخفیف‌های استثنایی",
-    image: "/images/hero-1.jpg",
-  },
-  {
-    id: 2,
-    title: "انواع دوربین های تحت شبکه و AHD",
-    subtitle: "گارانتی رسمی و ارسال سریع",
-    image: "/images/hero-2.jpg",
-  },
+const ICONS = [
+  "Siren",
+  "Camera",
+  "Cable",
+  "Lock",
+  "Shield",
+  "Box",
+  "User",
+  "ShoppingCart",
+  "Home",
+  "Key",
+  "Bell",
+  "Wifi",
 ];
 
-const categories = [
-  {
-    id: 1,
-    label: "دزدگیر اماکن",
-    slug: "alarm-systems",
-    icon: <Siren className="h-6 w-6" />,
-  },
-  {
-    id: 2,
-    label: "دوربین مداربسته",
-    slug: "cctv-cameras",
-    icon: <Camera className="h-6 w-6" />,
-  },
-  {
-    id: 3,
-    label: "لوازم جانبی",
-    slug: "accessories",
-    icon: <Cable className="h-6 w-6" />,
-  },
-  {
-    id: 4,
-    label: "کنترل تردد",
-    slug: "access-control",
-    icon: <Lock className="h-6 w-6" />,
-  },
-  {
-    id: 5,
-    label: "هوشمندسازی",
-    slug: "smart-home",
-    icon: <Shield className="h-6 w-6" />,
-  },
-];
-
-const products = await db.product.findMany({
-  orderBy: { createdAt: "desc" },
-  take: 8,
-  include: {
-    attributes: {
-      include: {
-        value: {
-          include: {
-            attribute: true,
-          },
-        },
-      },
-    },
-  },
-});
+// const categories = [
+//   {
+//     id: 1,
+//     label: "دزدگیر اماکن",
+//     slug: "alarm-systems",
+//     icon: <Siren className="h-6 w-6" />,
+//   },
+//   {
+//     id: 2,
+//     label: "دوربین مداربسته",
+//     slug: "cctv-cameras",
+//     icon: <Camera className="h-6 w-6" />,
+//   },
+//   {
+//     id: 3,
+//     label: "لوازم جانبی",
+//     slug: "accessories",
+//     icon: <Cable className="h-6 w-6" />,
+//   },
+//   {
+//     id: 4,
+//     label: "کنترل تردد",
+//     slug: "access-control",
+//     icon: <Lock className="h-6 w-6" />,
+//   },
+//   {
+//     id: 5,
+//     label: "هوشمندسازی",
+//     slug: "smart-home",
+//     icon: <Shield className="h-6 w-6" />,
+//   },
+// ];
 
 const brands = ["azer", "classic", "futal", "silex", "melsec", "dahua"];
 
@@ -182,7 +162,7 @@ function Collections() {
               {c.icon}
             </CardHeader>
             <CardContent className="grid grid-cols-4 gap-3">
-              {products.slice(i * 4, i * 4 + 4).map((p) => (
+              {/* {products.slice(i * 4, i * 4 + 4).map((p) => (
                 <div key={p.id} className="space-y-2">
                   <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-muted">
                     <FallbackImage
@@ -194,7 +174,7 @@ function Collections() {
                   </div>
                   <div className="text-xs leading-5">{p.name}</div>
                 </div>
-              ))}
+              ))} */}
             </CardContent>
             <CardFooter>
               <Button variant="ghost" className="mr-auto gap-1">
@@ -327,27 +307,63 @@ function Newsletter() {
 
 // ---- Page -----------------------------------------------------------------
 export default async function HomePage() {
-  const [newProducts, popularProducts] = await Promise.all([
-    db.product.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 8,
-      include: {
-        attributes: { include: { value: { include: { attribute: true } } } },
-      },
-    }),
-    db.product.findMany({
-      orderBy: { soldCount: "desc" },
-      take: 8,
-      include: {
-        attributes: { include: { value: { include: { attribute: true } } } },
-      },
-    }),
-  ]);
+  const [heroSlides, categories, newProducts, popularProducts] =
+    await Promise.all([
+      db.heroSlide.findMany({
+        where: { isActive: true },
+        orderBy: { order: "asc" },
+      }),
+      db.category.findMany(),
+      db.product.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 8,
+        include: {
+          attributes: {
+            include: {
+              value: {
+                include: {
+                  attribute: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+      db.product.findMany({
+        orderBy: { soldCount: "desc" },
+        take: 8,
+        include: {
+          attributes: {
+            include: {
+              value: {
+                include: {
+                  attribute: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+  const standardizedCategories = categories.map((c) => {
+    const dbIcon = (c.icon ?? "").replace(/\s/g, "");
+    const iconKey = ICONS.find(
+      (k) => k.toLowerCase() === dbIcon.toLowerCase()
+    ) as IconName | undefined;
+    return {
+      id: c.id,
+      label: c.name,
+      slug: c.slug,
+      icon: iconKey, // Type is now "User" | "Siren" | ... | undefined
+    };
+  });
+  console.log("categories", categories);
+  console.log("standardizedCategories", standardizedCategories);
 
   return (
     <main dir="rtl" className="container mx-auto max-w-7xl px-3 py-6">
       <Hero heroSlides={heroSlides} />
-      <CategorySection categories={categories} />
+      <CategorySection categories={standardizedCategories} />
       <DealStrip />
       <NewProducts products={newProducts} />
       <HotProducts products={popularProducts} />

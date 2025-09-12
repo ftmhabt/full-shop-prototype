@@ -7,17 +7,23 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { FallbackImage } from "@/componets/FallbackImage";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { FallbackImage } from "../FallbackImage";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 
-function Hero({
-  heroSlides,
-}: {
-  heroSlides: { id: number; image: string; title: string; subtitle: string }[];
-}) {
+type HeroSlides = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  order: number;
+  title: string;
+  image: string;
+  isActive: boolean;
+  subtitle: string | null;
+}[];
+function Hero({ heroSlides }: { heroSlides: HeroSlides }) {
   return (
     <section className="relative w-full">
       <Carousel opts={{ align: "start" }}>

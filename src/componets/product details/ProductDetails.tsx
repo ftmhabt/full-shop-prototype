@@ -3,9 +3,9 @@
 import { ProductWithAttribute } from "@/app/actions/products";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { useCartServer } from "@/hooks/useCartServer";
+import { selectCartItems } from "@/store/selectors";
 import { useState } from "react";
-import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 import { FallbackImage } from "../FallbackImage";
 import QuantitySelector from "./QuantitySelector";
 import RelatedProducts from "./RelatedProducts";
@@ -17,21 +17,10 @@ export default function ProductDetails({
   product: ProductWithAttribute;
 }) {
   const [activeImage, setActiveImage] = useState(product.image[0]);
-  const { items, add, increase, decrease } = useCartServer();
+  const items = useSelector(selectCartItems);
 
   const cartItem = items.find((i) => i.id === product.id);
   const quantity = cartItem?.quantity || 0;
-
-  const handleAddToCart = () => {
-    add({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image[0],
-      quantity: 1,
-    });
-    toast.success(`${product.name} به سبد اضافه شد`);
-  };
 
   return (
     <div className="container mx-auto px-4 py-6">

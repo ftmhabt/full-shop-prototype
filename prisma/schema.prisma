@@ -221,8 +221,8 @@ model OrderLog {
 
 model Cart {
   id        String     @id @default(cuid())
-  userId    String? // null for guest carts
-  guestId   String? // optional guest identifier (if you want)
+  userId    String?    @unique // null for guest carts
+  guestId   String? // optional guest identifier
   items     CartItem[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt

@@ -1,15 +1,20 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useCartServer } from "@/hooks/useCartServer";
+import { clear, remove } from "@/store/cartSlice";
+import { selectCartItems, selectCartTotalPrice } from "@/store/selectors";
 import { Trash } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
 import QuantitySelector from "./product details/QuantitySelector";
 
 export default function CartPanel({ onClose }: { onClose?: () => void }) {
-  const { items, totalPrice, remove, clear, isPending } = useCartServer();
   const router = useRouter();
+  const dispatch = useDispatch();
+  const items = useSelector(selectCartItems);
+  const totalPrice = useSelector(selectCartTotalPrice);
+
   if (items.length === 0) {
     return <p className="text-center py-8">سبد خرید خالی است</p>;
   }
@@ -43,8 +48,7 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
               <Button
                 size="sm"
                 variant="destructive"
-                onClick={() => remove(item.id)}
-                disabled={isPending}
+                onClick={() => dispatch(remove(item.id))}
                 className="w-10 h-10 rounded-lg"
               >
                 <Trash className="block" />
@@ -61,7 +65,6 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
         <div className="flex flex-col sm:flex-row gap-2">
           <Button
             className="flex-1"
-            disabled={isPending}
             onClick={() => {
               onClose?.();
               router.push("/dashboard/cart/checkout");
@@ -73,10 +76,9 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
             variant="outline"
             className="flex-1"
             onClick={() => {
-              clear();
+              dispatch(clear());
               onClose?.();
             }}
-            disabled={isPending}
           >
             خالی کردن سبد
           </Button>

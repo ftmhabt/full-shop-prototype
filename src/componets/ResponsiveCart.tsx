@@ -22,16 +22,17 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-import { useCartServer } from "@/hooks/useCartServer";
+import { selectCartItems, selectTotalItems } from "@/store/selectors";
+import { useSelector } from "react-redux";
 import CartPanel from "./CartPanel";
 
 export default function ResponsiveCart() {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  const { items } = useCartServer();
-
-  const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
+  // Redux cart
+  const items = useSelector(selectCartItems);
+  const totalItems = useSelector(selectTotalItems);
 
   const Trigger = (
     <Button

@@ -6,10 +6,11 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { useCartServer } from "@/hooks/useCartServer";
 import { formatPrice } from "@/lib/format";
+import { selectCartItems } from "@/store/selectors";
 import { ProductWithAttributes } from "@/types";
 import Link from "next/link";
+import { useSelector } from "react-redux";
 import { FallbackImage } from "./FallbackImage";
 import QuantitySelector from "./product details/QuantitySelector";
 
@@ -18,7 +19,7 @@ export default function ProductCard({
 }: {
   product: ProductWithAttributes;
 }) {
-  const { items } = useCartServer();
+  const items = useSelector(selectCartItems);
 
   const cartItem = items.find((i) => i.id === product.id);
   const quantity = cartItem?.quantity || 0;

@@ -1,89 +1,104 @@
-// lib/cart.ts
 "use server";
 
-import { cookies } from "next/headers";
+import { getCurrentUserId } from "@/lib/auth";
+import db from "@/lib/db";
 
-export interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image?: string;
-}
+// --- Get cart for current user ---
+export async function getCart() {
+  const userId = await getCurrentUserId();
+  if (!userId) return [];
 
-// --- Get cart ---
-export async function getCart(): Promise<CartItem[]> {
-  const cookieStore = await cookies();
-  const cartCookie = cookieStore.get("cart");
-  if (!cartCookie) return [];
-  try {
-    return JSON.parse(cartCookie.value) as CartItem[];
-  } catch {
-    return [];
-  }
-}
-
-// --- Save full cart ---
-export async function saveCart(cart: CartItem[]) {
-  const cookieStore = await cookies();
-  cookieStore.set("cart", JSON.stringify(cart), {
-    httpOnly: false,
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+  const cart = await db.cart.findFirst({
+    where: { userId },
+    include: {
+      items: { include: { product: true } },
+    },
   });
+
+  if (!cart) return [];
+
+  return cart.items.map((it) => ({
+    id: it.productId,
+    quantity: it.quantity,
+    price: it.product.price,
+    name: it.product.name,
+    image: it.product.image[0] ?? null,
+  }));
 }
 
-// --- Add item ---
-export async function addItem(item: CartItem) {
-  const cart = await getCart();
-  const exists = cart.find((i) => i.id === item.id);
-  let updated: CartItem[];
-  if (exists) {
-    updated = cart.map((i) =>
-      i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
-    );
-  } else {
-    updated = [...cart, item];
-  }
-  await saveCart(updated);
+// --- Replace entire cart with given items ---
+export async function syncCart(items: { id: string; quantity: number }[]) {
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Unauthorized");
+
+  const cart = await db.cart.upsert({
+    where: { userId },
+    create: { userId },
+    update: {},
+  });
+
+  await db.$transaction(async (tx) => {
+    // remove items not included
+    const keepIds = items.map((i) => i.id);
+    await tx.cartItem.deleteMany({
+      where: {
+        cartId: cart.id,
+        productId: { notIn: keepIds.length ? keepIds : ["__none__"] },
+      },
+    });
+
+    // upsert each provided item
+    for (const it of items) {
+      await tx.cartItem.upsert({
+        where: { cartId_productId: { cartId: cart.id, productId: it.id } },
+        create: { cartId: cart.id, productId: it.id, quantity: it.quantity },
+        update: { quantity: it.quantity },
+      });
+    }
+  });
+
+  return getCart();
 }
 
-// --- Remove item ---
-export async function removeItem(id: string) {
-  const cart = await getCart();
-  const updated = cart.filter((i) => i.id !== id);
-  await saveCart(updated);
+// --- Merge guest cart into user cart (at login) ---
+export async function mergeCart(items: { id: string; quantity: number }[]) {
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Unauthorized");
+
+  const cart = await db.cart.upsert({
+    where: { userId },
+    create: { userId },
+    update: {},
+  });
+
+  await db.$transaction(async (tx) => {
+    for (const it of items) {
+      const existing = await tx.cartItem.findUnique({
+        where: { cartId_productId: { cartId: cart.id, productId: it.id } },
+      });
+      if (existing) {
+        await tx.cartItem.update({
+          where: { id: existing.id },
+          data: { quantity: existing.quantity + it.quantity },
+        });
+      } else {
+        await tx.cartItem.create({
+          data: { cartId: cart.id, productId: it.id, quantity: it.quantity },
+        });
+      }
+    }
+  });
+
+  return getCart();
 }
 
 // --- Clear cart ---
 export async function clearCart() {
-  await saveCart([]);
-}
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Unauthorized");
 
-// --- Increase / Decrease quantity ---
-export async function increaseQty(id: string) {
-  const cart = await getCart();
-  const updated = cart.map((i) =>
-    i.id === id ? { ...i, quantity: i.quantity + 1 } : i
-  );
-  await saveCart(updated);
-}
+  const cart = await db.cart.findFirst({ where: { userId } });
+  if (!cart) return;
 
-export async function decreaseQty(id: string) {
-  const cart = await getCart();
-
-  let updated: CartItem[];
-
-  const item = cart.find((i) => i.id === id);
-  if (!item) return;
-
-  if (item.quantity <= 1) {
-    updated = cart.filter((i) => i.id !== id);
-  } else {
-    updated = cart.map((i) =>
-      i.id === id ? { ...i, quantity: i.quantity - 1 } : i
-    );
-  }
-
-  await saveCart(updated);
+  await db.cartItem.deleteMany({ where: { cartId: cart.id } });
 }

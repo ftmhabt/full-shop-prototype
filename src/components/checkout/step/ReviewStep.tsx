@@ -3,8 +3,9 @@
 import { createOrderAndStartPayment } from "@/app/actions/payment";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useCartServer } from "@/hooks/useCartServer";
 import { formatPrice } from "@/lib/format";
+import { clear } from "@/store/cartSlice";
+import { selectCartItems } from "@/store/selectors";
 import { Address } from "@/types";
 import { ShippingMethod } from "@prisma/client";
 import {
@@ -18,6 +19,7 @@ import {
   User,
 } from "lucide-react";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function ReviewStep({
   selectedAddress,
@@ -30,7 +32,8 @@ export default function ReviewStep({
   discount: number;
   onBack: () => void;
 }) {
-  const { items } = useCartServer();
+  const dispatch = useDispatch();
+  const items = useSelector(selectCartItems);
   const [loading, setLoading] = useState(false);
   // ✅ Calculate totals
   const itemsTotal = items.reduce(
@@ -59,6 +62,7 @@ export default function ReviewStep({
       );
 
       window.location.href = url;
+      dispatch(clear());
     } finally {
       setLoading(false);
     }

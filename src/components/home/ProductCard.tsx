@@ -1,17 +1,18 @@
 "use client";
 import { FallbackImage } from "@/componets/FallbackImage";
 import QuantitySelector from "@/componets/product details/QuantitySelector";
-import { useCartServer } from "@/hooks/useCartServer";
 import { cn } from "@/lib/utils";
+import { selectCartItems } from "@/store/selectors";
 import { ProductWithAttributes } from "@/types";
 import { Percent, Star } from "lucide-react";
 import Link from "next/link";
+import { useSelector } from "react-redux";
 import { Badge } from "../ui/badge";
 import { Card, CardContent } from "../ui/card";
 import Price from "./Price";
 
 function ProductCard({ p }: { p: ProductWithAttributes }) {
-  const { items } = useCartServer();
+  const items = useSelector(selectCartItems);
 
   const cartItem = items.find((i) => i.id === p.id);
   const quantity = cartItem?.quantity || 0;

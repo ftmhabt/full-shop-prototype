@@ -1,13 +1,12 @@
 "use client";
 
-import { CartItem } from "@/app/actions/cart";
 import { ProductWithAttribute } from "@/app/actions/products";
 import { Button } from "@/components/ui/button";
-import { useCartServer } from "@/hooks/useCartServer";
-import { ProductWithAttributes } from "@/types";
+import { add, decrease, increase } from "@/store/cartSlice";
+import { selectCartItems } from "@/store/selectors";
+import { CartItem, ProductWithAttributes } from "@/types";
 import { ShoppingCart } from "lucide-react";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function QuantitySelector({
   quantity,
@@ -18,70 +17,42 @@ export default function QuantitySelector({
   product: ProductWithAttribute | CartItem | ProductWithAttributes;
   size?: "lg" | "sm";
 }) {
-  const { add, increase, decrease } = useCartServer();
-
-  // Local optimistic quantity state
-  const [optimisticQuantity, setOptimisticQuantity] = useState(quantity);
-
-  // keep it in sync if parent changes
-  useEffect(() => {
-    setOptimisticQuantity(quantity);
-  }, [quantity]);
-
-  const handleAddToCart = async () => {
-    // Optimistically update
-    setOptimisticQuantity(1);
-
-    try {
-      await add({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: 1,
-      });
-      toast.success(`${product.name} به سبد اضافه شد`);
-    } catch (error) {
-      // rollback on failure
-      setOptimisticQuantity(0);
-      toast.error("مشکلی پیش آمد، دوباره تلاش کنید");
-    }
-  };
-
-  const handleIncrease = async () => {
-    setOptimisticQuantity((q) => q + 1);
-
-    try {
-      await increase(product.id);
-    } catch (error) {
-      setOptimisticQuantity((q) => q - 1); // rollback
-      toast.error("افزایش تعداد انجام نشد");
-    }
-  };
-
-  const handleDecrease = async () => {
-    setOptimisticQuantity((q) => Math.max(q - 1, 0));
-
-    try {
-      await decrease(product.id);
-    } catch (error) {
-      setOptimisticQuantity((q) => q + 1); // rollback
-      toast.error("کاهش تعداد انجام نشد");
-    }
-  };
-
+  const dispatch = useDispatch();
+  const items = useSelector(selectCartItems);
+  const number = items.find((i) => i.id === product.id)?.quantity ?? 0;
   return (
     <>
-      {optimisticQuantity === 0 ? (
+      {number === 0 ? (
         size === "lg" ? (
           <Button
-            onClick={handleAddToCart}
+            onClick={() =>
+              dispatch(
+                add({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  quantity: 1,
+                  image: product.image?.[0] ?? "",
+                })
+              )
+            }
             className="w-60 bg-primary text-white text-lg py-1 rounded-lg"
           >
             افزودن به سبد خرید
           </Button>
         ) : (
           <Button
-            onClick={handleAddToCart}
+            onClick={() =>
+              dispatch(
+                add({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  quantity: 1,
+                  image: product.image?.[0] ?? "",
+                })
+              )
+            }
             size="sm"
             className="absolute bottom-2 left-2 rounded-full"
             variant="secondary"
@@ -95,18 +66,16 @@ export default function QuantitySelector({
             size="icon"
             variant="ghost"
             className="text-primary hover:bg-gray-100 w-8 h-8 rounded-full"
-            onClick={handleDecrease}
+            onClick={() => dispatch(decrease(product.id))}
           >
             –
           </Button>
-          <span className="text-lg font-bold text-primary">
-            {optimisticQuantity}
-          </span>
+          <span className="text-lg font-bold text-primary">{number}</span>
           <Button
             size="icon"
             variant="ghost"
             className="text-primary hover:bg-gray-100 w-8 h-8 rounded-full"
-            onClick={handleIncrease}
+            onClick={() => dispatch(increase(product.id))}
           >
             +
           </Button>
@@ -117,18 +86,16 @@ export default function QuantitySelector({
             size="icon"
             variant="ghost"
             className="text-primary hover:bg-gray-100 w-6 h-6 rounded-full"
-            onClick={handleDecrease}
+            onClick={() => dispatch(decrease(product.id))}
           >
             –
           </Button>
-          <span className="text-sm font-bold text-primary">
-            {optimisticQuantity}
-          </span>
+          <span className="text-sm font-bold text-primary">{number}</span>
           <Button
             size="icon"
             variant="ghost"
             className="text-primary hover:bg-gray-100 w-6 h-6 rounded-full"
-            onClick={handleIncrease}
+            onClick={() => dispatch(increase(product.id))}
           >
             +
           </Button>

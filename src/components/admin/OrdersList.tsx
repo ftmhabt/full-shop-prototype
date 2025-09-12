@@ -19,11 +19,22 @@ import {
 } from "@/components/ui/table";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import OrderStatusDialog from "./OrderStatusDropdown";
 
-// --- نوع سفارش با اطلاعات کاربر و روش ارسال ---
-type OrderWithUserAndShipping = Prisma.OrderGetPayload<{
+// --- Utility: ensure all Prisma dates are serialized as ISO strings ---
+function serializeOrder<T extends { createdAt: Date; updatedAt?: Date }>(
+  order: T
+) {
+  return {
+    ...order,
+    createdAt: order.createdAt.toISOString(),
+    updatedAt: order.updatedAt ? order.updatedAt.toISOString() : undefined,
+  };
+}
+
+// --- Type including relations ---
+export type OrderWithUserAndShipping = Prisma.OrderGetPayload<{
   include: {
     user: { select: { firstName: true; lastName: true; phone: true } };
     ShippingMethod: { select: { id: true; name: true; cost: true } };
@@ -35,60 +46,56 @@ export default function OrdersList({
 }: {
   orders: OrderWithUserAndShipping[];
 }) {
+  // ✅ Serialize once to ensure safe Redux/React state usage
+  const safeOrders = useMemo(() => orders.map(serializeOrder), [orders]);
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("");
-  const [timeFilter, setTimeFilter] = useState("ALL"); // روزانه / هفتگی / ماهانه / همه
+  const [timeFilter, setTimeFilter] = useState<
+    "ALL" | "DAILY" | "WEEKLY" | "MONTHLY"
+  >("ALL");
 
-  // --- فیلترها ---
-  const filteredOrders = orders.filter((order) => {
-    const fullName = `${order.user.firstName ?? ""} ${
-      order.user.lastName ?? ""
-    }`.trim();
-    const matchesSearch =
-      order.id.includes(search) ||
-      order.trackingCode?.includes(search) ||
-      fullName.includes(search) ||
-      order.user.phone.includes(search);
-
-    const matchesStatus = statusFilter ? order.status === statusFilter : true;
-    const matchesPayment = paymentFilter
-      ? order.paymentStatus === paymentFilter
-      : true;
-
-    // فیلتر بازه زمانی
-    let matchesTime = true;
+  const filteredOrders = useMemo(() => {
     const now = new Date();
-    const created = new Date(order.createdAt);
-    if (timeFilter === "DAILY")
-      matchesTime = created.toDateString() === now.toDateString();
-    if (timeFilter === "WEEKLY") {
-      const weekAgo = new Date();
-      weekAgo.setDate(now.getDate() - 7);
-      matchesTime = created >= weekAgo;
-    }
-    if (timeFilter === "MONTHLY") {
-      const monthAgo = new Date();
-      monthAgo.setMonth(now.getMonth() - 1);
-      matchesTime = created >= monthAgo;
-    }
 
-    return matchesSearch && matchesStatus && matchesPayment && matchesTime;
-  });
+    return safeOrders.filter((order) => {
+      const fullName = `${order.user.firstName ?? ""} ${
+        order.user.lastName ?? ""
+      }`.trim();
+      const created = new Date(order.createdAt);
 
-  // --- پرفروش‌ترین محصولات ---
-  const productCountMap: Record<string, number> = {};
-  filteredOrders.forEach((o) => {
-    // فرض می‌کنیم هر order شامل items با productId و quantity است
-    (o as any).items?.forEach((item: any) => {
-      productCountMap[item.productId] =
-        (productCountMap[item.productId] || 0) + item.quantity;
+      const matchesSearch =
+        order.id.includes(search) ||
+        order.trackingCode?.includes(search) ||
+        fullName.includes(search) ||
+        order.user.phone.includes(search);
+
+      const matchesStatus = statusFilter ? order.status === statusFilter : true;
+      const matchesPayment = paymentFilter
+        ? order.paymentStatus === paymentFilter
+        : true;
+
+      let matchesTime = true;
+      if (timeFilter === "DAILY") {
+        matchesTime = created.toDateString() === now.toDateString();
+      } else if (timeFilter === "WEEKLY") {
+        const weekAgo = new Date();
+        weekAgo.setDate(now.getDate() - 7);
+        matchesTime = created >= weekAgo;
+      } else if (timeFilter === "MONTHLY") {
+        const monthAgo = new Date();
+        monthAgo.setMonth(now.getMonth() - 1);
+        matchesTime = created >= monthAgo;
+      }
+
+      return matchesSearch && matchesStatus && matchesPayment && matchesTime;
     });
-  });
+  }, [safeOrders, search, statusFilter, paymentFilter, timeFilter]);
 
   return (
     <div className="space-y-6">
-      {/* فیلترها و جستجو */}
+      {/* --- Filters --- */}
       <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 items-stretch sm:items-center">
         <Input
           placeholder="جستجو بر اساس شماره سفارش، نام یا شماره تماس..."
@@ -96,6 +103,7 @@ export default function OrdersList({
           onChange={(e) => setSearch(e.target.value)}
           className="w-full sm:max-w-sm"
         />
+
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="وضعیت سفارش" />
@@ -108,6 +116,7 @@ export default function OrdersList({
             <SelectItem value="CANCELED">لغو شده</SelectItem>
           </SelectContent>
         </Select>
+
         <Select value={paymentFilter} onValueChange={setPaymentFilter}>
           <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="وضعیت پرداخت" />
@@ -118,7 +127,11 @@ export default function OrdersList({
             <SelectItem value="FAILED">پرداخت ناموفق</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={timeFilter} onValueChange={setTimeFilter}>
+
+        <Select
+          value={timeFilter}
+          onValueChange={(val) => setTimeFilter(val as typeof timeFilter)}
+        >
           <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="بازه زمانی" />
           </SelectTrigger>
@@ -129,6 +142,7 @@ export default function OrdersList({
             <SelectItem value="MONTHLY">ماهانه</SelectItem>
           </SelectContent>
         </Select>
+
         <Button
           variant="outline"
           onClick={() => {
@@ -143,7 +157,7 @@ export default function OrdersList({
         </Button>
       </div>
 
-      {/* جدول دسکتاپ با scroll افقی */}
+      {/* --- Table View (Desktop) --- */}
       <div className="overflow-x-auto w-full border rounded-md hidden md:block">
         <Table>
           <TableHeader>
@@ -162,11 +176,13 @@ export default function OrdersList({
               <TableHead className="text-right">اکشن‌ها</TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
             {filteredOrders.map((order) => {
               const fullName = `${order.user.firstName ?? ""} ${
                 order.user.lastName ?? ""
               }`.trim();
+
               return (
                 <TableRow key={order.id}>
                   <TableCell>{order.id}</TableCell>
@@ -213,12 +229,13 @@ export default function OrdersList({
         </Table>
       </div>
 
-      {/* کارت موبایل */}
+      {/* --- Mobile Cards --- */}
       <div className="grid gap-4 md:hidden">
         {filteredOrders.map((order) => {
           const fullName = `${order.user.firstName ?? ""} ${
             order.user.lastName ?? ""
           }`.trim();
+
           return (
             <div
               key={order.id}
@@ -230,12 +247,14 @@ export default function OrdersList({
                   {new Date(order.createdAt).toLocaleDateString("fa-IR")}
                 </span>
               </div>
+
               <p>👤 {fullName || "بدون نام"}</p>
               <p>📞 {order.user.phone}</p>
               <p>📦 وضعیت: {order.status}</p>
               <p>💳 پرداخت: {order.paymentStatus}</p>
               <p>💰 مبلغ نهایی: {order.finalPrice.toLocaleString()} تومان</p>
               <p>🚚 ارسال: {order.ShippingMethod?.name ?? "-"}</p>
+
               <div className="flex gap-2">
                 <OrderStatusDialog order={order} />
                 <Link href={`/admin/orders/${order.id}`}>

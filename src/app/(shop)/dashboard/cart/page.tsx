@@ -1,13 +1,15 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useCartServer } from "@/hooks/useCartServer";
+import { decrease, increase, remove } from "@/store/cartSlice";
+import { selectCartItems, selectCartTotalPrice } from "@/store/selectors";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 
 export default function CartPage() {
-  const { items, remove, totalPrice, decrease, increase, isPending } =
-    useCartServer();
+  const items = useSelector(selectCartItems);
+  const totalPrice = useSelector(selectCartTotalPrice);
   const router = useRouter();
   if (items.length === 0) return <p>سبد خرید خالی است</p>;
 
@@ -40,7 +42,6 @@ export default function CartPage() {
                 size="icon"
                 variant="outline"
                 onClick={() => decrease(item.id)}
-                disabled={isPending}
               >
                 -
               </Button>
@@ -49,7 +50,6 @@ export default function CartPage() {
                 size="icon"
                 variant="outline"
                 onClick={() => increase(item.id)}
-                disabled={isPending}
               >
                 +
               </Button>
@@ -57,7 +57,6 @@ export default function CartPage() {
                 size="sm"
                 variant="destructive"
                 onClick={() => remove(item.id)}
-                disabled={isPending}
               >
                 حذف
               </Button>
@@ -69,10 +68,7 @@ export default function CartPage() {
         <p className="text-lg font-bold">
           مجموع: {new Intl.NumberFormat("fa-IR").format(totalPrice)} تومان
         </p>
-        <Button
-          onClick={() => router.push("/dashboard/cart/checkout")}
-          disabled={isPending}
-        >
+        <Button onClick={() => router.push("/dashboard/cart/checkout")}>
           تسویه حساب
         </Button>
       </div>

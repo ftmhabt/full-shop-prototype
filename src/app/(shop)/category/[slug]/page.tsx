@@ -1,5 +1,5 @@
 import { getAttributesByCategorySlug } from "@/app/actions/products";
-import FiltersForm from "@/components/FiltersForm";
+import FiltersFormWrapper from "@/components/FiltersFormWrapper";
 import ProductsSkeleton from "@/components/loading/ProductSkeleton";
 import ProductsWrapper from "@/components/server/ProductsWrapper";
 import SortBar from "@/components/SortBar";
@@ -23,7 +23,7 @@ export default async function CategoryPage({ params, searchParams }: any) {
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 p-4 lg:p-6 w-full">
       {/* Sidebar */}
       <aside className="lg:col-span-1 space-y-4">
-        <FiltersForm
+        <FiltersFormWrapper
           slug={slug}
           filters={filters}
           attributes={attributes}

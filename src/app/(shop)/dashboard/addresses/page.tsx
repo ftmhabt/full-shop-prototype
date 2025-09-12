@@ -1,4 +1,4 @@
-import AddressList from "@/componets/address/AddressList";
+import AddressList from "@/components/address/AddressList";
 import { getCurrentUserId } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Address } from "@/types";

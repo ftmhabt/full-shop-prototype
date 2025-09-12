@@ -1,12 +1,12 @@
 "use client";
-import { FallbackImage } from "@/componets/FallbackImage";
-import QuantitySelector from "@/componets/product details/QuantitySelector";
+import QuantitySelector from "@/components/product details/QuantitySelector";
 import { cn } from "@/lib/utils";
 import { selectCartItems } from "@/store/selectors";
 import { ProductWithAttributes } from "@/types";
 import { Percent, Star } from "lucide-react";
 import Link from "next/link";
 import { useSelector } from "react-redux";
+import { FallbackImage } from "../FallbackImage";
 import { Badge } from "../ui/badge";
 import { Card, CardContent } from "../ui/card";
 import Price from "./Price";

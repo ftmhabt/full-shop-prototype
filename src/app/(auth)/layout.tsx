@@ -1,8 +1,8 @@
 import "@/app/globals.css";
+import { FallbackImage } from "@/components/FallbackImage";
 import SearchBar from "@/components/home/SearchBar";
+import ResponsiveCart from "@/components/ResponsiveCart";
 import { Separator } from "@/components/ui/separator";
-import { FallbackImage } from "@/componets/FallbackImage";
-import ResponsiveCart from "@/componets/ResponsiveCart";
 import { Phone, User } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";

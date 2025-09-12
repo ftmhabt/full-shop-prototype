@@ -1,9 +1,8 @@
 import { getAttributesByCategorySlug } from "@/app/actions/products";
+import FiltersForm from "@/components/FiltersForm";
 import ProductsSkeleton from "@/components/loading/ProductSkeleton";
-import { Spinner } from "@/components/loading/Spinner";
 import ProductsWrapper from "@/components/server/ProductsWrapper";
-import FiltersForm from "@/componets/FiltersForm";
-import SortBar from "@/componets/SortBar";
+import SortBar from "@/components/SortBar";
 import { Suspense } from "react";
 
 export default async function CategoryPage({ params, searchParams }: any) {
@@ -24,14 +23,12 @@ export default async function CategoryPage({ params, searchParams }: any) {
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 p-4 lg:p-6 w-full">
       {/* Sidebar */}
       <aside className="lg:col-span-1 space-y-4">
-        <Suspense fallback={<Spinner />}>
-          <FiltersForm
-            slug={slug}
-            filters={filters}
-            attributes={attributes}
-            query={query}
-          />
-        </Suspense>
+        <FiltersForm
+          slug={slug}
+          filters={filters}
+          attributes={attributes}
+          query={query}
+        />
       </aside>
 
       {/* Main */}

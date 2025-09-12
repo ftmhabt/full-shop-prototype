@@ -2,8 +2,6 @@
 import "@/app/globals.css";
 import SearchBar from "@/components/home/SearchBar";
 import { Separator } from "@/components/ui/separator";
-import { FallbackImage } from "@/componets/FallbackImage";
-import ResponsiveCart from "@/componets/ResponsiveCart";
 import { store } from "@/store";
 import { hydrate } from "@/store/cartSlice";
 import { Phone, User } from "lucide-react";
@@ -11,6 +9,8 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { Provider, useDispatch } from "react-redux";
+import { FallbackImage } from "./FallbackImage";
+import ResponsiveCart from "./ResponsiveCart";
 
 export default function ClientWrapper({
   children,

@@ -1,5 +1,5 @@
 import { getProductBySlug } from "@/app/actions/products";
-import ProductDetails from "@/componets/product details/ProductDetails";
+import ProductDetails from "@/components/product details/ProductDetails";
 import { Metadata } from "next";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {

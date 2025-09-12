@@ -11,8 +11,8 @@ import { selectCartItems } from "@/store/selectors";
 import { ProductWithAttributes } from "@/types";
 import Link from "next/link";
 import { useSelector } from "react-redux";
+import QuantitySelector from "../components/product details/QuantitySelector";
 import { FallbackImage } from "./FallbackImage";
-import QuantitySelector from "./product details/QuantitySelector";
 
 export default function ProductCard({
   product,

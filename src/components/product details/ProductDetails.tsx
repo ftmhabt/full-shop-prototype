@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { selectCartItems } from "@/store/selectors";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { FallbackImage } from "../FallbackImage";
+import { FallbackImage } from "../../componets/FallbackImage";
 import QuantitySelector from "./QuantitySelector";
 import RelatedProducts from "./RelatedProducts";
 import TabsSection from "./TabsSection";

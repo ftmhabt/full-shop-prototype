@@ -27,13 +27,12 @@ export default function SortableRow({ slide, onToggle, onDelete, onEdit }) {
         <Image
           src={slide.image}
           alt={slide.title}
-          width={64}
+          width={100}
           height={40}
           className="rounded-md object-cover"
         />
       </td>
-      <td className="p-2">{slide.title}</td>
-      <td className="p-2">{slide.order}</td>
+      {/* <td className="p-2">{slide.order}</td> */}
       <td className="p-2">
         <Switch
           checked={slide.isActive}

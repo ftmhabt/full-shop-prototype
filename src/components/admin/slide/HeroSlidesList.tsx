@@ -81,8 +81,7 @@ export default function HeroSlidesList({
               <TableRow>
                 <TableHead className="w-10"></TableHead>
                 <TableHead>Image</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Order</TableHead>
+                {/* <TableHead>Order</TableHead> */}
                 <TableHead>Active</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -105,6 +104,8 @@ export default function HeroSlidesList({
         <EditHeroSlideForm
           slide={{
             ...selected,
+            title: selected.title ?? undefined,
+            url: selected.url ?? undefined,
             subtitle: selected.subtitle ?? undefined,
             primaryButtonLabel: selected.primaryButtonLabel ?? undefined,
             primaryButtonUrl: selected.primaryButtonUrl ?? undefined,
@@ -126,6 +127,7 @@ export default function HeroSlidesList({
           slide={{
             title: "",
             subtitle: "",
+            url: "",
             image: "",
             order: slides.length,
             isActive: true,

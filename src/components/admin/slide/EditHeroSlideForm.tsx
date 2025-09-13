@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { HeroSlideFormValues, heroSlideSchema } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
@@ -77,16 +76,16 @@ export default function EditHeroSlideForm({
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           {/* Title */}
-          <div>
+          {/* <div>
             <Label htmlFor="title">Title</Label>
             <Input id="title" {...form.register("title")} />
-          </div>
+          </div> */}
 
           {/* Subtitle */}
-          <div>
+          {/* <div>
             <Label htmlFor="subtitle">Subtitle</Label>
             <Input id="subtitle" {...form.register("subtitle")} />
-          </div>
+          </div> */}
 
           {/* Image */}
           <div>
@@ -120,27 +119,33 @@ export default function EditHeroSlideForm({
             </div>
           </div>
 
-          {/* Order */}
+          {/* Url */}
           <div>
+            <Label htmlFor="url">URL</Label>
+            <Input id="url" {...form.register("url")} />
+          </div>
+
+          {/* Order */}
+          {/* <div>
             <Label htmlFor="order">Order</Label>
             <Input
               id="order"
               type="number"
               {...form.register("order", { valueAsNumber: true })}
             />
-          </div>
+          </div> */}
 
           {/* Active Toggle */}
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <Switch
               checked={form.watch("isActive")}
               onCheckedChange={(checked) => form.setValue("isActive", checked)}
             />
             <Label>Active</Label>
-          </div>
+          </div> */}
 
           {/* Buttons */}
-          <div className="space-y-1">
+          {/* <div className="space-y-1">
             <Label>Primary Button Label</Label>
             <Input {...form.register("primaryButtonLabel")} />
             <Label>Primary Button URL</Label>
@@ -152,7 +157,7 @@ export default function EditHeroSlideForm({
             <Input {...form.register("secondaryButtonLabel")} />
             <Label>Secondary Button URL</Label>
             <Input {...form.register("secondaryButtonUrl")} />
-          </div>
+          </div> */}
 
           <Button type="submit" disabled={isPending} className="w-full">
             {isPending ? "Saving..." : "Save"}

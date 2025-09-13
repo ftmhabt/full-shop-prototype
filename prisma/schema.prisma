@@ -248,9 +248,10 @@ model CartItem {
 
 model HeroSlide {
   id       String  @id @default(cuid())
-  title    String
+  title    String?
   subtitle String?
   image    String
+  url      String?
   order    Int     @default(0)
   isActive Boolean @default(true)
 

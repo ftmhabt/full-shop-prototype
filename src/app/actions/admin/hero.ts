@@ -42,6 +42,7 @@ export async function updateHeroSlide(
     secondaryButtonLabel?: string | null;
     secondaryButtonUrl?: string | null;
     image?: string;
+    url?: string | null;
   }>,
   imageFile?: File
 ) {
@@ -52,6 +53,7 @@ export async function updateHeroSlide(
     subtitle: data.subtitle,
     order: data.order,
     isActive: data.isActive,
+    url: data.url,
     primaryButtonLabel: data.primaryButtonLabel,
     primaryButtonUrl: data.primaryButtonUrl,
     secondaryButtonLabel: data.secondaryButtonLabel,
@@ -90,8 +92,9 @@ export async function createHeroSlide(
 
   const newSlide = await db.heroSlide.create({
     data: {
-      title: data.title!,
+      title: data.title ?? null,
       subtitle: data.subtitle ?? null,
+      url: data.url ?? null,
       order: data.order ?? 0,
       isActive: data.isActive ?? true,
       primaryButtonLabel: data.primaryButtonLabel ?? null,

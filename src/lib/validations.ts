@@ -34,8 +34,9 @@ export const addressSchema = z.object({
 export type AddressInput = z.infer<typeof addressSchema>;
 
 export const heroSlideSchema = z.object({
-  title: z.string().min(1),
+  title: z.string().optional(),
   subtitle: z.string().optional(),
+  url: z.string().url().optional().or(z.literal("")),
   order: z.coerce.number().min(0),
   isActive: z.boolean(),
   primaryButtonLabel: z.string().optional(),

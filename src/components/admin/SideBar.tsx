@@ -31,6 +31,11 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       href: "/admin/categories",
       icon: <Tags className="w-4 h-4" />,
     },
+    {
+      label: "اسلایدها",
+      href: "/admin/hero-slides",
+      icon: <Home className="w-4 h-4" />,
+    },
   ];
 
   return (

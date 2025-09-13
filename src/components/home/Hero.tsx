@@ -1,75 +1,66 @@
 "use client";
 
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { motion } from "framer-motion";
-import Link from "next/link";
+import { HeroSlide } from "@prisma/client";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { FallbackImage } from "../FallbackImage";
 import { Button } from "../ui/button";
-import { Card } from "../ui/card";
 
-type HeroSlides = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  order: number;
-  title: string;
-  image: string;
-  isActive: boolean;
-  subtitle: string | null;
-}[];
-function Hero({ heroSlides }: { heroSlides: HeroSlides }) {
+import { Autoplay, Pagination } from "swiper/modules";
+
+function Hero({ heroSlides }: { heroSlides: HeroSlide[] }) {
   return (
     <section className="relative w-full">
-      <Carousel opts={{ align: "start" }}>
-        <CarouselContent>
-          {heroSlides.map((s) => (
-            <CarouselItem key={s.id}>
-              <Card className="overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-violet-600/10 to-indigo-600/10 p-0">
-                <div className="relative h-[260px] w-full sm:h-[360px] md:h-[420px]">
-                  <FallbackImage
-                    src={s.image}
-                    alt={s.title}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <div className="absolute right-6 top-6 max-w-xl text-right text-white drop-shadow">
-                    <motion.h1
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-2xl font-extrabold sm:text-3xl md:text-4xl"
+      <Swiper
+        modules={[Pagination, Autoplay]}
+        spaceBetween={20}
+        slidesPerView={1}
+        pagination={{ clickable: true }}
+        loop
+        autoplay={{ delay: 5000 }}
+        className="rounded-xl"
+      >
+        {heroSlides.map((s) => (
+          <SwiperSlide key={s.id}>
+            <div className="relative h-[260px] sm:h-[360px] md:h-[420px] w-full">
+              <FallbackImage
+                src={s.image}
+                alt={s.title}
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              <div className="absolute right-6 top-6 max-w-xl text-right text-white drop-shadow">
+                <h2 className="text-2xl font-extrabold sm:text-3xl md:text-4xl">
+                  {s.title}
+                </h2>
+                <p className="mt-2 text-sm opacity-90">{s.subtitle}</p>
+                <div className="mt-4 flex items-center gap-3">
+                  {s.primaryButtonLabel && s.primaryButtonUrl && (
+                    <Button
+                      asChild
+                      size="sm"
+                      variant="secondary"
+                      className="rounded-full"
                     >
-                      {s.title}
-                    </motion.h1>
-                    <p className="mt-2 text-sm opacity-90">{s.subtitle}</p>
-                    <div className="mt-4 flex items-center gap-3">
-                      <Button
-                        asChild
-                        size="sm"
-                        variant="secondary"
-                        className="rounded-full"
-                      >
-                        <Link href="#">مشاهده پیشنهادها</Link>
-                      </Button>
-                      <Button asChild size="sm" className="rounded-full">
-                        <Link href="#">خرید کنید</Link>
-                      </Button>
-                    </div>
-                  </div>
+                      <a href={s.primaryButtonUrl}>{s.primaryButtonLabel}</a>
+                    </Button>
+                  )}
+                  {s.secondaryButtonLabel && s.secondaryButtonUrl && (
+                    <Button asChild size="sm" className="rounded-full">
+                      <a href={s.secondaryButtonUrl}>
+                        {s.secondaryButtonLabel}
+                      </a>
+                    </Button>
+                  )}
                 </div>
-              </Card>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
+              </div>
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </section>
   );
 }

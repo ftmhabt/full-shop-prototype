@@ -1,0 +1,53 @@
+"use client";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { useSortable } from "@dnd-kit/sortable";
+import { GripVertical, Pencil, Trash2 } from "lucide-react";
+import Image from "next/image";
+
+export default function SortableRow({ slide, onToggle, onDelete, onEdit }) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: slide.id });
+
+  return (
+    <tr
+      ref={setNodeRef}
+      style={{
+        transform: transform
+          ? `translate(${transform.x}px, ${transform.y}px)`
+          : undefined,
+        transition,
+      }}
+      className="border-b hover:bg-muted/50"
+    >
+      <td className="p-2 cursor-grab" {...attributes} {...listeners}>
+        <GripVertical className="h-4 w-4 text-muted-foreground" />
+      </td>
+      <td className="p-2">
+        <Image
+          src={slide.image}
+          alt={slide.title}
+          width={64}
+          height={40}
+          className="rounded-md object-cover"
+        />
+      </td>
+      <td className="p-2">{slide.title}</td>
+      <td className="p-2">{slide.order}</td>
+      <td className="p-2">
+        <Switch
+          checked={slide.isActive}
+          onCheckedChange={(val) => onToggle(slide.id, val)}
+        />
+      </td>
+      <td className="p-2 text-right">
+        <Button variant="ghost" size="icon" onClick={onEdit}>
+          <Pencil className="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={() => onDelete(slide.id)}>
+          <Trash2 className="h-4 w-4 text-red-500" />
+        </Button>
+      </td>
+    </tr>
+  );
+}

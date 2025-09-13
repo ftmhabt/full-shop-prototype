@@ -32,3 +32,20 @@ export const addressSchema = z.object({
 });
 
 export type AddressInput = z.infer<typeof addressSchema>;
+
+export const heroSlideSchema = z.object({
+  title: z.string().min(1),
+  subtitle: z.string().optional(),
+  order: z.coerce.number().min(0),
+  isActive: z.boolean(),
+  primaryButtonLabel: z.string().optional(),
+  primaryButtonUrl: z.string().url().optional().or(z.literal("")),
+  secondaryButtonLabel: z.string().optional(),
+  secondaryButtonUrl: z.string().url().optional().or(z.literal("")),
+  imageFile: z
+    .any()
+    .refine((files) => !files || files.length <= 1, "Only one file allowed")
+    .optional(),
+});
+
+export type HeroSlideFormValues = z.infer<typeof heroSlideSchema>;

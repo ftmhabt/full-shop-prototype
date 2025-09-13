@@ -354,11 +354,9 @@ export default async function HomePage() {
       id: c.id,
       label: c.name,
       slug: c.slug,
-      icon: iconKey, // Type is now "User" | "Siren" | ... | undefined
+      icon: iconKey,
     };
   });
-  console.log("categories", categories);
-  console.log("standardizedCategories", standardizedCategories);
 
   return (
     <main dir="rtl" className="container mx-auto max-w-7xl px-3 py-6">

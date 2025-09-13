@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { FallbackImage } from "@/componets/FallbackImage";
 import { Trash } from "lucide-react";
 import { ConfirmDialogButton } from "../common/ConfirmDialogButton";
+import { FallbackImage } from "../FallbackImage";
 
 type ProductCardProps = {
   product: {

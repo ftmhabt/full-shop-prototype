@@ -247,12 +247,18 @@ model CartItem {
 }
 
 model HeroSlide {
-  id        String   @id @default(cuid())
-  title     String
-  subtitle  String?
-  image     String
-  order     Int      @default(0) // determines the display order
-  isActive  Boolean  @default(true)
+  id       String  @id @default(cuid())
+  title    String
+  subtitle String?
+  image    String
+  order    Int     @default(0)
+  isActive Boolean @default(true)
+
+  primaryButtonLabel   String?
+  primaryButtonUrl     String?
+  secondaryButtonLabel String?
+  secondaryButtonUrl   String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

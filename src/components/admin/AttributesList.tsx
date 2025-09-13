@@ -11,18 +11,35 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { ConfirmDialogButton } from "../common/ConfirmDialogButton";
 
+// ----- Types -----
+export interface AttributeValue {
+  id?: string;
+  value: string;
+  slug: string;
+}
+
+export interface Attribute {
+  id: string;
+  name: string;
+  slug: string;
+  values: AttributeValue[];
+}
+
+interface AttributesListProps {
+  attributes: Attribute[];
+  categoryId: string;
+}
+
+// ----- Component -----
 export function AttributesList({
   attributes,
   categoryId,
-}: {
-  attributes: any[];
-  categoryId: string;
-}) {
-  const [rows, setRows] = useState(attributes);
+}: AttributesListProps) {
+  const [rows, setRows] = useState<Attribute[]>(attributes);
   const [savingAll, setSavingAll] = useState(false);
 
   // تغییر Name / Slug
-  const handleChange = (id: string, field: string, value: string) => {
+  const handleChange = (id: string, field: keyof Attribute, value: string) => {
     setRows((prev) =>
       prev.map((row) => (row.id === id ? { ...row, [field]: value } : row))
     );
@@ -35,7 +52,7 @@ export function AttributesList({
         row.id === attrId
           ? {
               ...row,
-              values: row.values.map((v: any, i: number) =>
+              values: row.values.map((v, i) =>
                 i === index ? { ...v, value, slug: value } : v
               ),
             }
@@ -60,7 +77,7 @@ export function AttributesList({
 
   // ذخیره یک row (Autosave)
   const handleSave = async (
-    row: any,
+    row: Attribute,
     action: "save" | "deleteValue" = "save"
   ) => {
     try {
@@ -69,14 +86,13 @@ export function AttributesList({
         name: row.name,
         slug: row.slug,
         categoryId,
-        values: row.values.map((v: any) => ({
+        values: row.values.map((v) => ({
           id: v.id,
           value: v.value,
           slug: v.slug || v.value,
         })),
       });
 
-      // پیام مناسب بر اساس action
       if (action === "save") {
         toast.success(`ویژگی "${row.name}" ذخیره شد`);
       } else if (action === "deleteValue") {
@@ -113,6 +129,7 @@ export function AttributesList({
     }
   };
 
+  // حذف یک value
   const handleDeleteValue = (attrId: string, index: number) => {
     setRows((prev) =>
       prev.map((row) =>
@@ -125,10 +142,9 @@ export function AttributesList({
       )
     );
 
-    // Autosave بعد از حذف
     const row = rows.find((r) => r.id === attrId);
     if (row) {
-      const updatedRow = {
+      const updatedRow: Attribute = {
         ...row,
         values: row.values.filter((_, i) => i !== index),
       };
@@ -169,10 +185,10 @@ export function AttributesList({
                 className="flex-1"
               />
             </div>
-            <div className="block md:hidden border-b  border-b-primary/40" />
+            <div className="block md:hidden border-b border-b-primary/40" />
             {/* مقادیر */}
             <div className="flex-1 space-y-2 mt-2 md:mt-0">
-              {row.values.map((v: any, i: number) => (
+              {row.values.map((v, i) => (
                 <div className="flex items-center gap-2" key={v.id || i}>
                   <Input
                     value={v.value}
@@ -208,7 +224,7 @@ export function AttributesList({
                 dialogTitle="حذف ویژگی"
                 dialogDescription="آیا از حذف این ویژگی مطمئنید؟"
                 onConfirm={() => handleDelete(row.id)}
-                className="min-h-[40px] sm:h-full"
+                // className="min-h-[40px] sm:h-full"
                 variant="destructive"
                 size="sm"
               />

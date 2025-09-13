@@ -37,7 +37,7 @@ export const heroSlideSchema = z.object({
   title: z.string().optional(),
   subtitle: z.string().optional(),
   url: z.string().url().optional().or(z.literal("")),
-  order: z.coerce.number().min(0),
+  order: z.number().int().nonnegative(),
   isActive: z.boolean(),
   primaryButtonLabel: z.string().optional(),
   primaryButtonUrl: z.string().url().optional().or(z.literal("")),

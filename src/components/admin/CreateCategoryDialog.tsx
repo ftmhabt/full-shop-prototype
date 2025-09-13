@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { IconName } from "../home/CategorySection";
 
 const IconPicker = dynamic(() => import("./IconPicker"), { ssr: false });
 
@@ -21,7 +22,8 @@ export function CreateCategoryDialog() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
-  const [icon, setIcon] = useState("Box");
+  // const [icon, setIcon] = useState("Box");
+  const [icon, setIcon] = useState<IconName>("Box");
 
   const handleCreate = async () => {
     if (!name || !slug) return toast.error("نام و slug الزامی است");

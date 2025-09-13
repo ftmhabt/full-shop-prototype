@@ -95,7 +95,7 @@ export async function changeOrderStatus(
   orderId: string,
   newStatus: "PAID" | "SHIPPED" | "COMPLETED" | "CANCELED",
   trackingCode?: string,
-  inDetails?: boolean = true
+  inDetails?: boolean
 ) {
   const now = new Date();
 

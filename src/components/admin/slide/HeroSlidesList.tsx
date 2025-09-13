@@ -41,15 +41,15 @@ export default function HeroSlidesList({
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    setSlides((prev) => {
-      const oldIndex = prev.findIndex((s) => s.id === active.id);
-      const newIndex = prev.findIndex((s) => s.id === over.id);
-      const reordered = arrayMove(prev, oldIndex, newIndex);
+    const oldIndex = slides.findIndex((s) => s.id === active.id);
+    const newIndex = slides.findIndex((s) => s.id === over.id);
+    const reordered = arrayMove(slides, oldIndex, newIndex);
+    const updated = reordered.map((s, idx) => ({ ...s, order: idx }));
 
-      const updated = reordered.map((s, idx) => ({ ...s, order: idx }));
-      startTransition(() => updateHeroSlidesOrder(updated));
+    setSlides(updated);
 
-      return updated;
+    startTransition(() => {
+      updateHeroSlidesOrder(updated);
     });
   };
 

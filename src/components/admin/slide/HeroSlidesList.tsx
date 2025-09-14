@@ -20,6 +20,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  type DragEndEvent,
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { HeroSlide } from "@prisma/client";
@@ -37,7 +38,7 @@ export default function HeroSlidesList({
   const [isAdding, setIsAdding] = useState(false);
   const sensors = useSensors(useSensor(PointerSensor));
 
-  const handleDragEnd = (event) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 

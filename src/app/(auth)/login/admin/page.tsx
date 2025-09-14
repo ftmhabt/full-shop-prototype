@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 
-import { adminLogin } from "@/app/actions/admin/user";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -42,7 +41,7 @@ export default function AdminLoginPage() {
   async function onSubmit(values: FormData) {
     setIsLoading(true);
     setError(null);
-
+    const { adminLogin } = await import("@/app/actions/admin/user");
     const res = await adminLogin(values.email, values.password);
     if (!res.success) {
       setError(res.message);

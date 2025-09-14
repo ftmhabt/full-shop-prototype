@@ -2,10 +2,21 @@
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useSortable } from "@dnd-kit/sortable";
+import { HeroSlide } from "@prisma/client";
 import { GripVertical, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 
-export default function SortableRow({ slide, onToggle, onDelete, onEdit }) {
+export default function SortableRow({
+  slide,
+  onToggle,
+  onDelete,
+  onEdit,
+}: {
+  slide: HeroSlide;
+  onToggle: (id: string, val: boolean) => void;
+  onDelete: (id: string) => void;
+  onEdit: () => void;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: slide.id });
 
@@ -26,7 +37,7 @@ export default function SortableRow({ slide, onToggle, onDelete, onEdit }) {
       <td className="p-2">
         <Image
           src={slide.image}
-          alt={slide.title}
+          alt={slide.title || ""}
           width={100}
           height={40}
           className="rounded-md object-cover"

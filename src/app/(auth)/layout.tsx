@@ -1,4 +1,5 @@
 import "@/app/globals.css";
+import ClientWrapper from "@/components/ClientWrapper";
 import { FallbackImage } from "@/components/FallbackImage";
 import SearchBar from "@/components/home/SearchBar";
 import ResponsiveCart from "@/components/ResponsiveCart";
@@ -49,7 +50,9 @@ export default function RootLayout({
               >
                 <User className="h-4 w-4" />
               </Link>
-              <ResponsiveCart />
+              <ClientWrapper>
+                <ResponsiveCart />
+              </ClientWrapper>
               <a
                 href="tel:09123456789"
                 className="flex items-center gap-1 text-sm text-primary"

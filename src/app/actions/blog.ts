@@ -3,6 +3,20 @@ import db from "@/lib/db";
 import { z } from "zod";
 import { getCurrentUser } from "./user";
 
+export async function getBlogPosts() {
+  return db.blogPost.findMany({
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      excerpt: true,
+      createdAt: true,
+      author: { select: { displayName: true } },
+    },
+  });
+}
+
 const BlogPostSchema = z.object({
   title: z.string().min(3),
   slug: z.string().min(3),

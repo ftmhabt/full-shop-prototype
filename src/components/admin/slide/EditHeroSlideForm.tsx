@@ -44,7 +44,15 @@ export default function EditHeroSlideForm({
     },
   });
 
+  const file = form.watch("imageFile")?.[0];
+  const fileTooLarge = file && file.size > 900 * 1024; // 900KB
+
   const onSubmit = (values: HeroSlideFormValues) => {
+    if (fileTooLarge) {
+      toast.error("حجم فایل بیشتر از ۱ مگابایت است");
+      return;
+    }
+
     startTransition(async () => {
       try {
         let updated;
@@ -69,9 +77,11 @@ export default function EditHeroSlideForm({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-sm sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Edit Hero Slide</DialogTitle>
+          <DialogTitle>
+            {slide?.id ? "ویرایش اسلاید" : "ایجاد اسلاید"}
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -89,7 +99,7 @@ export default function EditHeroSlideForm({
 
           {/* Image */}
           <div>
-            <Label>Image</Label>
+            <Label>تصویر</Label>
             <div className="flex gap-2">
               <Input
                 type="file"
@@ -97,17 +107,19 @@ export default function EditHeroSlideForm({
                 {...form.register("imageFile")}
               />
               {/* Show current uploaded image if no new file is selected */}
-              {!form.watch("imageFile")?.length && slide.image && (
-                <FallbackImage
-                  src={slide.image} // <-- use slide.image directly
-                  alt="Current slide image"
-                  className="mt-2 h-24 w-auto rounded-md object-cover"
-                  width="20"
-                  height="20"
-                />
-              )}
+              {!fileTooLarge &&
+                !form.watch("imageFile")?.length &&
+                slide.image && (
+                  <FallbackImage
+                    src={slide.image} // <-- use slide.image directly
+                    alt="Current slide image"
+                    className="mt-2 h-24 w-auto rounded-md object-cover"
+                    width="20"
+                    height="20"
+                  />
+                )}
               {/* Show preview if a new file is selected */}
-              {form.watch("imageFile")?.length > 0 && (
+              {!fileTooLarge && form.watch("imageFile")?.length > 0 && (
                 <FallbackImage
                   src={URL.createObjectURL(form.watch("imageFile")[0])}
                   alt="New image preview"
@@ -118,10 +130,12 @@ export default function EditHeroSlideForm({
               )}{" "}
             </div>
           </div>
-
+          <p className="text-red-500">
+            {fileTooLarge && "حجم تصویر نباید بزرگتر از 900 کیلوبایت باشد."}
+          </p>
           {/* Url */}
           <div>
-            <Label htmlFor="url">URL</Label>
+            <Label htmlFor="url">لینک</Label>
             <Input id="url" {...form.register("url")} />
           </div>
 
@@ -159,8 +173,12 @@ export default function EditHeroSlideForm({
             <Input {...form.register("secondaryButtonUrl")} />
           </div> */}
 
-          <Button type="submit" disabled={isPending} className="w-full">
-            {isPending ? "Saving..." : "Save"}
+          <Button
+            type="submit"
+            disabled={isPending || fileTooLarge}
+            className="w-full"
+          >
+            {isPending ? "در حال ذخیره..." : "ذخیره"}
           </Button>
         </form>
       </DialogContent>

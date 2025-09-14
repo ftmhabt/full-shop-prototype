@@ -69,8 +69,11 @@ export async function updateHeroSlide(
   return updated;
 }
 
-// helper function
 async function saveFile(file: File) {
+  if (file && file.size > 1 * 1024 * 1024) {
+    throw new Error("حجم تصویر زیاد است (تا یک مگابایت مجاز)");
+  }
+
   const uploadsDir = join(process.cwd(), "public", "uploads");
   if (!existsSync(uploadsDir)) mkdirSync(uploadsDir, { recursive: true });
 

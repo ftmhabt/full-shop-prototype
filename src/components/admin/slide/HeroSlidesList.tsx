@@ -67,85 +67,91 @@ export default function HeroSlidesList({
   };
   const [selected, setSelected] = useState<HeroSlide | null>(null);
   return (
-    <Card className="p-4">
-      <Button onClick={() => setIsAdding(true)} className="mb-4">
-        ➕ Add Slide
-      </Button>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext items={slides.map((s) => s.id)}>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-10"></TableHead>
-                <TableHead>Image</TableHead>
-                {/* <TableHead>Order</TableHead> */}
-                <TableHead>Active</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {slides.map((slide) => (
-                <SortableRow
-                  key={slide.id}
-                  slide={slide}
-                  onToggle={handleToggleActive}
-                  onDelete={handleDelete}
-                  onEdit={() => setSelected(slide)}
-                />
-              ))}
-            </TableBody>
-          </Table>
-        </SortableContext>
-      </DndContext>
-      {selected && (
-        <EditHeroSlideForm
-          slide={{
-            ...selected,
-            title: selected.title ?? undefined,
-            url: selected.url ?? undefined,
-            subtitle: selected.subtitle ?? undefined,
-            primaryButtonLabel: selected.primaryButtonLabel ?? undefined,
-            primaryButtonUrl: selected.primaryButtonUrl ?? undefined,
-            secondaryButtonLabel: selected.secondaryButtonLabel ?? undefined,
-            secondaryButtonUrl: selected.secondaryButtonUrl ?? undefined,
-          }}
-          open={!!selected}
-          onClose={() => setSelected(null)}
-          onUpdated={(updated) =>
-            setSlides((prev) =>
-              prev.map((s) => (s.id === updated.id ? updated : s))
-            )
-          }
-        />
-      )}
-      {/* Create New Slide Form */}
-      {isAdding && (
-        <EditHeroSlideForm
-          slide={{
-            title: "",
-            subtitle: "",
-            url: "",
-            image: "",
-            order: slides.length,
-            isActive: true,
-            primaryButtonLabel: "",
-            primaryButtonUrl: "",
-            secondaryButtonLabel: "",
-            secondaryButtonUrl: "",
-          }}
-          open={isAdding}
-          onClose={() => setIsAdding(false)}
-          onUpdated={(newSlide) => {
-            setSlides((prev) => [...prev, newSlide]);
-            setIsAdding(false);
-          }}
-          isNew
-        />
-      )}
-    </Card>
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">اسلایدها</h1>
+        <Button onClick={() => setIsAdding(true)} className="mb-4">
+          ایجاد اسلاید جدید
+        </Button>
+      </div>
+
+      <Card className="p-4">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={slides.map((s) => s.id)}>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-10"></TableHead>
+                  <TableHead className="text-right">تصویر</TableHead>
+                  {/* <TableHead>Order</TableHead> */}
+                  <TableHead className="text-right">فعال</TableHead>
+                  <TableHead className="w-10"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {slides.map((slide) => (
+                  <SortableRow
+                    key={slide.id}
+                    slide={slide}
+                    onToggle={handleToggleActive}
+                    onDelete={handleDelete}
+                    onEdit={() => setSelected(slide)}
+                  />
+                ))}
+              </TableBody>
+            </Table>
+          </SortableContext>
+        </DndContext>
+        {selected && (
+          <EditHeroSlideForm
+            slide={{
+              ...selected,
+              title: selected.title ?? undefined,
+              url: selected.url ?? undefined,
+              subtitle: selected.subtitle ?? undefined,
+              primaryButtonLabel: selected.primaryButtonLabel ?? undefined,
+              primaryButtonUrl: selected.primaryButtonUrl ?? undefined,
+              secondaryButtonLabel: selected.secondaryButtonLabel ?? undefined,
+              secondaryButtonUrl: selected.secondaryButtonUrl ?? undefined,
+            }}
+            open={!!selected}
+            onClose={() => setSelected(null)}
+            onUpdated={(updated) =>
+              setSlides((prev) =>
+                prev.map((s) => (s.id === updated.id ? updated : s))
+              )
+            }
+          />
+        )}
+        {/* Create New Slide Form */}
+        {isAdding && (
+          <EditHeroSlideForm
+            slide={{
+              title: "",
+              subtitle: "",
+              url: "",
+              image: "",
+              order: slides.length,
+              isActive: true,
+              primaryButtonLabel: "",
+              primaryButtonUrl: "",
+              secondaryButtonLabel: "",
+              secondaryButtonUrl: "",
+            }}
+            open={isAdding}
+            onClose={() => setIsAdding(false)}
+            onUpdated={(newSlide) => {
+              setSlides((prev) => [...prev, newSlide]);
+              setIsAdding(false);
+            }}
+            isNew
+          />
+        )}
+      </Card>
+    </div>
   );
 }

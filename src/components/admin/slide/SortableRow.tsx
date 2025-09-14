@@ -1,9 +1,10 @@
 "use client";
+import { ConfirmDialogButton } from "@/components/common/ConfirmDialogButton";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useSortable } from "@dnd-kit/sortable";
 import { HeroSlide } from "@prisma/client";
-import { GripVertical, Pencil, Trash2 } from "lucide-react";
+import { GripVertical, Pencil, Trash } from "lucide-react";
 import Image from "next/image";
 
 export default function SortableRow({
@@ -54,9 +55,15 @@ export default function SortableRow({
         <Button variant="ghost" size="icon" onClick={onEdit}>
           <Pencil className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={() => onDelete(slide.id)}>
-          <Trash2 className="h-4 w-4 text-red-500" />
-        </Button>
+
+        <ConfirmDialogButton
+          buttonText={<Trash className="h-4 w-4 text-red-500" />}
+          dialogTitle="حذف اسلاید"
+          dialogDescription="آیا از حذف این اسلاید مطمئنید؟"
+          onConfirm={() => onDelete(slide.id)}
+          variant="ghost"
+          size="icon"
+        />
       </td>
     </tr>
   );

@@ -25,7 +25,7 @@ export async function middleware(req: NextRequest) {
   // Protect admin
   if (pathname.startsWith("/admin")) {
     if (!token) {
-      return NextResponse.redirect(new URL("/admin/login", req.url));
+      return NextResponse.redirect(new URL("/login/admin", req.url));
     }
 
     try {
@@ -35,7 +35,7 @@ export async function middleware(req: NextRequest) {
       }
       return NextResponse.next();
     } catch {
-      return NextResponse.redirect(new URL("/admin/login", req.url));
+      return NextResponse.redirect(new URL("/login/admin", req.url));
     }
   }
 

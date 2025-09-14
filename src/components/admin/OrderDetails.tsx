@@ -56,7 +56,7 @@ export default function OrderDetails({ order }: { order: any }) {
               <span>مجموع:</span>
               <span>{totalPrice.toLocaleString()} تومان</span>
             </div>
-            <div className="flex justify-between text-red-500">
+            <div className="flex justify-between text-destructive">
               <span>تخفیف:</span>
               <span>-{order.discount.toLocaleString()} تومان</span>
             </div>

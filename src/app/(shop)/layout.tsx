@@ -1,6 +1,7 @@
 import "@/app/globals.css";
 import ClientWrapper from "@/components/ClientWrapper";
 import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   title: "فروشگاه سیستم‌های حفاظتی",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl">
       <body className="bg-background text-foreground">
-        <ClientWrapper>{children}</ClientWrapper>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ClientWrapper>{children}</ClientWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );

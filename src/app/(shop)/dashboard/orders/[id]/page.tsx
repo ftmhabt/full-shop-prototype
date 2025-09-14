@@ -20,7 +20,9 @@ export default async function OrderDetailsPage({ params }: any) {
   });
 
   if (!order) {
-    return <p className="text-center mt-10 text-red-500">سفارش یافت نشد.</p>;
+    return (
+      <p className="text-center mt-10 text-destructive">سفارش یافت نشد.</p>
+    );
   }
 
   return <OrderDetailsClient order={order} />;

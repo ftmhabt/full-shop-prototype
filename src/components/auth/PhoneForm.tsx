@@ -73,7 +73,7 @@ export const PhoneForm = ({
         disabled={isPending}
       />
       {touched && !isValid && (
-        <p className="text-red-500 text-sm">شماره موبایل معتبر نیست</p>
+        <p className="text-destructive text-sm">شماره موبایل معتبر نیست</p>
       )}
       <Button type="submit" disabled={isPending || !isValid} className="w-full">
         {isPending ? "در حال بررسی..." : "ادامه"}

@@ -164,7 +164,7 @@ export function AttributesList({
         {rows.map((row) => (
           <div
             key={row.id}
-            className="border rounded-lg p-4 shadow-sm space-y-3 md:space-y-0 md:flex md:items-stretch md:gap-4 bg-white"
+            className="border rounded-lg p-4 shadow-sm space-y-3 md:space-y-0 md:flex md:items-stretch md:gap-4 "
           >
             {/* Name / Slug */}
             <div className="flex flex-col md:flex-row gap-2 md:gap-4 flex-1">
@@ -233,7 +233,7 @@ export function AttributesList({
         ))}
       </div>
       {/* موبایل: دکمه فیکس پایین صفحه */}
-      <div className="fixed bottom-0 left-0 w-full p-4 bg-white border-t shadow md:hidden z-50">
+      <div className="fixed bottom-0 left-0 w-full p-4  border-t shadow md:hidden z-50">
         <Button className="w-full" onClick={handleSaveAll} disabled={savingAll}>
           {savingAll ? "در حال ذخیره..." : "ذخیره همه تغییرات"}
         </Button>

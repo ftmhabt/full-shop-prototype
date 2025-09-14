@@ -58,7 +58,7 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
         ))}
       </div>
 
-      <div className="sticky bottom-0 border-t mt-3 pt-3 space-y-3 bg-white">
+      <div className="sticky bottom-0 border-t mt-3 pt-3 space-y-3 bg-background">
         <p className="font-bold text-lg">
           مجموع: {new Intl.NumberFormat("fa-IR").format(totalPrice)} تومان
         </p>

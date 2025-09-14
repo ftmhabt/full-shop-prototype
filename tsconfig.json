@@ -7,12 +7,16 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    // "module": "esnext",
+    // "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "module": "nodenext",      // ← مهم
+    "moduleResolution": "nodenext", // ← مهم
+ 
+    "forceConsistentCasingInFileNames": true,
     "plugins": [
       {
         "name": "next"

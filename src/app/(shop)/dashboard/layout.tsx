@@ -32,21 +32,38 @@ export default function DashboardLayout({
   const [open, setOpen] = useState(false);
 
   const SidebarContent = (
-    <Card className="p-4 space-y-2">
-      {links.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className={cn(
-            "block rounded-md px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground transition-colors"
-          )}
-          onClick={() => setOpen(false)}
-        >
-          {link.label}
-        </Link>
-      ))}
-      <LogoutButton />
-    </Card>
+    <>
+      <Card className="p-4 space-y-2 hidden md:flex">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={cn(
+              "block rounded-md px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground transition-colors"
+            )}
+            onClick={() => setOpen(false)}
+          >
+            {link.label}
+          </Link>
+        ))}
+        <LogoutButton />
+      </Card>
+      <div className="p-4 space-y-2 md:hidden">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={cn(
+              "block rounded-md px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground transition-colors"
+            )}
+            onClick={() => setOpen(false)}
+          >
+            {link.label}
+          </Link>
+        ))}
+        <LogoutButton />
+      </div>
+    </>
   );
 
   return (
@@ -61,7 +78,7 @@ export default function DashboardLayout({
             </Button>
           </SheetTrigger>
           <SheetContent side="right" className="w-64">
-            <SheetHeader>
+            <SheetHeader className="mt-5">
               <SheetTitle>منوی کاربری</SheetTitle>
             </SheetHeader>
             <div className="mt-4">{SidebarContent}</div>

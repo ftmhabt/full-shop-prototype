@@ -17,7 +17,7 @@ export default function LoginPage() {
   const { timer, canResend, resetTimer } = useOtpTimer(step);
 
   return (
-    <div className="w-sm p-6 space-y-6 border rounded-2xl shadow-lg bg-white">
+    <div className="w-sm p-6 space-y-6 border rounded-2xl shadow-lg ">
       <StepIndicator step={step} />
 
       {step === "phone" && (

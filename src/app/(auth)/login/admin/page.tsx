@@ -54,7 +54,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-lg">
+      <Card className="w-full max-w-md sm:min-w-sm shadow-lg">
         <CardHeader className="text-center space-y-2">
           <div className="mx-auto w-12 h-12 rounded-2xl grid place-items-center bg-muted">
             <Shield className="w-6 h-6" />
@@ -102,7 +102,7 @@ export default function AdminLoginPage() {
                 )}
               />
 
-              {error && <p className="text-red-500 text-sm">{error}</p>}
+              {error && <p className="text-destructive text-sm">{error}</p>}
 
               <Button type="submit" className="w-full" disabled={isLoading}>
                 <LogIn className="mr-2 h-4 w-4" />

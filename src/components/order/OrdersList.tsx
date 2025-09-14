@@ -85,7 +85,7 @@ export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
               <div className="mt-2">
                 <Link
                   href={`/dashboard/orders/${order.id}`}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-background rounded-lg text-sm hover:bg-primary/90 transition"
                 >
                   مشاهده جزئیات <ArrowRight className="w-4 h-4" />
                 </Link>

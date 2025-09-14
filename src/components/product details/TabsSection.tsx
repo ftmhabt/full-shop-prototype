@@ -18,7 +18,7 @@ export default function TabsSection({
         px-4 py-2
         rounded-lg
         min-w-0 truncate
-        data-[state=active]:bg-white
+        data-[state=active]:
         data-[state=active]:text-primary"
           >
             ویژگی‌ها
@@ -29,7 +29,7 @@ export default function TabsSection({
         px-4 py-2
         rounded-lg
         min-w-0 truncate
-        data-[state=active]:bg-white
+        data-[state=active]:
         data-[state=active]:text-primary"
           >
             توضیحات
@@ -40,7 +40,7 @@ export default function TabsSection({
         px-4 py-2
         rounded-lg
         min-w-0 truncate
-        data-[state=active]:bg-white
+        data-[state=active]:
         data-[state=active]:text-primary"
           >
             نظرات

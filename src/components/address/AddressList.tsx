@@ -3,6 +3,7 @@
 import { Address } from "@/types";
 import { Hash, Home, MapIcon, MapPin, Phone, User } from "lucide-react";
 import { useState } from "react";
+import { Button } from "../ui/button";
 import AddressForm from "./AddressForm";
 import EditAddressForm from "./EditAddressForm";
 
@@ -21,12 +22,12 @@ export default function AddressList({ addresses }: AddressesPageProps) {
           <MapIcon className="w-6 h-6" /> آدرس‌های من
         </h1>
 
-        <button
-          className="bg-primary text-white px-4 py-2 rounded-lg"
+        <Button
+          className=" px-4 py-2 rounded-lg"
           onClick={() => setShowForm(!showForm)}
         >
           افزودن آدرس
-        </button>
+        </Button>
       </div>
 
       {showForm && (

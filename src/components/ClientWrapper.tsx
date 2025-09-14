@@ -11,6 +11,7 @@ import { Toaster } from "react-hot-toast";
 import { Provider, useDispatch } from "react-redux";
 import { FallbackImage } from "./FallbackImage";
 import ResponsiveCart from "./ResponsiveCart";
+import { ThemeSwitcher } from "./common/ThemeSwitcher";
 
 export default function ClientWrapper({
   children,
@@ -43,7 +44,7 @@ function HydrateCart() {
 
 function Header() {
   return (
-    <header className="border-b bg-white shadow-sm">
+    <header className="border-b  shadow-sm">
       <div className="container mx-auto flex items-center justify-between gap-4 p-4">
         {/* Logo */}
         <Link
@@ -53,7 +54,7 @@ function Header() {
           <FallbackImage src="/logo.png" alt="لوگو" width={40} height={40} />
           شاپ
         </Link>
-
+        <ThemeSwitcher />
         {/* Search Bar */}
         <SearchBar />
 

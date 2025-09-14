@@ -230,7 +230,7 @@ export default function ProductForm({
                             key={val.id}
                             className={cn(
                               "px-3 py-1 rounded border",
-                              selected ? "bg-primary text-white" : "bg-white"
+                              selected ? "bg-primary text-white" : ""
                             )}
                             onClick={() => {
                               const current =
@@ -339,7 +339,7 @@ export default function ProductForm({
                       setPreviewImages(newImages);
                       form.setValue("images", newImages);
                     }}
-                    className="absolute top-1 right-1 z-10 bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                    className="absolute top-1 right-1 z-10 bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-destructive"
                   >
                     <X size={12} />
                   </button>

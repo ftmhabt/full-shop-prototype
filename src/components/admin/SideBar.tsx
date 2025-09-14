@@ -42,7 +42,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     <>
       {/* Overlay for mobile */}
       <div
-        className={`fixed inset-0 bg-black/50 bg-opacity-30 z-20 md:hidden transition-opacity ${
+        className={`fixed inset-0 bg-transparent bg-opacity-30 z-20 md:hidden transition-opacity ${
           isOpen ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         onClick={() => setIsOpen(false)}
@@ -50,10 +50,10 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed z-30 top-0 right-0 h-full w-64 bg-white border-l border-gray-200 p-4 transform transition-transform
+        className={`fixed z-30 top-0 right-0 h-full w-64  border-l border-border p-4 transform transition-transform
           ${
             isOpen ? "translate-x-0" : "translate-x-full"
-          } md:translate-x-0 md:static md:block`}
+          } md:translate-x-0 md:static md:block bg-card md:bg-background`}
       >
         <div className="mb-6 flex items-center justify-between md:justify-center">
           <h2 className="text-lg font-bold">پنل مدیریت</h2>
@@ -66,7 +66,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center gap-2 p-2 rounded hover:bg-gray-100 transition"
+              className="flex items-center gap-2 p-2 rounded hover:bg-accent transition"
             >
               {item.icon}
               <span>{item.label}</span>

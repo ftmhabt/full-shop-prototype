@@ -142,14 +142,14 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
           )}
         </CardContent>
       </Card>
-      <Card className="bg-gray-50 border">
+      <Card className=" border">
         <CardHeader>
-          <CardTitle className="text-gray-700 text-base flex items-center gap-2">
+          <CardTitle className="text-base flex items-center gap-2">
             <Truck className="w-4 h-4 text-gray-500" />
             روش ارسال
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-gray-800">
+        <CardContent className="text-sm ">
           {order.ShippingMethod ? (
             <div className="flex justify-between border-b pb-1">
               <span>{order.ShippingMethod.name}</span>

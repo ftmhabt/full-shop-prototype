@@ -1,3 +1,4 @@
+import { ThemeProvider } from "next-themes";
 import { ReactNode } from "react";
 import { Toaster } from "react-hot-toast";
 
@@ -7,9 +8,11 @@ export default function AdminRootLayout({ children }: { children: ReactNode }) {
       <head>
         <title>پنل مدیریت</title>
       </head>
-      <body className="bg-gray-50 font-sans">
-        {children}
-        <Toaster position="top-center" reverseOrder={false} />
+      <body className=" font-sans">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+          <Toaster position="top-center" reverseOrder={false} />
+        </ThemeProvider>
       </body>
     </html>
   );

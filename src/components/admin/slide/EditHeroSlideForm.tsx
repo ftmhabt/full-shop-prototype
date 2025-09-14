@@ -130,7 +130,7 @@ export default function EditHeroSlideForm({
               )}{" "}
             </div>
           </div>
-          <p className="text-red-500">
+          <p className="text-destructive">
             {fileTooLarge && "حجم تصویر نباید بزرگتر از 900 کیلوبایت باشد."}
           </p>
           {/* Url */}

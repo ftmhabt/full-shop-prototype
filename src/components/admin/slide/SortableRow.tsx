@@ -57,7 +57,7 @@ export default function SortableRow({
         </Button>
 
         <ConfirmDialogButton
-          buttonText={<Trash className="h-4 w-4 text-red-500" />}
+          buttonText={<Trash className="h-4 w-4 text-destructive" />}
           dialogTitle="حذف اسلاید"
           dialogDescription="آیا از حذف این اسلاید مطمئنید؟"
           onConfirm={() => onDelete(slide.id)}

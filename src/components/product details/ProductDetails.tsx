@@ -85,7 +85,7 @@ export default function ProductDetails({
         </div>
 
         {/* سمت راست: اطلاعات */}
-        <Card className="flex flex-col p-5 bg-gray-100 ">
+        <Card className="flex flex-col p-5 bg-card ">
           <h1>گارانتی محصول: تعهد ما به کیفیت و رضایت شما</h1>
           <p>
             گارانتی یک محصول، در واقع تعهد رسمی و قانونی شرکت تولیدکننده یا

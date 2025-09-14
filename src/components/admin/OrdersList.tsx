@@ -239,7 +239,7 @@ export default function OrdersList({
           return (
             <div
               key={order.id}
-              className="border rounded-lg p-4 shadow-sm bg-white space-y-2"
+              className="border rounded-lg p-4 shadow-sm  space-y-2"
             >
               <div className="flex justify-between items-center">
                 <span className="font-semibold">سفارش #{order.id}</span>

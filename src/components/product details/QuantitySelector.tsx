@@ -61,7 +61,7 @@ export default function QuantitySelector({
           </Button>
         )
       ) : size === "lg" ? (
-        <div className="flex items-center justify-between p-1 border rounded-lg w-40 bg-white shadow-xs">
+        <div className="flex items-center justify-between p-1 border rounded-lg w-40  shadow-xs">
           <Button
             size="icon"
             variant="ghost"

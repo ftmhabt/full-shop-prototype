@@ -14,7 +14,7 @@ export function ProductList({ products }: { products: ProductWithCategory[] }) {
           className="rounded-2xl shadow hover:shadow-lg transition"
         >
           <CardContent className="p-4 flex flex-col gap-2">
-            <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+            <div className="aspect-square bg-card rounded-lg flex items-center justify-center">
               📷
             </div>
             <h3 className="font-bold">{product.name}</h3>

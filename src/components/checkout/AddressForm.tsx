@@ -132,12 +132,12 @@ export default function AddressForm({
           onValueChange={handleProvinceChange}
           disabled={isPending}
         >
-          <SelectTrigger className="w-full border rounded-md px-3 py-2 bg-white flex items-center justify-between flex-row-reverse">
+          <SelectTrigger className="w-full border rounded-md px-3 py-2  flex items-center justify-between flex-row-reverse">
             <SelectValue placeholder="انتخاب استان" />
           </SelectTrigger>
           <SelectContent
             dir="rtl"
-            className="w-full bg-white shadow-lg rounded-md max-h-60 overflow-auto text-right"
+            className="w-full  shadow-lg rounded-md max-h-60 overflow-auto text-right"
           >
             {provinces.map((p) => (
               <SelectItem
@@ -156,12 +156,12 @@ export default function AddressForm({
           onValueChange={(v) => setForm((f) => ({ ...f, city: v }))}
           disabled={!form.province || isPending}
         >
-          <SelectTrigger className="w-full border rounded-md px-3 py-2 bg-white flex items-center justify-between flex-row-reverse">
+          <SelectTrigger className="w-full border rounded-md px-3 py-2  flex items-center justify-between flex-row-reverse">
             <SelectValue placeholder="انتخاب شهر" />
           </SelectTrigger>
           <SelectContent
             dir="rtl"
-            className="w-full bg-white shadow-lg rounded-md max-h-60 overflow-auto"
+            className="w-full  shadow-lg rounded-md max-h-60 overflow-auto"
           >
             {cities.map((c) => (
               <SelectItem

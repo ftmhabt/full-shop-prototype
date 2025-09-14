@@ -144,15 +144,6 @@ model OrderItem {
   @@index([productId])
 }
 
-model BlogPost {
-  id        String   @id @default(cuid())
-  title     String
-  content   String
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
-  createdAt DateTime @default(now())
-}
-
 model Attribute {
   id         String   @id @default(cuid())
   name       String
@@ -262,4 +253,35 @@ model HeroSlide {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model BlogPost {
+  id         String        @id @default(cuid())
+  title      String
+  slug       String        @unique
+  excerpt    String?
+  content    String
+  category   BlogCategory? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+  tags       BlogTag[]     @relation("PostTags")
+  authorId   String
+  author     User          @relation(fields: [authorId], references: [id])
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+model BlogCategory {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  posts       BlogPost[]
+}
+
+model BlogTag {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  posts       BlogPost[] @relation("PostTags")
 }

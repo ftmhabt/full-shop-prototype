@@ -56,3 +56,31 @@ export async function createBlogPost(data: unknown) {
 
   return blogPost;
 }
+
+export async function getBlogCategories() {
+  try {
+    const categories = await db.blogCategory.findMany();
+    // Map the results to the { value, label } format required by react-select
+    return categories.map((c) => ({
+      value: c.id,
+      label: c.name,
+    }));
+  } catch (err) {
+    console.error("Failed to fetch blog categories:", err);
+    return [];
+  }
+}
+
+export async function getBlogTags() {
+  try {
+    const tags = await db.blogTag.findMany();
+    // Map the results to the { value, label } format
+    return tags.map((t) => ({
+      value: t.id,
+      label: t.name,
+    }));
+  } catch (err) {
+    console.error("Failed to fetch blog tags:", err);
+    return [];
+  }
+}

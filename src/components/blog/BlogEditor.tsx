@@ -1,6 +1,10 @@
 "use client";
 
-import { createBlogPost } from "@/app/actions/blog";
+import {
+  createBlogPost,
+  getBlogCategories,
+  getBlogTags,
+} from "@/app/actions/blog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,24 +19,36 @@ import slugify from "slugify";
 import { Button } from "../ui/button";
 import Editor from "./Editor";
 
-// Sample categories and tags (replace with API call)
-const categories = [
-  { value: "frontend", label: "فرانت‌اند" },
-  { value: "backend", label: "بک‌اند" },
-];
-
-const availableTags = [
-  { value: "nextjs", label: "Next.js" },
-  { value: "tiptap", label: "TipTap" },
-];
+// Define a type for your options to ensure type safety
+type OptionType = {
+  value: string;
+  label: string;
+};
 
 export default function BlogEditor({ onChange }: { onChange?: any }) {
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [excerpt, setExcerpt] = useState("");
-  const [category, setCategory] = useState<any>(null);
-  const [tags, setTags] = useState<any[]>([]);
+  const [category, setCategory] = useState<OptionType | null>(null);
+  const [tags, setTags] = useState<OptionType[]>([]);
+  const [categories, setCategories] = useState<OptionType[]>([]); // New state for categories
+  const [availableTags, setAvailableTags] = useState<OptionType[]>([]); // New state for tags
   const [isPending, startTransition] = useTransition();
+
+  // New useEffect to fetch data on component mount
+  useEffect(() => {
+    async function fetchData() {
+      // Fetch data from your Server Actions
+      const fetchedCategories = await getBlogCategories();
+      const fetchedTags = await getBlogTags();
+
+      setCategories(fetchedCategories);
+      setAvailableTags(fetchedTags);
+    }
+
+    fetchData();
+  }, []); // Empty dependency array ensures this runs only once
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -67,21 +83,20 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
       }
     });
   };
-  // Auto-generate slug from Farsi title
+
   useEffect(() => {
     const newSlug = slugify(title, { lower: true, locale: "fa" });
     setSlug(newSlug);
   }, [title]);
 
-  // Pass blog data to parent if needed
   useEffect(() => {
     if (onChange) {
       onChange({
         title,
         slug,
         excerpt,
-        category: category?.value,
-        tags: tags.map((t) => t.value),
+        categoryId: category?.value,
+        tagIds: tags.map((t) => t.value),
         content: editor?.getHTML(),
       });
     }
@@ -126,7 +141,7 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
           <Select
             value={category}
             onChange={setCategory}
-            options={categories}
+            options={categories} // Use the fetched data
             placeholder="انتخاب دسته‌بندی"
             isRtl
           />
@@ -137,7 +152,7 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
           <Select
             value={tags}
             onChange={setTags}
-            options={availableTags}
+            options={availableTags} // Use the fetched data
             placeholder="انتخاب یا ایجاد تگ"
             isMulti
             isRtl

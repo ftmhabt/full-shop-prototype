@@ -151,7 +151,7 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
           <Label>تگ‌ها</Label>
           <Select
             value={tags}
-            onChange={setTags}
+            onChange={(newValue) => setTags([...newValue])}
             options={availableTags} // Use the fetched data
             placeholder="انتخاب یا ایجاد تگ"
             isMulti

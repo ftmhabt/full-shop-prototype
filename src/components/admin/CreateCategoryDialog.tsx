@@ -16,7 +16,10 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { IconName } from "../home/CategorySection";
 
-const IconPicker = dynamic(() => import("./IconPicker"), { ssr: false });
+const IconPicker = dynamic(
+  () => import("./IconPicker.tsx").then((mod) => mod.default),
+  { ssr: false }
+);
 
 export function CreateCategoryDialog() {
   const [open, setOpen] = useState(false);

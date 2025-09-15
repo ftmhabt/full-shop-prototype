@@ -13,9 +13,9 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "module": "nodenext",      // ← مهم
-    "moduleResolution": "nodenext", // ← مهم
- 
+    "module": "nodenext",     
+    "moduleResolution": "nodenext",
+ "allowImportingTsExtensions": true,
     "forceConsistentCasingInFileNames": true,
     "plugins": [
       {

@@ -18,6 +18,7 @@ import Select from "react-select";
 import slugify from "slugify";
 import { Button } from "../ui/button";
 import Editor from "./Editor";
+import { TagInput } from "./TagInput"; // Import the new component
 
 // Define a type for your options to ensure type safety
 type OptionType = {
@@ -31,23 +32,19 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
   const [excerpt, setExcerpt] = useState("");
   const [category, setCategory] = useState<OptionType | null>(null);
   const [tags, setTags] = useState<OptionType[]>([]);
-  const [categories, setCategories] = useState<OptionType[]>([]); // New state for categories
-  const [availableTags, setAvailableTags] = useState<OptionType[]>([]); // New state for tags
+  const [categories, setCategories] = useState<OptionType[]>([]);
+  const [availableTags, setAvailableTags] = useState<OptionType[]>([]);
   const [isPending, startTransition] = useTransition();
 
-  // New useEffect to fetch data on component mount
   useEffect(() => {
     async function fetchData() {
-      // Fetch data from your Server Actions
       const fetchedCategories = await getBlogCategories();
       const fetchedTags = await getBlogTags();
-
       setCategories(fetchedCategories);
       setAvailableTags(fetchedTags);
     }
-
     fetchData();
-  }, []); // Empty dependency array ensures this runs only once
+  }, []);
 
   const editor = useEditor({
     extensions: [
@@ -64,13 +61,22 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
     immediatelyRender: false,
   });
 
+  const handleNewTagAdd = (newTag: OptionType) => {
+    setAvailableTags((prev) => [...prev, newTag]);
+    setTags((prevTags) => [...prevTags, newTag]);
+  };
+
   const handleSave = async () => {
     const data = {
       title,
       slug,
       excerpt,
       categoryId: category?.value,
-      tagIds: tags.map((t) => t.value),
+      tags: tags.map((t) => ({
+        id: t.value?.length === 25 ? t.value : undefined,
+        name: t.label,
+        slug: slugify(t.label, { lower: true, locale: "fa" }),
+      })),
       content: editor?.getHTML(),
     };
 
@@ -116,7 +122,6 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
             placeholder="عنوان پست"
           />
         </div>
-
         <div className="flex flex-col gap-1">
           <Label>اسلاگ</Label>
           <Input
@@ -125,7 +130,6 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
             placeholder="اسلاگ پست"
           />
         </div>
-
         <div className="flex flex-col gap-1">
           <Label>خلاصه</Label>
           <Textarea
@@ -135,13 +139,12 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
             rows={3}
           />
         </div>
-
         <div className="flex flex-col gap-1">
           <Label>دسته‌بندی</Label>
           <Select
             value={category}
             onChange={setCategory}
-            options={categories} // Use the fetched data
+            options={categories}
             placeholder="انتخاب دسته‌بندی"
             isRtl
           />
@@ -149,14 +152,11 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
 
         <div className="flex flex-col gap-1">
           <Label>تگ‌ها</Label>
-          <Select
-            value={tags}
-            onChange={(newValue) => setTags([...newValue])}
-            options={availableTags} // Use the fetched data
-            placeholder="انتخاب یا ایجاد تگ"
-            isMulti
-            isRtl
-            isClearable
+          <TagInput
+            selectedTags={tags}
+            availableTags={availableTags}
+            onTagsChange={setTags}
+            onNewTagAdd={handleNewTagAdd}
           />
         </div>
 

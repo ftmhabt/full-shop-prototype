@@ -23,7 +23,16 @@ const BlogPostSchema = z.object({
   content: z.string().min(10),
   excerpt: z.string().optional(),
   categoryId: z.string().optional(),
-  tagIds: z.array(z.string()).optional(),
+  // tagIds: z.array(z.string()).optional(),
+  tags: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        name: z.string().min(1),
+        slug: z.string().min(1),
+      })
+    )
+    .optional(),
 });
 
 export async function createBlogPost(data: unknown) {
@@ -34,7 +43,16 @@ export async function createBlogPost(data: unknown) {
 
   const parsed = BlogPostSchema.parse(data);
 
-  const blogPost = await db.blogPost.create({
+  const tagsToConnect =
+    parsed.tags?.map((tag) => ({
+      where: tag.id ? { id: tag.id } : { slug: tag.slug },
+      create: {
+        name: tag.name,
+        slug: tag.slug,
+      },
+    })) ?? [];
+
+  return await db.blogPost.create({
     data: {
       title: parsed.title,
       slug: parsed.slug,
@@ -42,19 +60,15 @@ export async function createBlogPost(data: unknown) {
       excerpt: parsed.excerpt,
       categoryId: parsed.categoryId,
       authorId: user.id,
-      tags: parsed.tagIds
-        ? {
-            connect: parsed.tagIds.map((id) => ({ id })),
-          }
-        : undefined,
+      tags: {
+        connectOrCreate: tagsToConnect,
+      },
     },
     include: {
       tags: true,
       category: true,
     },
   });
-
-  return blogPost;
 }
 
 export async function getBlogCategories() {
@@ -72,15 +86,10 @@ export async function getBlogCategories() {
 }
 
 export async function getBlogTags() {
-  try {
-    const tags = await db.blogTag.findMany();
-    // Map the results to the { value, label } format
-    return tags.map((t) => ({
-      value: t.id,
-      label: t.name,
-    }));
-  } catch (err) {
-    console.error("Failed to fetch blog tags:", err);
-    return [];
-  }
+  const tags = await db.blogTag.findMany({ orderBy: { name: "asc" } });
+  return tags.map((t) => ({
+    value: t.id,
+    label: t.name,
+    slug: t.slug,
+  }));
 }

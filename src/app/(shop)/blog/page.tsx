@@ -17,7 +17,10 @@ export default async function BlogPage() {
       <div className="grid gap-4">
         {posts.length > 0 ? (
           posts.map((post) => (
-            <Link key={post.id} href={`/blog/${post.slug}`}>
+            <Link
+              key={post.id}
+              href={`/blog/${post.category.slug}/${post.slug}`}
+            >
               <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader>
                   <CardTitle>{post.title}</CardTitle>

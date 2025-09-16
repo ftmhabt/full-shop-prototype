@@ -1,3 +1,4 @@
+import { FallbackImage } from "@/components/FallbackImage";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -55,7 +56,7 @@ export default async function BlogPostPage({ params }: any) {
             {post.category && (
               <li className="flex items-center">
                 <Link
-                  href={`/blog/category/${post.category.slug}`}
+                  href={`/blog/${post.category.slug}`}
                   className="text-primary hover:underline"
                 >
                   {post.category.name}
@@ -98,10 +99,12 @@ export default async function BlogPostPage({ params }: any) {
                 >
                   <Card className="hover:border-primary transition-colors">
                     <CardHeader className="p-0">
-                      <img
+                      <FallbackImage
                         src={product.image[0]}
                         alt={product.name}
                         className="w-full h-48 object-cover rounded-t-lg"
+                        width={30}
+                        height={30}
                       />
                     </CardHeader>
                     <CardContent className="p-4">

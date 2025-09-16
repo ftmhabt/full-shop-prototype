@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { BlogCategory, BlogPost, BlogTag, User } from "@prisma/client";
+import { Edit, Eye, Trash } from "lucide-react";
 import Link from "next/link";
 import { useTransition } from "react";
 
@@ -59,27 +60,27 @@ export default function AdminBlogList({ blogs }: { blogs: Blog[] }) {
                   <TableCell>{blog.createdAt.toLocaleDateString()}</TableCell>
                   <TableCell className="flex gap-2">
                     {/* دکمه مشاهده */}
-                    <Link href={`/blog/${blog.id}`}>
+                    <Link href={`/blog/${blog.category?.slug}/${blog.slug}`}>
                       <Button size="sm" variant="ghost">
-                        مشاهده
+                        <Eye className="w-4 h-4 mr-1" />
                       </Button>
                     </Link>
 
-                    {/* دکمه ویرایش - هدایت به صفحه ویرایش */}
+                    {/* دکمه ویرایش */}
                     <Link href={`/admin/blog/${blog.id}/edit`}>
-                      <Button size="sm" variant="outline">
-                        ویرایش
+                      <Button size="sm" variant="ghost">
+                        <Edit className="w-4 h-4 mr-1" />
                       </Button>
                     </Link>
 
                     {/* دکمه حذف */}
                     <Button
                       size="sm"
-                      variant="destructive"
+                      variant="ghost"
                       onClick={() => handleDelete(blog.id)}
                       disabled={isPending}
                     >
-                      حذف
+                      <Trash className="w-4 h-4 mr-1 text-destructive" />
                     </Button>
                   </TableCell>
                 </TableRow>

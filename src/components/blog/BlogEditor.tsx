@@ -4,11 +4,14 @@ import {
   createBlogPost,
   getBlogCategories,
   getBlogTags,
+  updateBlogPost,
 } from "@/app/actions/blog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import GapCursor from "@tiptap/extension-gapcursor";
+import HardBreak from "@tiptap/extension-hard-break";
 import TextAlign from "@tiptap/extension-text-align";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -18,20 +21,47 @@ import Select from "react-select";
 import slugify from "slugify";
 import { Button } from "../ui/button";
 import Editor from "./Editor";
-import { TagInput } from "./TagInput"; // Import the new component
+import { TagInput } from "./TagInput";
 
-// Define a type for your options to ensure type safety
 type OptionType = {
   value: string;
   label: string;
+  slug?: string;
 };
 
-export default function BlogEditor({ onChange }: { onChange?: any }) {
-  const [title, setTitle] = useState("");
-  const [slug, setSlug] = useState("");
-  const [excerpt, setExcerpt] = useState("");
-  const [category, setCategory] = useState<OptionType | null>(null);
-  const [tags, setTags] = useState<OptionType[]>([]);
+type BlogEditorProps = {
+  mode: "create" | "edit";
+  initialData?: {
+    id?: string;
+    title: string;
+    slug: string;
+    excerpt?: string;
+    categoryId?: string;
+    category?: { value: string; label: string } | null;
+    tags?: { id: string; name: string; slug: string }[];
+    content: string;
+  };
+  onChange?: (data: any) => void;
+  onSave?: (data: any) => Promise<void>;
+};
+
+export default function BlogEditor({
+  mode,
+  initialData,
+  onChange,
+  onSave,
+}: BlogEditorProps) {
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [slug, setSlug] = useState(initialData?.slug || "");
+  const [excerpt, setExcerpt] = useState(initialData?.excerpt || "");
+  const [category, setCategory] = useState<OptionType | null>(
+    initialData?.category
+      ? { value: initialData.category.value, label: initialData.category.label }
+      : null
+  );
+  const [tags, setTags] = useState<OptionType[]>(
+    initialData?.tags?.map((t) => ({ value: t.id, label: t.name })) || []
+  );
   const [categories, setCategories] = useState<OptionType[]>([]);
   const [availableTags, setAvailableTags] = useState<OptionType[]>([]);
   const [isPending, startTransition] = useTransition();
@@ -49,9 +79,15 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
   const editor = useEditor({
     extensions: [
       StarterKit,
+      GapCursor,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
+      HardBreak.configure({
+        HTMLAttributes: {
+          class: "hard-break",
+        },
+      }),
     ],
-    content: "<p></p>",
+    content: initialData?.content || "<p></p>",
     editorProps: {
       attributes: {
         class:
@@ -59,6 +95,9 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
       },
     },
     immediatelyRender: false,
+    parseOptions: {
+      preserveWhitespace: "full",
+    },
   });
 
   const handleNewTagAdd = (newTag: OptionType) => {
@@ -68,6 +107,7 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
 
   const handleSave = async () => {
     const data = {
+      id: initialData?.id,
       title,
       slug,
       excerpt,
@@ -75,25 +115,35 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
       tags: tags.map((t) => ({
         id: t.value?.length === 25 ? t.value : undefined,
         name: t.label,
-        slug: slugify(t.label, { lower: true, locale: "fa" }),
+        slug: t.slug || slugify(t.label, { lower: true, locale: "fa" }),
       })),
       content: editor?.getHTML(),
     };
 
     startTransition(async () => {
       try {
-        await createBlogPost(data);
-        toast.success("پست با موفقیت ذخیره شد");
+        if (onSave) {
+          await onSave(data);
+        } else {
+          if (mode === "create") {
+            await createBlogPost(data);
+          } else {
+            await updateBlogPost(data); // ⬅️ new action
+          }
+        }
+        toast.success(mode === "create" ? "پست ایجاد شد" : "پست ویرایش شد");
       } catch (err: any) {
-        toast.error("خطا در ذخیره: " + err.message);
+        toast.error("خطا: " + err.message);
       }
     });
   };
 
   useEffect(() => {
-    const newSlug = slugify(title, { lower: true, locale: "fa" });
-    setSlug(newSlug);
-  }, [title]);
+    if (!initialData?.slug) {
+      const newSlug = slugify(title, { lower: true, locale: "fa" });
+      setSlug(newSlug);
+    }
+  }, [title, initialData?.slug]);
 
   useEffect(() => {
     if (onChange) {
@@ -111,9 +161,12 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>نوشتن پست بلاگ</CardTitle>
+        <CardTitle>
+          {mode === "create" ? "نوشتن پست جدید" : "ویرایش پست"}
+        </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
+        {/* Title */}
         <div className="flex flex-col gap-1">
           <Label>عنوان</Label>
           <Input
@@ -122,6 +175,7 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
             placeholder="عنوان پست"
           />
         </div>
+        {/* Slug */}
         <div className="flex flex-col gap-1">
           <Label>اسلاگ</Label>
           <Input
@@ -130,6 +184,7 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
             placeholder="اسلاگ پست"
           />
         </div>
+        {/* Excerpt */}
         <div className="flex flex-col gap-1">
           <Label>خلاصه</Label>
           <Textarea
@@ -139,6 +194,7 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
             rows={3}
           />
         </div>
+        {/* Category */}
         <div className="flex flex-col gap-1">
           <Label>دسته‌بندی</Label>
           <Select
@@ -149,7 +205,7 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
             isRtl
           />
         </div>
-
+        {/* Tags */}
         <div className="flex flex-col gap-1">
           <Label>تگ‌ها</Label>
           <TagInput
@@ -159,19 +215,24 @@ export default function BlogEditor({ onChange }: { onChange?: any }) {
             onNewTagAdd={handleNewTagAdd}
           />
         </div>
-
+        {/* Content */}
         <div className="flex flex-col gap-1">
           <Label>محتوا</Label>
           <div className="border rounded p-2 min-h-[300px]">
             {editor && <Editor editor={editor} />}
           </div>
         </div>
+        {/* Save button */}
         <Button
           onClick={handleSave}
           disabled={isPending}
           className="px-4 py-2 rounded"
         >
-          {isPending ? "در حال ذخیره..." : "ذخیره پست"}
+          {isPending
+            ? "در حال ذخیره..."
+            : mode === "create"
+            ? "ایجاد پست"
+            : "ذخیره تغییرات"}
         </Button>
       </CardContent>
     </Card>

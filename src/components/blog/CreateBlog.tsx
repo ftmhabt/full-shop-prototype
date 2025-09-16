@@ -9,7 +9,7 @@ export default function CreateBlog() {
 
   return (
     <div className="p-4">
-      <BlogEditor onChange={handleBlogChange} />
+      <BlogEditor onChange={handleBlogChange} mode="create" />
     </div>
   );
 }

@@ -80,7 +80,7 @@ export default async function BlogPostPage({ params }: any) {
           </CardHeader>
           <CardContent>
             <div
-              className="prose max-w-none"
+              className="prose max-w-none whitespace-pre-wrap"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
           </CardContent>

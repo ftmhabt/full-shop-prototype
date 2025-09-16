@@ -40,7 +40,13 @@ export function TagInput({
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
     setNewTagName(name);
-    setNewTagSlug(slugify(name, { lower: true, locale: "fa" }));
+
+    if (
+      !newTagSlug ||
+      newTagSlug === slugify(newTagName, { lower: true, locale: "fa" })
+    ) {
+      setNewTagSlug(slugify(name, { lower: true, locale: "fa" }));
+    }
   };
 
   const handleAddTag = () => {
@@ -49,6 +55,7 @@ export function TagInput({
     const newTag = {
       value: newTagSlug,
       label: newTagName,
+      slug: newTagSlug,
     };
 
     // ✅ Only notify parent — do NOT change local state
@@ -85,11 +92,7 @@ export function TagInput({
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
               <Label>نام تگ</Label>
-              <Input
-                value={newTagName}
-                onChange={handleNameChange}
-                placeholder="مثلاً: جاوااسکریپت"
-              />
+              <Input value={newTagName} onChange={handleNameChange} />
             </div>
 
             <div className="flex flex-col gap-1">
@@ -97,7 +100,6 @@ export function TagInput({
               <Input
                 value={newTagSlug}
                 onChange={(e) => setNewTagSlug(e.target.value)}
-                placeholder="slug"
               />
             </div>
           </div>

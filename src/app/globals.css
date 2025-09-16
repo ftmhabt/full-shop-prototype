@@ -154,3 +154,8 @@ li::marker {
 .prose li {
   margin-bottom: 0.5rem;
 }
+
+/* globals.css یا فایل CSS مناسب */
+.prose p:empty::before {
+  content: "\00a0"; /* non-breaking space */
+}

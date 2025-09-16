@@ -1,6 +1,14 @@
 "use client";
 
-import { CreditCard, Home, Package, Tags, Users, X } from "lucide-react";
+import {
+  CreditCard,
+  FileText,
+  Home,
+  Package,
+  Tags,
+  Users,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 
 interface SidebarProps {
@@ -35,6 +43,11 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       label: "اسلایدها",
       href: "/admin/hero-slides",
       icon: <Home className="w-4 h-4" />,
+    },
+    {
+      label: "وبلاگ",
+      href: "/admin/blog",
+      icon: <FileText className="w-4 h-4" />,
     },
   ];
 

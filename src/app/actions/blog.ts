@@ -158,3 +158,43 @@ export async function getBlogTags() {
     slug: t.slug,
   }));
 }
+
+export async function createBlogCategory(data: { name: string; slug: string }) {
+  const category = await db.blogCategory.create({ data });
+  revalidatePath("/admin/blog/blog-categories");
+  return category;
+}
+
+export async function updateBlogCategory(data: {
+  id: string;
+  name: string;
+  slug: string;
+}) {
+  const category = await db.blogCategory.update({
+    where: { id: data.id },
+    data: {
+      name: data.name,
+      slug: data.slug,
+    },
+  });
+  revalidatePath("/admin/blog/blog-categories");
+  return category;
+}
+
+export async function deleteBlogCategory(id: string) {
+  const postsCount = await db.blogPost.count({
+    where: { categoryId: id },
+  });
+
+  if (postsCount > 0) {
+    throw new Error(
+      "نمی‌توانید این دسته‌بندی را حذف کنید چون حداقل یک مقاله به آن مرتبط است."
+    );
+  } else {
+    await db.blogCategory.delete({
+      where: { id },
+    });
+  }
+
+  revalidatePath("/admin/blog/blog-categories");
+}

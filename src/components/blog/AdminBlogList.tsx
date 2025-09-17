@@ -34,8 +34,14 @@ export default function AdminBlogList({ blogs }: { blogs: Blog[] }) {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">پست‌ها</h1>
+      <div className="flex justify-between items-center mb-4 gap-2">
+        <h1 className="text-2xl font-bold ml-auto">پست‌ها</h1>
+        <Link href="/admin/blog/blog-categories" className="mb-4">
+          <Button variant="secondary">مدیریت دسته‌ها</Button>
+        </Link>
+        <Link href="/admin/blog/blog-tags" className="mb-4">
+          <Button variant="secondary">مدیریت برچسب‌ها</Button>
+        </Link>
         <Link href="/admin/blog/create" className="mb-4">
           <Button>ایجاد پست جدید</Button>
         </Link>

@@ -17,3 +17,9 @@ export async function deleteCategory(id: string) {
   await db.category.delete({ where: { id } });
   revalidatePath("/admin/categories");
 }
+
+export async function getProductCategories() {
+  return await db.category.findMany({
+    select: { slug: true },
+  });
+}

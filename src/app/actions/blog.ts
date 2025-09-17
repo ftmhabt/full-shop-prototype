@@ -198,3 +198,33 @@ export async function deleteBlogCategory(id: string) {
 
   revalidatePath("/admin/blog/blog-categories");
 }
+
+export async function createBlogTag(data: { name: string; slug: string }) {
+  const tag = await db.blogTag.create({ data });
+  revalidatePath("/admin/blog/blog-tags");
+  return tag;
+}
+
+export async function updateBlogTag(data: {
+  id: string;
+  name: string;
+  slug: string;
+}) {
+  const tag = await db.blogTag.update({
+    where: { id: data.id },
+    data: {
+      name: data.name,
+      slug: data.slug,
+    },
+  });
+  revalidatePath("/admin/blog/blog-tags");
+  return tag;
+}
+
+export async function deleteBlogTag(id: string) {
+  await db.blogTag.delete({
+    where: { id },
+  });
+
+  revalidatePath("/admin/blog/blog-tags");
+}

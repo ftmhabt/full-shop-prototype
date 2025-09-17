@@ -45,7 +45,7 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({
       <CardHeader>
         <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="h-24">
         <p className="text-muted-foreground mb-2">{excerpt}</p>
       </CardContent>
       <CardFooter className="flex items-center gap-2 text-sm text-muted-foreground">

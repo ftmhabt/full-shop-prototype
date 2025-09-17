@@ -26,23 +26,23 @@ export function BlogCategoriesList({
       {blogCategories.map((cat) => (
         <div
           key={cat.id}
-          className="border rounded-lg p-4 shadow-sm flex flex-col justify-between"
+          className="border rounded-lg p-4 shadow-sm flex flex-col justify-between space-y-2.5"
         >
           <div>
             <h3 className="font-bold text-lg">{cat.name}</h3>
             <p className="text-sm text-muted-foreground">slug: {cat.slug}</p>
           </div>
+          {cat.slug === "other" && (
+            <p className="text-sm text-muted-foreground">
+              این دسته پیش‌فرض است (برای پست‌هایی که دسته‌ای ندارند) و امکان
+              ویرایش یا حذف آن وجود ندارد
+            </p>
+          )}
           <div
             className={`flex justify-end gap-2 mt-4 ${
-              cat.slug === "other" ? "pointer-events-none opacity-60" : ""
+              cat.slug === "other" ? "hidden" : ""
             }`}
           >
-            {cat.slug === "other" && (
-              <p className="text-sm text-muted-foreground">
-                این دسته پیش‌فرض است (برای پست‌هایی که دسته‌ای ندارند) و امکان
-                ویرایش یا حذف آن وجود ندارد
-              </p>
-            )}
             <BlogCategoryDialog initialData={cat} triggerLabel={<Edit />} />
             <ConfirmDialogButton
               buttonText={<Trash color="white" />}

@@ -38,7 +38,7 @@ export default function ProductCard({
           />
         </CardHeader>
 
-        <CardContent className="flex-1 flex flex-col gap-2 text-center">
+        <CardContent className="flex-1 flex flex-col gap-2 text-center ">
           <h2 className="text-base font-semibold">{product.name}</h2>
           <p className="text-primary font-bold text-lg">
             {formatPrice(product.price)} تومان

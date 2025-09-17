@@ -66,7 +66,10 @@ export function BlogCategoryDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={isEditing ? "outline" : "default"}>
+        <Button
+          variant={isEditing ? "outline" : "default"}
+          className="p-0 px-3"
+        >
           {triggerLabel || (isEditing ? "ویرایش دسته" : "ایجاد دسته جدید")}
         </Button>
       </DialogTrigger>

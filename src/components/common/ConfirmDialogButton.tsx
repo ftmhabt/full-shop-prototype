@@ -42,7 +42,12 @@ export function ConfirmDialogButton({
   return (
     <>
       {buttonText && (
-        <Button onClick={() => setOpen(true)} variant={variant} {...props}>
+        <Button
+          onClick={() => setOpen(true)}
+          variant={variant}
+          className="h-9 w-10"
+          {...props}
+        >
           {buttonText}
         </Button>
       )}

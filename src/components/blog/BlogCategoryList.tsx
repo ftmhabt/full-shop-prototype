@@ -22,7 +22,7 @@ export function BlogCategoriesList({
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {blogCategories.map((cat) => (
         <div
           key={cat.id}
@@ -32,11 +32,18 @@ export function BlogCategoriesList({
             <h3 className="font-bold text-lg">{cat.name}</h3>
             <p className="text-sm text-muted-foreground">slug: {cat.slug}</p>
           </div>
-          <div className="flex justify-end gap-2 mt-4">
-            <BlogCategoryDialog
-              initialData={cat}
-              triggerLabel={<Edit size={10} />}
-            />
+          <div
+            className={`flex justify-end gap-2 mt-4 ${
+              cat.slug === "other" ? "pointer-events-none opacity-60" : ""
+            }`}
+          >
+            {cat.slug === "other" && (
+              <p className="text-sm text-muted-foreground">
+                این دسته پیش‌فرض است (برای پست‌هایی که دسته‌ای ندارند) و امکان
+                ویرایش یا حذف آن وجود ندارد
+              </p>
+            )}
+            <BlogCategoryDialog initialData={cat} triggerLabel={<Edit />} />
             <ConfirmDialogButton
               buttonText={<Trash color="white" />}
               dialogTitle="حذف دسته"

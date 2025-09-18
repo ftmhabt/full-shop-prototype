@@ -36,6 +36,7 @@ model User {
   orders    Order[]
   blogPosts BlogPost[]
   Address   Address[]
+  Review    Review[]
 }
 
 model Address {
@@ -86,6 +87,7 @@ model Product {
 
   orderItems OrderItem[]
   CartItem   CartItem[]
+  Review     Review[]
 }
 
 model Category {
@@ -284,4 +286,21 @@ model BlogTag {
   slug        String     @unique
   description String?
   posts       BlogPost[] @relation("PostTags")
+}
+
+model Review {
+  id        String @id @default(cuid())
+  content   String
+  rating    Int    @default(5)
+  userId    String
+  productId String
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+  @@index([userId])
 }

@@ -3,6 +3,7 @@ import type {
   Attribute as AttributeModel,
   AttributeValue,
   AttributeValue as AttributeValueModel,
+  Category,
   Product,
   ProductAttribute,
   Review,
@@ -16,6 +17,7 @@ export type ProductWithAttributes = Product & {
   reviews: (Review & {
     user: Pick<User, "displayName">;
   })[];
+  category: Pick<Category, "id" | "name" | "slug">;
 };
 
 export type AttributeWithValues = AttributeModel & {

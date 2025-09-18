@@ -1,9 +1,9 @@
 "use client";
 
-import { ProductWithAttribute } from "@/app/actions/products";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { selectCartItems } from "@/store/selectors";
+import { ProductWithAttributes } from "@/types";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { FallbackImage } from "../FallbackImage";
@@ -15,7 +15,7 @@ import TabsSection from "./TabsSection";
 export default function ProductDetails({
   product,
 }: {
-  product: ProductWithAttribute;
+  product: ProductWithAttributes;
 }) {
   const [activeImage, setActiveImage] = useState(product.image[0]);
   const items = useSelector(selectCartItems);

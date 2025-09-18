@@ -1,43 +1,13 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { AttributeWithValues, ProductWithAttributes } from "@/types";
+import type { AttributeWithValues, ProductWithAttributes } from "@/types";
 import { Prisma } from "@prisma/client";
 
-export type ProductWithAttribute = {
-  id: string;
-  slug: string;
-  name: string;
-  description: string;
-  image: string[];
-  price: number;
-  attributes: {
-    id: string;
-    value: {
-      id: string;
-      slug: string;
-      value: string;
-      attributeId: string;
-      attribute: {
-        id: string;
-        slug: string;
-        name: string;
-        categoryId: string;
-        createdAt: Date;
-        updatedAt: Date;
-      };
-    };
-  }[];
-  category: {
-    id: string;
-    name: string;
-    slug: string;
-  };
-};
-
+// Get a single product by slug, including attributes, category, and reviews
 export async function getProductBySlug(
   slug: string
-): Promise<ProductWithAttribute> {
+): Promise<ProductWithAttributes> {
   const product = await db.product.findUnique({
     where: { slug },
     include: {
@@ -48,10 +18,14 @@ export async function getProductBySlug(
               attribute: true,
             },
           },
-          Attribute: true,
         },
       },
-      category: true, // category is already here
+      category: true,
+      reviews: {
+        include: {
+          user: { select: { displayName: true } },
+        },
+      },
     },
   });
 
@@ -59,22 +33,10 @@ export async function getProductBySlug(
     throw new Error(`Product with slug "${slug}" not found`);
   }
 
-  return {
-    id: product.id,
-    name: product.name,
-    slug: product.slug,
-    price: product.price,
-    description: product.description,
-    image: product.image,
-    attributes: product.attributes,
-    category: {
-      id: product.category.id,
-      name: product.category.name,
-      slug: product.category.slug,
-    },
-  };
+  return product;
 }
 
+// Get all categories
 export async function getCategories() {
   return db.category.findMany({
     select: { id: true, name: true, slug: true },
@@ -82,29 +44,29 @@ export async function getCategories() {
   });
 }
 
+// Get products by category slug with filters and orderBy
 export async function getProductsByCategorySlug(
   slug: string,
   filters: Record<string, string[]>
 ): Promise<ProductWithAttributes[]> {
   const { orderBy, query, ...otherFilters } = filters;
 
-  const where: Prisma.ProductWhereInput = {
-    category: { slug },
-  };
+  const where: Prisma.ProductWhereInput = { category: { slug } };
 
-  // موجودی
+  // Filter by stock
   if (otherFilters.inStock?.includes("true")) {
     where.stock = { gt: 0 };
   }
 
-  // سرچ روی نام یا توضیحات
+  // Search by name or description
   if (query?.length) {
     where.OR = [
       { name: { contains: query[0], mode: "insensitive" } },
       { description: { contains: query[0], mode: "insensitive" } },
     ];
   }
-  // فیلتر ویژگی‌ها با slug
+
+  // Filter by attribute slugs
   const attributeFilters = Object.entries(otherFilters).filter(
     ([key]) => key !== "inStock"
   );
@@ -121,7 +83,7 @@ export async function getProductsByCategorySlug(
     }));
   }
 
-  // مرتب‌سازی
+  // Order by
   let orderByClause: Prisma.ProductOrderByWithRelationInput = {
     createdAt: "desc",
   };
@@ -136,10 +98,8 @@ export async function getProductsByCategorySlug(
       case "priceDesc":
         orderByClause = { price: "desc" };
         break;
-      case "newest":
       default:
         orderByClause = { createdAt: "desc" };
-        break;
     }
   }
 
@@ -151,11 +111,16 @@ export async function getProductsByCategorySlug(
           value: { include: { attribute: true } },
         },
       },
+      category: true,
+      reviews: {
+        include: { user: { select: { displayName: true } } },
+      },
     },
     orderBy: orderByClause,
   });
 }
 
+// Get attributes with values for a category
 export async function getAttributesByCategorySlug(slug: string) {
   return db.attribute.findMany({
     where: { category: { slug } },
@@ -164,6 +129,7 @@ export async function getAttributesByCategorySlug(slug: string) {
   });
 }
 
+// Search products with filters and return both products and available attributes
 export async function getProductsBySearch(
   query: string,
   filters: Record<string, string[]> = {},
@@ -180,11 +146,14 @@ export async function getProductsBySearch(
   };
 
   if (filters.inStock?.includes("true")) {
-    (where as Prisma.ProductWhereInput).stock = { gt: 0 };
+    where.stock = { gt: 0 };
   }
 
-  if (Object.keys(filters).length > 0) {
-    where.AND = Object.entries(filters).map(([attrSlug, valueSlugs]) => ({
+  const attributeFilters = Object.entries(filters).filter(
+    ([key]) => key !== "inStock"
+  );
+  if (attributeFilters.length) {
+    where.AND = attributeFilters.map(([attrSlug, valueSlugs]) => ({
       attributes: {
         some: {
           value: {
@@ -196,7 +165,6 @@ export async function getProductsBySearch(
     }));
   }
 
-  // تعیین ترتیب مرتب‌سازی بر اساس orderBy
   let orderByClause: Prisma.ProductOrderByWithRelationInput = {
     createdAt: "desc",
   };
@@ -218,14 +186,15 @@ export async function getProductsBySearch(
     where,
     include: {
       attributes: {
-        include: {
-          value: { include: { attribute: true } },
-        },
+        include: { value: { include: { attribute: true } } },
       },
+      category: true,
+      reviews: { include: { user: { select: { displayName: true } } } },
     },
     orderBy: orderByClause,
   });
 
+  // Build attribute map for filtering options
   const attributeMap: Record<string, AttributeWithValues> = {};
   for (const p of products) {
     for (const pa of p.attributes) {

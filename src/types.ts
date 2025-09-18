@@ -1,15 +1,21 @@
 import type {
+  Attribute,
   Attribute as AttributeModel,
+  AttributeValue,
   AttributeValue as AttributeValueModel,
-  Product as ProductModel,
+  Product,
+  ProductAttribute,
+  Review,
+  User,
 } from "@prisma/client";
 
-export type ProductWithAttributes = ProductModel & {
-  attributes: {
-    value: AttributeValueModel & {
-      attribute: AttributeModel;
-    };
-  }[];
+export type ProductWithAttributes = Product & {
+  attributes: (ProductAttribute & {
+    value: AttributeValue & { attribute: Attribute };
+  })[];
+  reviews: (Review & {
+    user: Pick<User, "displayName">;
+  })[];
 };
 
 export type AttributeWithValues = AttributeModel & {

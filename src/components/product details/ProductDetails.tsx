@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { FallbackImage } from "../FallbackImage";
 import QuantitySelector from "./QuantitySelector";
+import Rating from "./Rating";
 import RelatedProducts from "./RelatedProducts";
 import TabsSection from "./TabsSection";
 
@@ -21,6 +22,12 @@ export default function ProductDetails({
 
   const cartItem = items.find((i) => i.id === product.id);
   const quantity = cartItem?.quantity || 0;
+
+  const averageRating =
+    product.reviews.length > 0
+      ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
+        product.reviews.length
+      : 0;
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -73,6 +80,8 @@ export default function ProductDetails({
         <div className="flex flex-col space-y-4">
           <h1 className="text-2xl font-bold">{product.name}</h1>
           <p className="text-xl font-semibold">{product.price} تومان</p>
+          <Rating value={averageRating} />
+
           <Badge variant="secondary">موجود در انبار</Badge>
           <p>{product.description}</p>
           <QuantitySelector product={product} quantity={quantity} />

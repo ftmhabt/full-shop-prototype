@@ -327,6 +327,7 @@ export default async function HomePage() {
               },
             },
           },
+          reviews: { include: { user: true } },
         },
       }),
       db.product.findMany({
@@ -342,6 +343,7 @@ export default async function HomePage() {
               },
             },
           },
+          reviews: { include: { user: true } },
         },
       }),
     ]);

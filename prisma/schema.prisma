@@ -35,8 +35,8 @@ model User {
 
   orders    Order[]
   blogPosts BlogPost[]
-  Address   Address[]
-  Review    Review[]
+  addresses Address[]
+  reviews   Review[]
 }
 
 model Address {
@@ -86,8 +86,8 @@ model Product {
   updatedAt   DateTime           @updatedAt
 
   orderItems OrderItem[]
-  CartItem   CartItem[]
-  Review     Review[]
+  cartItems  CartItem[]
+  reviews    Review[]
 }
 
 model Category {

@@ -1,12 +1,12 @@
 "use client";
 import QuantitySelector from "@/components/product details/QuantitySelector";
-import { cn } from "@/lib/utils";
 import { selectCartItems } from "@/store/selectors";
 import { ProductWithAttributes } from "@/types";
-import { Percent, Star } from "lucide-react";
+import { Percent } from "lucide-react";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import { FallbackImage } from "../FallbackImage";
+import Rating from "../product details/Rating";
 import { Badge } from "../ui/badge";
 import { Card, CardContent } from "../ui/card";
 import Price from "./Price";
@@ -16,6 +16,11 @@ function ProductCard({ p }: { p: ProductWithAttributes }) {
 
   const cartItem = items.find((i) => i.id === p.id);
   const quantity = cartItem?.quantity || 0;
+
+  const averageRating =
+    p.reviews.length > 0
+      ? p.reviews.reduce((sum, r) => sum + r.rating, 0) / p.reviews.length
+      : 0;
   return (
     <Card className="group overflow-hidden rounded-2xl border-muted/40">
       <CardContent className="p-4">
@@ -42,19 +47,7 @@ function ProductCard({ p }: { p: ProductWithAttributes }) {
           </Link>
           <div className="flex flex-col gap-2 items-center justify-between">
             <Price value={p.price} old={p.oldPrice} />
-            <div className="flex items-center gap-0.5 text-amber-500">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={cn(
-                    "h-4 w-4",
-                    i < Math.round(p.rating || 0)
-                      ? "fill-current"
-                      : "opacity-30"
-                  )}
-                />
-              ))}
-            </div>
+            <Rating value={averageRating} />
           </div>
         </div>
       </CardContent>

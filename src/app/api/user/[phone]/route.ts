@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     select: {
       phone: true,
       password: false,
-      Address: true,
+      addresses: true,
     },
   });
 
@@ -33,17 +33,15 @@ export async function PATCH(req: NextRequest) {
   const updatedUser = await db.user.update({
     where: { phone },
     data: {
-      Address: {
+      addresses: {
         updateMany: {
-          where: { userId: data.id }, // update the main address if you store full name etc.
+          where: { userId: data.id },
           data: {
             fullName: data.fullName,
             phone: data.phone,
-            // add other fields as needed
           },
         },
       },
-      // Add password hashing if updating password
     },
   });
 

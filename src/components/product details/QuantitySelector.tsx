@@ -1,6 +1,5 @@
 "use client";
 
-import { ProductWithAttribute } from "@/app/actions/products";
 import { Button } from "@/components/ui/button";
 import { add, decrease, increase } from "@/store/cartSlice";
 import { selectCartItems } from "@/store/selectors";
@@ -14,7 +13,7 @@ export default function QuantitySelector({
   size = "lg",
 }: {
   quantity: number;
-  product: ProductWithAttribute | CartItem | ProductWithAttributes;
+  product: ProductWithAttributes | CartItem | ProductWithAttributes;
   size?: "lg" | "sm";
 }) {
   const dispatch = useDispatch();

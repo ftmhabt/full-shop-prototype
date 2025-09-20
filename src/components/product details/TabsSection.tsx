@@ -1,16 +1,16 @@
 "use client";
 
-import { ProductWithAttribute } from "@/app/actions/products";
 import { createReview, getReviews } from "@/app/actions/reviews";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { ProductWithAttributes } from "@/types";
 import { useEffect, useState, useTransition } from "react";
 
 export default function TabsSection({
   product,
 }: {
-  product: ProductWithAttribute;
+  product: ProductWithAttributes;
 }) {
   const [reviews, setReviews] = useState<any[]>([]);
   const [content, setContent] = useState("");

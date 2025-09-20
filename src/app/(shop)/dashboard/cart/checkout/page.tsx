@@ -1,6 +1,7 @@
 import { getUserAddresses } from "@/app/actions/addresses";
 import CheckoutStepper from "@/components/checkout/CheckoutStepper";
 import { getCurrentUserId } from "@/lib/auth";
+import Link from "next/link";
 
 export default async function page() {
   const userId = await getCurrentUserId();
@@ -18,9 +19,9 @@ export default async function page() {
       <div className="bg-yellow-100 text-yellow-800 p-4 rounded mb-4">
         اگر پرداخت شما انجام نشد یا صفحه پرداخت بسته شد، نگران نباشید. سفارش شما
         در{" "}
-        <a href="/orders" className="underline font-bold">
+        <Link href="/dashboard/orders" className="underline font-bold">
           صفحه سفارش‌ها
-        </a>{" "}
+        </Link>{" "}
         موجود است و می‌توانید دوباره پرداخت کنید.
       </div>
       <CheckoutStepper addresses={serializedAddresses} />

@@ -94,8 +94,7 @@ export async function getUserOrders() {
 export async function changeOrderStatus(
   orderId: string,
   newStatus: "PAID" | "SHIPPED" | "COMPLETED" | "CANCELED",
-  trackingCode?: string,
-  inDetails?: boolean
+  trackingCode?: string
 ) {
   const now = new Date();
 
@@ -136,8 +135,7 @@ export async function changeOrderStatus(
           : undefined,
     },
   });
-  if (inDetails) revalidatePath(`/admin/orders/${orderId}`);
-  else revalidatePath(`/admin/orders`);
+  revalidatePath(`/admin/orders`);
   return updatedOrder;
 }
 

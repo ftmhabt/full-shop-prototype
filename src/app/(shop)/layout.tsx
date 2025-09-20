@@ -1,5 +1,6 @@
 import "@/app/globals.css";
 import ClientWrapper from "@/components/ClientWrapper";
+import CategoryNav from "@/components/server/CategoryNav";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 
@@ -17,7 +18,9 @@ export default function RootLayout({
     <html lang="fa" dir="rtl">
       <body className="bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <ClientWrapper>{children}</ClientWrapper>
+          <ClientWrapper categoryNav={<CategoryNav />}>
+            {children}
+          </ClientWrapper>
         </ThemeProvider>
       </body>
     </html>

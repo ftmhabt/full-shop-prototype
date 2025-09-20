@@ -42,7 +42,6 @@ export default function AdminLoginPage() {
   async function onSubmit(values: FormData) {
     setIsLoading(true);
     setError(null);
-    // const { adminLogin } = await import("@/app/actions/admin/user");
     const res = await adminLogin(values.email, values.password);
     if (!res.success) {
       setError(res.message);

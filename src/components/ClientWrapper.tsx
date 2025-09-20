@@ -4,7 +4,7 @@ import SearchBar from "@/components/home/SearchBar";
 import { Separator } from "@/components/ui/separator";
 import { store } from "@/store";
 import { hydrate } from "@/store/cartSlice";
-import { Phone, User } from "lucide-react";
+import { Home, Phone, ScrollText, User } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
@@ -15,13 +15,15 @@ import { ThemeSwitcher } from "./common/ThemeSwitcher";
 
 export default function ClientWrapper({
   children,
+  categoryNav,
 }: {
   children: React.ReactNode;
+  categoryNav: React.ReactNode;
 }) {
   return (
     <Provider store={store}>
       <HydrateCart /> {/* ✅ child component handles hydration */}
-      <Header />
+      <Header categoryNav={categoryNav} />
       <Toaster position="top-center" reverseOrder={false} />
       <main className="container mx-auto min-h-[60vh] px-4 py-6 flex items-center justify-center">
         {children}
@@ -42,7 +44,7 @@ function HydrateCart() {
   return null; // No UI, just dispatches hydration
 }
 
-function Header() {
+function Header({ categoryNav }: { categoryNav: React.ReactNode }) {
   return (
     <header className="border-b  shadow-sm">
       <div className="container mx-auto flex items-center justify-between gap-4 p-4">
@@ -80,13 +82,17 @@ function Header() {
       {/* Nav */}
       <nav className="border-t">
         <div className="container mx-auto flex items-center gap-6 overflow-x-auto p-3 text-sm *:text-nowrap">
-          <Link href="/">خانه</Link>
-          <Link href="/category/alarm-systems">دزدگیر اماکن</Link>
-          <Link href="/category/cctv-cameras">دوربین مداربسته</Link>
-          <Link href="/category/access-control">کنترل تردد</Link>
-          <Link href="/category/smart-home">هوشمندسازی</Link>
-          <Link href="/blog">مقالات</Link>
-          <Link href="/contact">تماس با ما</Link>
+          <Link href="/">
+            <div className="flex items-center gap-1">
+              <div>خانه</div> <Home size={14} />
+            </div>
+          </Link>
+          {categoryNav}
+          <Link href="/blog">
+            <div className="flex items-center gap-1">
+              <div>مقالات</div> <ScrollText size={14} />
+            </div>
+          </Link>
         </div>
       </nav>
     </header>

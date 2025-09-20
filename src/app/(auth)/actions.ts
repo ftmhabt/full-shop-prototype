@@ -148,3 +148,10 @@ export async function logout() {
 
   redirect("/login");
 }
+
+export async function adminLogout() {
+  const allCookies = await cookies();
+  allCookies.set("token", "", { httpOnly: true, expires: new Date(0) });
+
+  redirect("/login/admin");
+}

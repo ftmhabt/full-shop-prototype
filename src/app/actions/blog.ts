@@ -22,7 +22,6 @@ const BlogPostSchema = z.object({
   content: z.string().min(10),
   excerpt: z.string().optional(),
   categoryId: z.string().optional(),
-  // tagIds: z.array(z.string()).optional(),
   tags: z
     .array(
       z.object({
@@ -42,22 +41,20 @@ export async function createBlogPost(data: unknown) {
 
   const parsed = BlogPostSchema.parse(data);
 
-  // ✅ Upsert default category if none selected
   const categoryId = parsed.categoryId
     ? parsed.categoryId
     : (
         await db.blogCategory.upsert({
           where: { slug: "other" },
-          update: {}, // nothing to update if exists
+          update: {},
           create: {
-            name: "سایر", // Persian for "Other"
+            name: "سایر",
             slug: "other",
             description: "دسته‌بندی پیش‌فرض برای پست‌هایی بدون دسته‌بندی",
           },
         })
       ).id;
 
-  // ✅ Build connectOrCreate for tags
   const tagsToConnect =
     parsed.tags?.map((tag) => ({
       where: tag.id ? { id: tag.id } : { slug: tag.slug },
@@ -67,7 +64,6 @@ export async function createBlogPost(data: unknown) {
       },
     })) ?? [];
 
-  // ✅ Create post
   try {
     await db.blogPost.create({
       data: {
@@ -75,7 +71,7 @@ export async function createBlogPost(data: unknown) {
         slug: parsed.slug,
         content: parsed.content,
         excerpt: parsed.excerpt,
-        categoryId, // ✅ always set (user-selected or "other")
+        categoryId,
         authorId: user.id,
         tags: {
           connectOrCreate: tagsToConnect,
@@ -86,7 +82,6 @@ export async function createBlogPost(data: unknown) {
         category: true,
       },
     });
-    revalidatePath(`/admin/blog`);
   } catch (error) {
     console.error("Failed to create blog post:", error);
   }
@@ -130,8 +125,6 @@ export async function updateBlogPost(data: unknown) {
         category: true,
       },
     });
-
-    revalidatePath(`/admin/blog`);
   } catch (error) {
     console.error("Failed to update blog post:", error);
   }
@@ -139,7 +132,6 @@ export async function updateBlogPost(data: unknown) {
 export async function getBlogCategories() {
   try {
     const categories = await db.blogCategory.findMany();
-    // Map the results to the { value, label } format required by react-select
     return categories.map((c) => ({
       value: c.id,
       label: c.name,

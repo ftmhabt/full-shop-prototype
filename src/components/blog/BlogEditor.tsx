@@ -15,6 +15,7 @@ import HardBreak from "@tiptap/extension-hard-break";
 import TextAlign from "@tiptap/extension-text-align";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import Select from "react-select";
@@ -66,6 +67,8 @@ export default function BlogEditor({
   const [availableTags, setAvailableTags] = useState<OptionType[]>([]);
   const [isPending, startTransition] = useTransition();
 
+  const router = useRouter();
+
   useEffect(() => {
     async function fetchData() {
       const fetchedCategories = await getBlogCategories();
@@ -105,7 +108,9 @@ export default function BlogEditor({
     setTags((prevTags) => [...prevTags, newTag]);
   };
 
-  const handleSave = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     const data = {
       id: initialData?.id,
       title,
@@ -128,10 +133,11 @@ export default function BlogEditor({
           if (mode === "create") {
             await createBlogPost(data);
           } else {
-            await updateBlogPost(data); // ⬅️ new action
+            await updateBlogPost(data);
           }
         }
         toast.success(mode === "create" ? "پست ایجاد شد" : "پست ویرایش شد");
+        router.push("/admin/blog");
       } catch (err: any) {
         toast.error("خطا: " + err.message);
       }
@@ -165,75 +171,77 @@ export default function BlogEditor({
           {mode === "create" ? "نوشتن پست جدید" : "ویرایش پست"}
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        {/* Title */}
-        <div className="flex flex-col gap-1">
-          <Label>عنوان</Label>
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="عنوان پست"
-          />
-        </div>
-        {/* Slug */}
-        <div className="flex flex-col gap-1">
-          <Label>اسلاگ</Label>
-          <Input
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            placeholder="اسلاگ پست"
-          />
-        </div>
-        {/* Excerpt */}
-        <div className="flex flex-col gap-1">
-          <Label>خلاصه</Label>
-          <Textarea
-            value={excerpt}
-            onChange={(e) => setExcerpt(e.target.value)}
-            placeholder="خلاصه کوتاه برای SEO"
-            rows={3}
-          />
-        </div>
-        {/* Category */}
-        <div className="flex flex-col gap-1">
-          <Label>دسته‌بندی</Label>
-          <Select
-            value={category}
-            onChange={setCategory}
-            options={categories}
-            placeholder="انتخاب دسته‌بندی"
-            isRtl
-          />
-        </div>
-        {/* Tags */}
-        <div className="flex flex-col gap-1">
-          <Label>تگ‌ها</Label>
-          <TagInput
-            selectedTags={tags}
-            availableTags={availableTags}
-            onTagsChange={setTags}
-            onNewTagAdd={handleNewTagAdd}
-          />
-        </div>
-        {/* Content */}
-        <div className="flex flex-col gap-1">
-          <Label>محتوا</Label>
-          <div className="border rounded p-2 min-h-[300px]">
-            {editor && <Editor editor={editor} />}
+      <CardContent>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {/* Title */}
+          <div className="flex flex-col gap-1">
+            <Label>عنوان</Label>
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="عنوان پست"
+            />
           </div>
-        </div>
-        {/* Save button */}
-        <Button
-          onClick={handleSave}
-          disabled={isPending}
-          className="px-4 py-2 rounded"
-        >
-          {isPending
-            ? "در حال ذخیره..."
-            : mode === "create"
-            ? "ایجاد پست"
-            : "ذخیره تغییرات"}
-        </Button>
+          {/* Slug */}
+          <div className="flex flex-col gap-1">
+            <Label>اسلاگ</Label>
+            <Input
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              placeholder="اسلاگ پست"
+            />
+          </div>
+          {/* Excerpt */}
+          <div className="flex flex-col gap-1">
+            <Label>خلاصه</Label>
+            <Textarea
+              value={excerpt}
+              onChange={(e) => setExcerpt(e.target.value)}
+              placeholder="خلاصه کوتاه برای SEO"
+              rows={3}
+            />
+          </div>
+          {/* Category */}
+          <div className="flex flex-col gap-1">
+            <Label>دسته‌بندی</Label>
+            <Select
+              value={category}
+              onChange={setCategory}
+              options={categories}
+              placeholder="انتخاب دسته‌بندی"
+              isRtl
+            />
+          </div>
+          {/* Tags */}
+          <div className="flex flex-col gap-1">
+            <Label>تگ‌ها</Label>
+            <TagInput
+              selectedTags={tags}
+              availableTags={availableTags}
+              onTagsChange={setTags}
+              onNewTagAdd={handleNewTagAdd}
+            />
+          </div>
+          {/* Content */}
+          <div className="flex flex-col gap-1">
+            <Label>محتوا</Label>
+            <div className="border rounded p-2 min-h-[300px]">
+              {editor && <Editor editor={editor} />}
+            </div>
+          </div>
+          {/* Save button */}
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="px-4 py-2 rounded"
+          >
+            {isPending
+              ? "در حال ذخیره..."
+              : mode === "create"
+              ? "ایجاد پست"
+              : "ذخیره تغییرات"}
+          </Button>
+        </form>
       </CardContent>
     </Card>
   );

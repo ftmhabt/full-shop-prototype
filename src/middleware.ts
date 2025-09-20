@@ -30,7 +30,7 @@ export async function middleware(req: NextRequest) {
 
     try {
       const { payload } = await jwtVerify(token, secret);
-      if (payload.role !== "ADMIN") {
+      if (payload.role !== "ADMIN" && payload.role !== "EDITOR") {
         return NextResponse.redirect(new URL("/403", req.url));
       }
       return NextResponse.next();

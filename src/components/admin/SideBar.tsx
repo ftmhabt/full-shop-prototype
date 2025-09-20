@@ -1,5 +1,6 @@
 "use client";
 
+import { getCurrentUserRole } from "@/app/actions/admin/getUserRole";
 import {
   CreditCard,
   FileText,
@@ -10,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -17,6 +19,16 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
+  const [role, setRole] = useState<"ADMIN" | "EDITOR" | null>(null);
+
+  useEffect(() => {
+    async function fetchRole() {
+      const userRole = await getCurrentUserRole();
+      setRole(userRole);
+    }
+    fetchRole();
+  }, []);
+
   const navItems = [
     { label: "داشبورد", href: "/admin", icon: <Home className="w-4 h-4" /> },
     {
@@ -51,31 +63,31 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     },
   ];
 
-  return (
-    <>
-      {/* Overlay for mobile */}
-      <div
-        className={`fixed inset-0 bg-transparent bg-opacity-30 z-20 md:hidden transition-opacity ${
-          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
-        }`}
-        onClick={() => setIsOpen(false)}
-      />
+  const filteredNavItems =
+    role === "EDITOR"
+      ? navItems.filter(
+          (item) => item.href === "/admin" || item.href === "/admin/blog"
+        )
+      : navItems;
 
-      {/* Sidebar */}
-      <aside
-        className={`fixed z-30 top-0 right-0 h-full w-64  border-l border-border p-4 transform transition-transform
-          ${
-            isOpen ? "translate-x-0" : "translate-x-full"
-          } md:translate-x-0 md:static md:block bg-card md:bg-background`}
-      >
-        <div className="mb-6 flex items-center justify-between md:justify-center">
-          <h2 className="text-lg font-bold">پنل مدیریت</h2>
-          <button className="md:hidden" onClick={() => setIsOpen(false)}>
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+  return (
+    <aside
+      className={`fixed z-30 top-0 right-0 h-full w-64 border-l p-4 transform transition-transform
+        ${isOpen ? "translate-x-0" : "translate-x-full"}
+        md:translate-x-0 md:static md:block bg-card md:bg-background`}
+    >
+      <div className="mb-6 flex items-center justify-between md:justify-center">
+        <h2 className="text-lg font-bold">پنل مدیریت</h2>
+        <button className="md:hidden" onClick={() => setIsOpen(false)}>
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+
+      {!role ? (
+        <p className="text-center text-muted-foreground">در حال بارگذاری...</p>
+      ) : (
         <nav className="flex flex-col space-y-2">
-          {navItems.map((item) => (
+          {filteredNavItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -86,7 +98,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             </Link>
           ))}
         </nav>
-      </aside>
-    </>
+      )}
+    </aside>
   );
 }

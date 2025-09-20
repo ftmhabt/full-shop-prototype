@@ -15,14 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fa" dir="rtl">
-      <body className="bg-background text-foreground">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <ClientWrapper categoryNav={<CategoryNav />}>
-            {children}
-          </ClientWrapper>
-        </ThemeProvider>
-      </body>
-    </html>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <ClientWrapper categoryNav={<CategoryNav />}>{children}</ClientWrapper>
+    </ThemeProvider>
   );
 }

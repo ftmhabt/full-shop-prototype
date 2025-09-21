@@ -15,7 +15,6 @@ import { provinces } from "@/lib/locations";
 import { AddressInput, addressSchema } from "@/lib/validations";
 import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState, useTransition } from "react";
-import toast from "react-hot-toast";
 
 interface AddressFormProps {
   onClose?: () => void;
@@ -36,6 +35,9 @@ export default function AddressForm({
     postalCode: "",
   });
 
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof AddressInput, string>>
+  >({});
   const [cities, setCities] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
   const controls = useAnimation();
@@ -64,6 +66,7 @@ export default function AddressForm({
     }
     loadUserDefaults();
   }, []);
+
   const handleProvinceChange = (value: string) => {
     setForm((f) => ({ ...f, province: value, city: "" }));
     const selected = provinces.find((p) => p.province === value);
@@ -74,16 +77,27 @@ export default function AddressForm({
     e.preventDefault();
 
     const parsed = addressSchema.safeParse(form);
+
     if (!parsed.success) {
-      toast.error("لطفا تمام فیلدها را به درستی پر کنید.");
+      const fieldErrors: Partial<Record<keyof AddressInput, string>> = {};
+
+      // Use 'issues' instead of 'errors'
+      parsed.error.issues.forEach((issue) => {
+        const field = issue.path[0];
+        if (field && typeof field === "string" && field in form) {
+          fieldErrors[field as keyof AddressInput] = issue.message;
+        }
+      });
+
+      setErrors(fieldErrors);
       return;
     }
 
+    setErrors({});
     startTransition(async () => {
       try {
-        await createAddress(form); // سرور اکشن
-        toast.success("آدرس با موفقیت اضافه شد.");
-        onClose?.();
+        await createAddress(form);
+        // Clear form on success
         setForm({
           title: "",
           fullName: "",
@@ -93,12 +107,18 @@ export default function AddressForm({
           address: "",
           postalCode: "",
         });
+        onClose?.();
       } catch (err) {
         console.error(err);
-        toast.error("خطا در افزودن آدرس.");
+        alert("خطا در افزودن آدرس."); // You can replace with toast if you want
       }
     });
   }
+
+  const renderError = (field: keyof AddressInput) => {
+    if (!errors[field]) return null;
+    return <p className="text-destructive text-xs mt-1">{errors[field]}</p>;
+  };
 
   return (
     <motion.div
@@ -111,82 +131,102 @@ export default function AddressForm({
         dir="rtl"
         className="border p-4 rounded shadow space-y-3 mt-4"
       >
-        <Input
-          placeholder="عنوان"
-          value={form.title}
-          onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-        />
-        <Input
-          placeholder="نام کامل گیرنده"
-          value={form.fullName}
-          onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))}
-        />
-        <Input
-          placeholder="شماره تماس گیرنده"
-          value={form.phone}
-          onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-        />
+        <div>
+          <Input
+            placeholder="عنوان"
+            value={form.title}
+            onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+          />
+          {renderError("title")}
+        </div>
 
-        <Select
-          value={form.province}
-          onValueChange={handleProvinceChange}
-          disabled={isPending}
-        >
-          <SelectTrigger className="w-full border rounded-md px-3 py-2  flex items-center justify-between flex-row-reverse">
-            <SelectValue placeholder="انتخاب استان" />
-          </SelectTrigger>
-          <SelectContent
-            dir="rtl"
-            className="w-full  shadow-lg rounded-md max-h-60 overflow-auto text-right"
+        <div>
+          <Input
+            placeholder="نام کامل گیرنده"
+            value={form.fullName}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, fullName: e.target.value }))
+            }
+          />
+          {renderError("fullName")}
+        </div>
+
+        <div>
+          <Input
+            placeholder="شماره تماس گیرنده"
+            value={form.phone}
+            onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+          />
+          {renderError("phone")}
+        </div>
+
+        <div>
+          <Select
+            value={form.province}
+            onValueChange={handleProvinceChange}
+            disabled={isPending}
           >
-            {provinces.map((p) => (
-              <SelectItem
-                key={p.province}
-                value={p.province}
-                className="cursor-pointer px-4 py-2 hover:bg-gray-100 text-right"
-              >
-                {p.province}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+            <SelectTrigger className="w-full border rounded-md px-3 py-2  flex items-center justify-between flex-row-reverse">
+              <SelectValue placeholder="انتخاب استان" />
+            </SelectTrigger>
+            <SelectContent
+              dir="rtl"
+              className="w-full shadow-lg rounded-md max-h-60 overflow-auto text-right"
+            >
+              {provinces.map((p) => (
+                <SelectItem key={p.province} value={p.province}>
+                  {p.province}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {renderError("province")}
+        </div>
 
-        <Select
-          value={form.city}
-          onValueChange={(v) => setForm((f) => ({ ...f, city: v }))}
-          disabled={!form.province || isPending}
-        >
-          <SelectTrigger className="w-full border rounded-md px-3 py-2  flex items-center justify-between flex-row-reverse">
-            <SelectValue placeholder="انتخاب شهر" />
-          </SelectTrigger>
-          <SelectContent
-            dir="rtl"
-            className="w-full  shadow-lg rounded-md max-h-60 overflow-auto"
+        <div>
+          <Select
+            value={form.city}
+            onValueChange={(v) => setForm((f) => ({ ...f, city: v }))}
+            disabled={!form.province || isPending}
           >
-            {cities.map((c) => (
-              <SelectItem
-                key={c}
-                value={c}
-                className="cursor-pointer px-4 py-2 hover:bg-gray-100 text-right"
-              >
-                {c}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+            <SelectTrigger className="w-full border rounded-md px-3 py-2 flex items-center justify-between flex-row-reverse">
+              <SelectValue placeholder="انتخاب شهر" />
+            </SelectTrigger>
+            <SelectContent
+              dir="rtl"
+              className="w-full shadow-lg rounded-md max-h-60 overflow-auto"
+            >
+              {cities.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {renderError("city")}
+        </div>
 
-        <Input
-          placeholder="آدرس دقیق"
-          value={form.address}
-          onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
-        />
-        <Input
-          placeholder="کد پستی"
-          value={form.postalCode}
-          onChange={(e) =>
-            setForm((f) => ({ ...f, postalCode: e.target.value }))
-          }
-        />
+        <div>
+          <Input
+            placeholder="آدرس دقیق"
+            value={form.address}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, address: e.target.value }))
+            }
+          />
+          {renderError("address")}
+        </div>
+
+        <div>
+          <Input
+            placeholder="کد پستی"
+            value={form.postalCode}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, postalCode: e.target.value }))
+            }
+          />
+          {renderError("postalCode")}
+        </div>
 
         <div className="flex gap-2">
           <Button type="submit" disabled={isPending}>

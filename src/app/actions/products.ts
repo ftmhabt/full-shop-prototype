@@ -40,7 +40,6 @@ export async function getProductBySlug(
 export async function getCategories() {
   return db.category.findMany({
     select: { id: true, name: true, slug: true },
-    orderBy: { name: "asc" },
   });
 }
 

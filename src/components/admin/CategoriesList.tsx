@@ -6,6 +6,8 @@ import { Trash } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { ConfirmDialogButton } from "../common/ConfirmDialogButton";
+import { DynamicIcon } from "../DynamicIcon";
+import { CategoryDialog } from "./CreateCategoryDialog";
 
 export function CategoriesList({ categories }: { categories: any[] }) {
   const handleDelete = async (id: string) => {
@@ -26,14 +28,23 @@ export function CategoriesList({ categories }: { categories: any[] }) {
           className="border rounded-lg p-4 shadow-sm flex flex-col justify-between"
         >
           <div>
-            <h3 className="font-bold text-lg">{cat.name}</h3>
-            <p className="text-sm text-muted-foreground">slug: {cat.slug}</p>
+            <div className="flex gap-2">
+              <h3 className="font-bold text-lg">{cat.name}</h3>
+              <DynamicIcon iconName={cat.icon} className="text-primary/70" />
+            </div>
+            <p className="text-sm text-muted-foreground italic"> {cat.slug}</p>
           </div>
-          <div className="flex justify-between mt-4">
-            <Link href={`/admin/categories/${cat.id}/attributes`}>
-              <Button size="sm">مدیریت ویژگی‌ها</Button>
-            </Link>
 
+          <div className="flex justify-between mt-4 gap-2">
+            <Link
+              href={`/admin/categories/${cat.id}/attributes`}
+              className="ml-auto"
+            >
+              <Button variant="outline" size="sm">
+                مدیریت ویژگی‌ها
+              </Button>
+            </Link>
+            <CategoryDialog initialValues={cat} />
             <ConfirmDialogButton
               buttonText={<Trash color="white" />}
               dialogTitle="حذف دسته"

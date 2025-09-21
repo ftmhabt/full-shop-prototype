@@ -1,6 +1,6 @@
 "use client";
 
-import { createCategory } from "@/app/actions/admin/categories";
+import { createCategory, updateCategory } from "@/app/actions/admin/categories";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useSlugValidator } from "@/hooks/useSlugValidator";
+import { Edit } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -22,13 +23,19 @@ const IconPicker = dynamic(
   { ssr: false }
 );
 
-export function CreateCategoryDialog() {
+export function CategoryDialog({
+  initialValues,
+}: {
+  initialValues?: { id: string; name: string; slug: string; icon: IconName };
+}) {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
+  const [name, setName] = useState(initialValues?.name ?? "");
+  const [slug, setSlug] = useState(initialValues?.slug ?? "");
+  const [icon, setIcon] = useState<IconName>(
+    (initialValues?.icon as IconName) ?? "Box"
+  );
 
   const { isValid, errorMessage } = useSlugValidator(slug);
-  const [icon, setIcon] = useState<IconName>("Box");
 
   const handleCreate = async () => {
     if (!isValid) {
@@ -37,7 +44,9 @@ export function CreateCategoryDialog() {
     if (!name || !slug) return toast.error("نام و اسلاگ الزامی است");
 
     try {
-      await createCategory({ name, slug, icon });
+      if (initialValues)
+        await updateCategory(initialValues.id, { name, slug, icon });
+      else await createCategory({ name, slug, icon });
       toast.success("دسته با موفقیت ایجاد شد");
       setOpen(false);
       setName("");
@@ -51,11 +60,13 @@ export function CreateCategoryDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>ایجاد دسته جدید</Button>
+        <Button>{initialValues ? <Edit /> : "ایجاد دسته جدید"}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>ایجاد دسته جدید</DialogTitle>
+          <DialogTitle>
+            {initialValues ? "ویرایش دسته" : "ایجاد دسته جدید"}
+          </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <Input
@@ -74,7 +85,9 @@ export function CreateCategoryDialog() {
           <IconPicker value={icon} onChange={setIcon} />
         </div>
         <DialogFooter>
-          <Button onClick={handleCreate}>ایجاد</Button>
+          <Button onClick={handleCreate}>
+            {initialValues ? "ویرایش" : "ایجاد"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

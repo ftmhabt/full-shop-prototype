@@ -13,6 +13,22 @@ export async function createCategory(data: {
   return category;
 }
 
+export async function updateCategory(
+  id: string,
+  data: {
+    name: string;
+    slug: string;
+    icon?: string;
+  }
+) {
+  const category = await db.category.update({
+    where: { id },
+    data,
+  });
+  revalidatePath("/admin/categories");
+  return category;
+}
+
 export async function deleteCategory(id: string) {
   await db.category.delete({ where: { id } });
   revalidatePath("/admin/categories");

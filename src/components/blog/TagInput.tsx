@@ -14,8 +14,8 @@ import { Label } from "@/components/ui/label";
 import { useSlugValidator } from "@/hooks/useSlugValidator";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import Select from "react-select";
 import slugify from "slugify";
+import { ShadcnSelect } from "../ShadcnSelect";
 
 type OptionType = {
   value: string;
@@ -75,7 +75,7 @@ export function TagInput({
 
   return (
     <div className="flex flex-col gap-2">
-      <Select
+      <ShadcnSelect
         value={selectedTags}
         onChange={(selected) => onTagsChange(selected as OptionType[])}
         options={availableTags}

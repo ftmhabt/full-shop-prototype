@@ -19,8 +19,8 @@ import StarterKit from "@tiptap/starter-kit";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import toast from "react-hot-toast";
-import Select from "react-select";
 import slugify from "slugify";
+import { ShadcnSelect } from "../ShadcnSelect";
 import { Button } from "../ui/button";
 import Editor from "./Editor";
 import { TagInput } from "./TagInput";
@@ -212,9 +212,9 @@ export default function BlogEditor({
           {/* Category */}
           <div className="flex flex-col gap-1">
             <Label>دسته‌بندی</Label>
-            <Select
+            <ShadcnSelect
               value={category}
-              onChange={setCategory}
+              onChange={(val) => setCategory(val as OptionType | null)}
               options={categories}
               placeholder="انتخاب دسته‌بندی"
               isRtl
@@ -222,7 +222,7 @@ export default function BlogEditor({
           </div>
           {/* Tags */}
           <div className="flex flex-col gap-1">
-            <Label>تگ‌ها</Label>
+            <Label>برچسب‌ها</Label>
             <TagInput
               selectedTags={tags}
               availableTags={availableTags}

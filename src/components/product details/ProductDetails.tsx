@@ -61,7 +61,7 @@ export default function ProductDetails({
                 key={i}
                 onClick={() => setActiveImage(img)}
                 className={`w-16 h-16 relative border rounded-lg ${
-                  activeImage === img ? "border-blue-500" : ""
+                  activeImage === img ? "border-primary" : ""
                 }`}
               >
                 <FallbackImage

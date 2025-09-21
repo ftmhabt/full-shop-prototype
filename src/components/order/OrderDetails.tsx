@@ -69,7 +69,7 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
                 href={`https://tracking.post.ir/${order.trackingCode}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 underline"
+                className="underline"
               >
                 {order.trackingCode}
               </a>

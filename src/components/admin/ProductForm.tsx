@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useSlugValidator } from "@/hooks/useSlugValidator";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import Image from "next/image";
@@ -79,6 +80,9 @@ export default function ProductForm({
       attributeValueIds: initialData?.attributeValueIds || [],
     },
   });
+  const slugValue = form.watch("slug");
+  const { isValid, errorMessage } = useSlugValidator(slugValue);
+  const showError = slugValue.trim().length > 0 && !isValid;
 
   const selectedAttributes = useMemo(() => {
     return attributes.filter((a) => a.categoryId === form.watch("categoryId"));
@@ -115,6 +119,9 @@ export default function ProductForm({
   }
 
   function onSubmit(values: FormValues) {
+    if (!isValid) {
+      return form.setError("slug", { message: errorMessage || "Invalid slug" });
+    }
     startTransition(async () => {
       if (initialData) {
         await updateProduct({
@@ -166,8 +173,15 @@ export default function ProductForm({
               <FormItem>
                 <FormLabel>Slug</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    {...field}
+                    className={showError ? "border-destructive" : ""}
+                  />
                 </FormControl>
+                {/* Show hook-based error if slug is invalid */}
+                {showError && errorMessage && (
+                  <p className="text-destructive text-xs">{errorMessage}</p>
+                )}
                 <FormMessage />
               </FormItem>
             )}

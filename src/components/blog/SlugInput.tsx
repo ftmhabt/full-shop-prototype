@@ -8,6 +8,7 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
+import { useSlugValidator } from "@/hooks/useSlugValidator";
 import { useState } from "react";
 
 interface SlugFieldProps {
@@ -19,6 +20,9 @@ interface SlugFieldProps {
 export function SlugField({ value, onChange, productSlugs }: SlugFieldProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState(value);
+
+  const { isValid, errorMessage } = useSlugValidator(search);
+  const showError = search.trim().length > 0 && !isValid;
 
   const filteredSlugs = productSlugs.filter((slug) =>
     slug.toLowerCase().includes(search.toLowerCase())
@@ -45,6 +49,7 @@ export function SlugField({ value, onChange, productSlugs }: SlugFieldProps) {
         onChange={(e) => handleChange(e.target.value)}
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
+        className={showError ? "border-destructive" : ""}
       />
 
       {open && filteredSlugs.length > 0 && (
@@ -65,6 +70,10 @@ export function SlugField({ value, onChange, productSlugs }: SlugFieldProps) {
             </CommandGroup>
           </Command>
         </div>
+      )}
+
+      {showError && errorMessage && (
+        <p className="text-destructive text-xs">{errorMessage}</p>
       )}
 
       <p className="text-xs text-muted-foreground mt-1">

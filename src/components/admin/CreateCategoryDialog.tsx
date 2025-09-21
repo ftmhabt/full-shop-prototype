@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useSlugValidator } from "@/hooks/useSlugValidator";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -25,11 +26,15 @@ export function CreateCategoryDialog() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
-  // const [icon, setIcon] = useState("Box");
+
+  const { isValid, errorMessage } = useSlugValidator(slug);
   const [icon, setIcon] = useState<IconName>("Box");
 
   const handleCreate = async () => {
-    if (!name || !slug) return toast.error("نام و slug الزامی است");
+    if (!isValid) {
+      return toast.error(errorMessage);
+    }
+    if (!name || !slug) return toast.error("نام و اسلاگ الزامی است");
 
     try {
       await createCategory({ name, slug, icon });
@@ -54,15 +59,18 @@ export function CreateCategoryDialog() {
         </DialogHeader>
         <div className="space-y-4">
           <Input
-            placeholder="نام دسته"
+            placeholder="نام"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
           <Input
-            placeholder="slug دسته"
+            placeholder="اسلاگ"
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
           />
+          {errorMessage && (
+            <p className="text-destructive text-sm">{errorMessage}</p>
+          )}
           <IconPicker value={icon} onChange={setIcon} />
         </div>
         <DialogFooter>

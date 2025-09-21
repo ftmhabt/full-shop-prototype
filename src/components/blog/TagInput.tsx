@@ -11,7 +11,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSlugValidator } from "@/hooks/useSlugValidator";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import Select from "react-select";
 import slugify from "slugify";
 
@@ -36,7 +38,8 @@ export function TagInput({
   const [open, setOpen] = useState(false);
   const [newTagName, setNewTagName] = useState("");
   const [newTagSlug, setNewTagSlug] = useState("");
-
+  const { isValid, errorMessage } = useSlugValidator(newTagSlug);
+  const showError = newTagSlug.trim().length > 0 && !isValid;
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
     setNewTagName(name);
@@ -50,6 +53,9 @@ export function TagInput({
   };
 
   const handleAddTag = () => {
+    if (!isValid) {
+      return toast.error(errorMessage);
+    }
     if (!newTagName.trim()) return;
 
     const newTag = {
@@ -100,7 +106,11 @@ export function TagInput({
               <Input
                 value={newTagSlug}
                 onChange={(e) => setNewTagSlug(e.target.value)}
+                className={showError ? "border-destructive" : ""}
               />
+              {showError && (
+                <p className="text-destructive text-xs">{errorMessage}</p>
+              )}
             </div>
           </div>
 

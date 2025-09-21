@@ -5,11 +5,9 @@ import {
   updateAttributeWithValues,
 } from "@/app/actions/admin/attributes";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Trash } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { ConfirmDialogButton } from "../common/ConfirmDialogButton";
+import AttributeRow from "./AttributeRow";
 
 // ----- Types -----
 export interface AttributeValue {
@@ -37,7 +35,6 @@ export function AttributesList({
 }: AttributesListProps) {
   const [rows, setRows] = useState<Attribute[]>(attributes);
   const [savingAll, setSavingAll] = useState(false);
-
   // تغییر Name / Slug
   const handleChange = (id: string, field: keyof Attribute, value: string) => {
     setRows((prev) =>
@@ -162,74 +159,16 @@ export function AttributesList({
       </div>
       <div className="mb-[70px] sm:mb-0 space-y-4">
         {rows.map((row) => (
-          <div
+          <AttributeRow
             key={row.id}
-            className="border rounded-lg p-4 shadow-sm space-y-3 md:space-y-0 md:flex md:items-stretch md:gap-4 "
-          >
-            {/* Name / Slug */}
-            <div className="flex flex-col md:flex-row gap-2 md:gap-4 flex-1">
-              <Input
-                value={row.name}
-                placeholder="نام ویژگی"
-                onChange={(e) => handleChange(row.id, "name", e.target.value)}
-                onBlur={() => handleSave(row)}
-                onKeyDown={(e) => e.key === "Enter" && handleSave(row)}
-                className="flex-1"
-              />
-              <Input
-                value={row.slug}
-                placeholder="Slug ویژگی"
-                onChange={(e) => handleChange(row.id, "slug", e.target.value)}
-                onBlur={() => handleSave(row)}
-                onKeyDown={(e) => e.key === "Enter" && handleSave(row)}
-                className="flex-1"
-              />
-            </div>
-            <div className="block md:hidden border-b border-b-primary/40" />
-            {/* مقادیر */}
-            <div className="flex-1 space-y-2 mt-2 md:mt-0">
-              {row.values.map((v, i) => (
-                <div className="flex items-center gap-2" key={v.id || i}>
-                  <Input
-                    value={v.value}
-                    placeholder={`مقدار ${i + 1}`}
-                    onChange={(e) =>
-                      handleValueChange(row.id, i, e.target.value)
-                    }
-                    onBlur={() => handleSave(row)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSave(row)}
-                  />
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleDeleteValue(row.id, i)}
-                  >
-                    <Trash />
-                  </Button>
-                </div>
-              ))}
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleAddValue(row.id)}
-              >
-                + افزودن مقدار جدید
-              </Button>
-            </div>
-
-            {/* دکمه حذف */}
-            <div className="flex flex-col justify-between gap-2 mt-2 md:mt-0 self-stretch">
-              <ConfirmDialogButton
-                buttonText={<Trash />}
-                dialogTitle="حذف ویژگی"
-                dialogDescription="آیا از حذف این ویژگی مطمئنید؟"
-                onConfirm={() => handleDelete(row.id)}
-                // className="min-h-[40px] sm:h-full"
-                variant="destructive"
-                size="sm"
-              />
-            </div>
-          </div>
+            row={row}
+            onChange={handleChange}
+            onSave={handleSave}
+            onValueChange={handleValueChange}
+            onAddValue={handleAddValue}
+            onDelete={handleDelete}
+            onDeleteValue={handleDeleteValue}
+          />
         ))}
       </div>
       {/* موبایل: دکمه فیکس پایین صفحه */}

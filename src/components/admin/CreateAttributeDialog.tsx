@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useSlugValidator } from "@/hooks/useSlugValidator";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -19,7 +20,7 @@ export function CreateAttributeDialog({ categoryId }: { categoryId: string }) {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [values, setValues] = useState<string[]>([""]);
-
+  const { isValid, errorMessage } = useSlugValidator(slug);
   const handleAddValue = () => setValues([...values, ""]);
   const handleChangeValue = (i: number, val: string) => {
     const newVals = [...values];
@@ -28,6 +29,9 @@ export function CreateAttributeDialog({ categoryId }: { categoryId: string }) {
   };
 
   const handleCreate = async () => {
+    if (!isValid) {
+      return toast.error(errorMessage);
+    }
     if (!name || !slug) return toast.error("نام و slug الزامی است");
 
     try {
@@ -67,7 +71,9 @@ export function CreateAttributeDialog({ categoryId }: { categoryId: string }) {
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
           />
-
+          {errorMessage && (
+            <p className="text-destructive text-sm">{errorMessage}</p>
+          )}
           <div className="space-y-2">
             <label className="text-sm font-medium">مقادیر</label>
             {values.map((v, i) => (

@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useSlugValidator } from "@/hooks/useSlugValidator";
 import { ReactNode, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -26,9 +27,14 @@ export function BlogTagDialog({
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(initialData?.name || "");
   const [slug, setSlug] = useState(initialData?.slug || "");
+  const { isValid, errorMessage } = useSlugValidator(slug);
+
   const isEditing = Boolean(initialData);
 
   const handleSubmit = async () => {
+    if (!isValid) {
+      return toast.error(errorMessage);
+    }
     if (!name || !slug) return toast.error("نام و اسلاگ الزامی است");
 
     try {
@@ -70,7 +76,11 @@ export function BlogTagDialog({
             placeholder="اسلاگ برچسب"
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
+            className={!isValid ? "border-destructive" : ""}
           />
+          {errorMessage && (
+            <span className="text-destructive text-sm">{errorMessage}</span>
+          )}
         </div>
         <DialogFooter>
           <Button onClick={handleSubmit}>

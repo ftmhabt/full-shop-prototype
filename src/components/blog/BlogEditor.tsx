@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useSlugValidator } from "@/hooks/useSlugValidator";
 import GapCursor from "@tiptap/extension-gapcursor";
 import HardBreak from "@tiptap/extension-hard-break";
 import TextAlign from "@tiptap/extension-text-align";
@@ -54,6 +55,7 @@ export default function BlogEditor({
 }: BlogEditorProps) {
   const [title, setTitle] = useState(initialData?.title || "");
   const [slug, setSlug] = useState(initialData?.slug || "");
+  const { isValid, errorMessage } = useSlugValidator(slug);
   const [excerpt, setExcerpt] = useState(initialData?.excerpt || "");
   const [category, setCategory] = useState<OptionType | null>(
     initialData?.category
@@ -110,6 +112,11 @@ export default function BlogEditor({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isValid) {
+      toast.error(errorMessage);
+      return;
+    }
 
     const data = {
       id: initialData?.id,
@@ -190,6 +197,7 @@ export default function BlogEditor({
               onChange={(e) => setSlug(e.target.value)}
               placeholder="اسلاگ پست"
             />
+            {errorMessage && <p className="text-destructive">{errorMessage}</p>}
           </div>
           {/* Excerpt */}
           <div className="flex flex-col gap-1">

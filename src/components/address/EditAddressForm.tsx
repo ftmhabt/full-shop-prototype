@@ -19,7 +19,7 @@ import toast from "react-hot-toast";
 
 interface EditAddressFormProps {
   address: Address;
-  onClose: () => void; // ترکیب Cancel + Success
+  onClose: () => void;
 }
 
 export default function EditAddressForm({

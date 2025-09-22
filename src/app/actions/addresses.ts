@@ -26,7 +26,7 @@ export async function updateAddress(
   const parsed = addressSchema.safeParse(data);
   if (!parsed.success) throw new Error("Invalid data");
 
-  await db.address.update({
+  await db.address.updateMany({
     where: { id, userId },
     data: parsed.data,
   });

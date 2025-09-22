@@ -18,18 +18,19 @@ export async function createAddress(data: AddressInput) {
   revalidatePath("/dashboard/cart/checkout");
 }
 
-export async function updateAddress(
-  id: string,
-  userId: string,
-  data: AddressInput
-) {
+export async function updateAddress(id: string, data: AddressInput) {
+  const userId = (await getCurrentUserId()) as string;
   const parsed = addressSchema.safeParse(data);
   if (!parsed.success) throw new Error("Invalid data");
 
-  await db.address.updateMany({
+  const result = await db.address.updateMany({
     where: { id, userId },
     data: parsed.data,
   });
+
+  if (result.count === 0) {
+    throw new Error("Address not found or you do not have permission.");
+  }
 
   revalidatePath("/dashboard/addresses");
 }

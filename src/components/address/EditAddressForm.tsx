@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/select";
 import { provinces } from "@/lib/locations";
 import { AddressInput, addressSchema } from "@/lib/validations";
-import { useUser } from "@/store/useUser";
 import { Address } from "@/types";
 import { useState, useTransition } from "react";
 import toast from "react-hot-toast";
@@ -44,7 +43,6 @@ export default function EditAddressForm({
   );
 
   const [isPending, startTransition] = useTransition();
-  const userId = useUser((state) => state.userId);
 
   function handleProvinceChange(value: string) {
     setForm((f) => ({ ...f, province: value, city: "" }));
@@ -76,7 +74,7 @@ export default function EditAddressForm({
     setErrors({});
     startTransition(async () => {
       try {
-        await updateAddress(address.id, userId || "", form);
+        await updateAddress(address.id, form);
         toast.success("آدرس با موفقیت ویرایش شد.");
         onClose();
       } catch (err) {

@@ -49,6 +49,7 @@ export default function AddressList({ addresses }: AddressesPageProps) {
                 />
               ) : (
                 <>
+                  <h1 className="mb-2 font-bold">{addr.title}</h1>
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4 text-gray-500" />
                     <span>{addr.fullName}</span>

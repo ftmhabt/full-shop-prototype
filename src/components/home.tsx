@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import {
   Camera,
   ChevronRight,
+  Cog,
   CreditCard,
   Headphones,
   Percent,
@@ -26,6 +27,7 @@ import Hero from "@/components/home/Hero";
 import HotProducts from "@/components/home/HotProducts";
 import NewProducts from "@/components/home/NewProducts";
 import db from "@/lib/db";
+import Link from "next/link";
 import { FallbackImage } from "./FallbackImage";
 
 const ICONS = [
@@ -120,6 +122,34 @@ function DealStrip() {
           <Button variant="outline" className="rounded-full">
             مشاهده همه
           </Button>
+        </CardContent>
+      </Card>
+    </section>
+  );
+}
+
+function BuilderStrip() {
+  return (
+    <section className="mt-6">
+      <Card className="rounded-3xl border-dashed">
+        <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-6">
+          <div className="flex flex-col gap-2 text-sm sm:text-base">
+            <div className="flex items-center gap-2">
+              <Cog className="h-5 w-5 text-primary hidden sm:block" />
+              <h1 className="font-bold text-lg">
+                دستگاه دلخواهت رو همینجا بساز
+              </h1>
+            </div>
+
+            <div>
+              از هر دسته، قطعه‌ی مناسب رو انتخاب کن و سیستم امنیتی اختصاصی خودت
+              رو مونتاژ کن — سریع، ساده و با نمایش قیمت لحظه‌ای.
+            </div>
+          </div>
+
+          <Link href="/builder">
+            <Button className="rounded-full">شروع انتخاب قطعات</Button>
+          </Link>
         </CardContent>
       </Card>
     </section>
@@ -366,7 +396,8 @@ export default async function HomePage() {
     <main dir="rtl" className="container mx-auto max-w-7xl px-3 py-6">
       <Hero heroSlides={heroSlides} />
       <CategorySection categories={standardizedCategories} />
-      <DealStrip />
+      {/* <DealStrip /> */}
+      <BuilderStrip />
       <NewProducts products={newProducts} />
       <HotProducts products={popularProducts} />
       <PromoRow />

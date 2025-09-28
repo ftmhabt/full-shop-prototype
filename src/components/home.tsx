@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   Camera,
+  ChevronLeft,
   ChevronRight,
   Cog,
   CreditCard,
@@ -22,13 +23,16 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
+import { get4BlogPosts } from "@/app/actions/blog";
 import CategorySection, { IconName } from "@/components/home/CategorySection";
 import Hero from "@/components/home/Hero";
 import HotProducts from "@/components/home/HotProducts";
 import NewProducts from "@/components/home/NewProducts";
 import db from "@/lib/db";
+import { BlogPost, Category, User } from "@prisma/client";
 import Link from "next/link";
 import { FallbackImage } from "./FallbackImage";
+import BlogPostCard from "./blog/BlogPostCard";
 
 const ICONS = [
   "Siren",
@@ -44,39 +48,6 @@ const ICONS = [
   "Bell",
   "Wifi",
 ];
-
-// const categories = [
-//   {
-//     id: 1,
-//     label: "دزدگیر اماکن",
-//     slug: "alarm-systems",
-//     icon: <Siren className="h-6 w-6" />,
-//   },
-//   {
-//     id: 2,
-//     label: "دوربین مداربسته",
-//     slug: "cctv-cameras",
-//     icon: <Camera className="h-6 w-6" />,
-//   },
-//   {
-//     id: 3,
-//     label: "لوازم جانبی",
-//     slug: "accessories",
-//     icon: <Cable className="h-6 w-6" />,
-//   },
-//   {
-//     id: 4,
-//     label: "کنترل تردد",
-//     slug: "access-control",
-//     icon: <Lock className="h-6 w-6" />,
-//   },
-//   {
-//     id: 5,
-//     label: "هوشمندسازی",
-//     slug: "smart-home",
-//     icon: <Shield className="h-6 w-6" />,
-//   },
-// ];
 
 const brands = ["azer", "classic", "futal", "silex", "melsec", "dahua"];
 
@@ -242,38 +213,35 @@ function BrandStrip() {
   );
 }
 
-function BlogRow() {
+function BlogRow({
+  blogPosts,
+}: {
+  blogPosts: (BlogPost & {
+    category: Category;
+    author: User;
+  })[];
+}) {
   return (
     <section className="mt-12">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-bold">مطالب خواندنی</h2>
-        <Button variant="ghost" size="sm" className="gap-1">
-          مشاهده همه <ChevronRight className="h-4 w-4" />
-        </Button>
+        <Link href="/blog">
+          <Button variant="ghost" size="sm" className="gap-1">
+            مشاهده همه <ChevronLeft className="h-4 w-4" />
+          </Button>
+        </Link>
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-        {posts.map((p) => (
-          <Card key={p.id} className="overflow-hidden rounded-2xl">
-            <div className="relative h-40 w-full">
-              <FallbackImage
-                src={p.image}
-                alt={p.title}
-                fill
-                className="object-cover"
-              />
-            </div>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">{p.title}</CardTitle>
-              <CardDescription className="line-clamp-2">
-                {p.excerpt}
-              </CardDescription>
-            </CardHeader>
-            <CardFooter>
-              <Button size="sm" variant="secondary" className="rounded-full">
-                ادامه مطلب
-              </Button>
-            </CardFooter>
-          </Card>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {blogPosts.map((post) => (
+          <BlogPostCard
+            key={post.id}
+            categorySlug={post.category?.slug || ""}
+            slug={post.slug}
+            title={post.title}
+            excerpt={post.excerpt || ""}
+            author={post.author.displayName || ""}
+            date={new Date(post.createdAt).toLocaleDateString("fa-IR")}
+          />
         ))}
       </div>
     </section>
@@ -391,7 +359,7 @@ export default async function HomePage() {
       icon: iconKey,
     };
   });
-
+  const blogPosts = await get4BlogPosts();
   return (
     <main dir="rtl" className="container mx-auto max-w-7xl px-3 py-6">
       <Hero heroSlides={heroSlides} />
@@ -403,7 +371,7 @@ export default async function HomePage() {
       <PromoRow />
       <Collections />
       <BrandStrip />
-      <BlogRow />
+      <BlogRow blogPosts={blogPosts} />
       <ServiceBar />
       <Newsletter />
     </main>

@@ -15,6 +15,18 @@ export async function getBlogPosts() {
   });
 }
 
+export async function get4BlogPosts() {
+  return db.blogPost.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      tags: true,
+      category: true,
+      author: true,
+    },
+    take: 4,
+  });
+}
+
 const BlogPostSchema = z.object({
   id: z.string().optional(),
   title: z.string().min(3),

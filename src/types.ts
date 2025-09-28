@@ -47,3 +47,15 @@ export interface CartItem {
 }
 
 export type OrderStep = "address" | "cart" | "review" | "payment" | "success";
+
+export type BlogPostCardProps = {
+  categorySlug: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  author: string;
+  date: string;
+  imageUrl?: string;
+  authorAvatarUrl?: string;
+  onClick?: () => void;
+};

@@ -56,7 +56,7 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
 
   // Calculate totals
   const totalPrice = order.items.reduce(
-    (sum: number, i: any) => sum + i.price * i.quantity,
+    (sum: number, i: any) => sum + i.product.price * i.quantity,
     0
   );
 

@@ -20,6 +20,7 @@ import {
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import OrderStatusDialog from "./OrderStatusDropdown";
 
 // --- Utility: ensure all Prisma dates are serialized as ISO strings ---
@@ -279,37 +280,36 @@ export default function OrdersList({
       {/* --- Mobile Cards --- */}
       <div className="grid gap-4 md:hidden">
         {filteredOrders.map((order) => {
-          const fullName = `${order.user.firstName ?? ""} ${
-            order.user.lastName ?? ""
-          }`.trim();
+          const fullName = `${
+            order.fullName || order.user.firstName + "" + order.user.lastName
+          } ${order.user.lastName ?? ""}`.trim();
 
           return (
-            <div
-              key={order.id}
-              className="border rounded-lg p-4 shadow-sm  space-y-2"
-            >
-              <div className="flex justify-between items-center">
+            <Card key={order.id}>
+              <CardHeader className="flex justify-between items-center">
                 <span className="font-semibold">سفارش #{order.id}</span>
                 <span className="text-sm text-gray-500">
                   {new Date(order.createdAt).toLocaleDateString("fa-IR")}
                 </span>
-              </div>
+              </CardHeader>
 
-              <p>👤 {fullName || "بدون نام"}</p>
-              <p>📞 {order.user.phone}</p>
-              <p>📦 وضعیت: {order.status}</p>
-              <p>💳 پرداخت: {order.paymentStatus}</p>
-              <p>💰 مبلغ نهایی: {order.finalPrice.toLocaleString()} تومان</p>
-              <p>🚚 ارسال: {order.ShippingMethod?.name ?? "-"}</p>
+              <CardContent>
+                <p>👤 {fullName || "بدون نام"}</p>
+                <p>📞 {order.user.phone}</p>
+                <p>📦 وضعیت: {order.status}</p>
+                <p>💳 پرداخت: {order.paymentStatus}</p>
+                <p>💰 مبلغ نهایی: {order.finalPrice.toLocaleString()} تومان</p>
+                <p>🚚 ارسال: {order.ShippingMethod?.name ?? "-"}</p>
+              </CardContent>
 
-              <div className="flex gap-2">
+              <CardFooter className="flex gap-2">
                 <OrderStatusDialog order={order} />
                 <Link href={`/admin/orders/${order.id}`}>
                   <Button variant="default" size="sm">
                     جزئیات
                   </Button>
                 </Link>
-                <Button
+                {/* <Button
                   variant="outline"
                   size="sm"
                   onClick={() =>
@@ -320,9 +320,9 @@ export default function OrdersList({
                   }
                 >
                   فاکتور
-                </Button>
-              </div>
-            </div>
+                </Button> */}
+              </CardFooter>
+            </Card>
           );
         })}
       </div>

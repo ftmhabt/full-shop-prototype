@@ -30,7 +30,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useSlugValidator } from "@/hooks/useSlugValidator";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
-import Image from "next/image";
+import { FallbackImage } from "../FallbackImage";
 
 const formSchema = z.object({
   name: z.string().min(2),
@@ -374,7 +374,7 @@ export default function ProductForm({
                     }}
                   >
                     <CardContent className="p-0">
-                      <Image
+                      <FallbackImage
                         src={img}
                         alt="preview"
                         width={200}

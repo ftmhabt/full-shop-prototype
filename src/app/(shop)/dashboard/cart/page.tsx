@@ -1,9 +1,9 @@
 "use client";
 
+import { FallbackImage } from "@/components/FallbackImage";
 import { Button } from "@/components/ui/button";
 import { decrease, increase, remove } from "@/store/cartSlice";
 import { selectCartItems, selectCartTotalPrice } from "@/store/selectors";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
@@ -23,7 +23,7 @@ export default function CartPage() {
             className="grid grid-cols-2 sm:grid-cols-3 border p-3 rounded"
           >
             <div className="flex items-center gap-3 col-span-1 sm:col-span-2">
-              <Image
+              <FallbackImage
                 src={item.image || ""}
                 alt={item.name}
                 width={50}

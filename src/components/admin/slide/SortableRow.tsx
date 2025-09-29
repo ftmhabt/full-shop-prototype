@@ -1,11 +1,11 @@
 "use client";
 import { ConfirmDialogButton } from "@/components/common/ConfirmDialogButton";
+import { FallbackImage } from "@/components/FallbackImage";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useSortable } from "@dnd-kit/sortable";
 import { HeroSlide } from "@prisma/client";
 import { GripVertical, Pencil, Trash } from "lucide-react";
-import Image from "next/image";
 
 export default function SortableRow({
   slide,
@@ -36,7 +36,7 @@ export default function SortableRow({
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </td>
       <td className="p-2">
-        <Image
+        <FallbackImage
           src={slide.image}
           alt={slide.title || ""}
           width={100}

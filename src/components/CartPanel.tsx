@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { clear, remove } from "@/store/cartSlice";
 import { selectCartItems, selectCartTotalPrice } from "@/store/selectors";
 import { Trash } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import QuantitySelector from "../components/product details/QuantitySelector";
+import { FallbackImage } from "./FallbackImage";
 
 export default function CartPanel({ onClose }: { onClose?: () => void }) {
   const router = useRouter();
@@ -30,7 +30,7 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
             {/* --- Main Row --- */}
             <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
               <div className="flex items-center gap-3">
-                <Image
+                <FallbackImage
                   src={item.image || "/fallback.png"}
                   alt={item.name}
                   width={56}

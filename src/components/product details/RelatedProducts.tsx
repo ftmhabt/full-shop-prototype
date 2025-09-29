@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { useEffect, useState } from "react";
+import { FallbackImage } from "../FallbackImage";
 
 export default function RelatedProducts({
   categoryId,
@@ -33,7 +33,7 @@ export default function RelatedProducts({
           <Card key={p.id} className="min-w-[200px]">
             <CardContent className="p-2 flex flex-col">
               <div className="relative h-40">
-                <Image
+                <FallbackImage
                   src={p.image}
                   alt={p.name}
                   fill

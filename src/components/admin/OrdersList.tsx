@@ -225,7 +225,14 @@ export default function OrdersList({
 
               return (
                 <TableRow key={order.id}>
-                  <TableCell>{order.id}</TableCell>
+                  <TableCell>
+                    <Link
+                      href={`/admin/orders/${order.id}`}
+                      className="cursor-pointer"
+                    >
+                      {order.id}
+                    </Link>
+                  </TableCell>
                   <TableCell>
                     {order.fullName || fullName || "بدون نام"}
                   </TableCell>
@@ -250,7 +257,7 @@ export default function OrdersList({
                     <Link href={`/admin/orders/${order.id}`}>
                       <Button variant="default">جزئیات</Button>
                     </Link>
-                    <Button
+                    {/* <Button
                       variant="outline"
                       onClick={() =>
                         window.open(
@@ -260,7 +267,7 @@ export default function OrdersList({
                       }
                     >
                       دانلود فاکتور
-                    </Button>
+                    </Button> */}
                   </TableCell>
                 </TableRow>
               );

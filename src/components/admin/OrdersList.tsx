@@ -38,6 +38,9 @@ export type OrderWithUserAndShipping = Prisma.OrderGetPayload<{
   include: {
     user: { select: { firstName: true; lastName: true; phone: true } };
     ShippingMethod: { select: { id: true; name: true; cost: true } };
+    items: {
+      select: { id: true; bundleId: true; product: true; quantity: true };
+    };
   };
 }>;
 
@@ -55,6 +58,8 @@ export default function OrdersList({
   const [timeFilter, setTimeFilter] = useState<
     "ALL" | "DAILY" | "WEEKLY" | "MONTHLY"
   >("ALL");
+  type BundleFilter = "ALL" | "WITH_BUNDLE" | "WITHOUT_BUNDLE";
+  const [bundleFilter, setBundleFilter] = useState<BundleFilter>("ALL");
 
   const filteredOrders = useMemo(() => {
     const now = new Date();
@@ -75,6 +80,14 @@ export default function OrdersList({
       const matchesPayment = paymentFilter
         ? order.paymentStatus === paymentFilter
         : true;
+      const hasBundle = order.items?.some((i) => Boolean(i.bundleId));
+
+      const matchesBundle =
+        bundleFilter === "ALL"
+          ? true
+          : bundleFilter === "WITH_BUNDLE"
+          ? hasBundle
+          : !hasBundle;
 
       let matchesTime = true;
       if (timeFilter === "DAILY") {
@@ -89,9 +102,22 @@ export default function OrdersList({
         matchesTime = created >= monthAgo;
       }
 
-      return matchesSearch && matchesStatus && matchesPayment && matchesTime;
+      return (
+        matchesSearch &&
+        matchesStatus &&
+        matchesPayment &&
+        matchesBundle &&
+        matchesTime
+      );
     });
-  }, [safeOrders, search, statusFilter, paymentFilter, timeFilter]);
+  }, [
+    safeOrders,
+    search,
+    statusFilter,
+    paymentFilter,
+    bundleFilter,
+    timeFilter,
+  ]);
 
   return (
     <div className="space-y-6">
@@ -142,6 +168,19 @@ export default function OrdersList({
             <SelectItem value="MONTHLY">ماهانه</SelectItem>
           </SelectContent>
         </Select>
+        <Select
+          value={bundleFilter}
+          onValueChange={(value) => setBundleFilter(value as BundleFilter)}
+        >
+          <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectValue placeholder="نوع سفارش" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">همه سفارش‌ها</SelectItem>
+            <SelectItem value="WITH_BUNDLE">دارای باندل</SelectItem>
+            <SelectItem value="WITHOUT_BUNDLE">بدون باندل</SelectItem>
+          </SelectContent>
+        </Select>
 
         <Button
           variant="outline"
@@ -150,6 +189,7 @@ export default function OrdersList({
             setStatusFilter("");
             setPaymentFilter("");
             setTimeFilter("ALL");
+            setBundleFilter("ALL");
           }}
           className="w-full sm:w-auto"
         >

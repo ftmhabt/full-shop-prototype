@@ -123,19 +123,54 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
         <CardContent className="space-y-2">
           {order.items.length > 0 ? (
             <ul className="divide-y">
-              {order.items.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex justify-between items-center py-2 text-sm"
-                >
-                  <span>
-                    {item.product.name} × {item.quantity}
-                  </span>
-                  <span>
-                    {formatPrice(item.product.price * item.quantity)} تومان
-                  </span>
-                </li>
-              ))}
+              {/* 1️⃣ Individual items */}
+              {order.items
+                .filter((item) => !item.bundleId)
+                .map((item) => (
+                  <li
+                    key={item.id}
+                    className="flex justify-between py-2 text-sm"
+                  >
+                    <span>
+                      {item.product.name} × {item.quantity}
+                    </span>
+                    <span>
+                      {new Intl.NumberFormat("fa-IR").format(
+                        item.price * item.quantity
+                      )}{" "}
+                      تومان
+                    </span>
+                  </li>
+                ))}
+
+              {/* 2️⃣ Bundled items */}
+              {[
+                ...new Set(order.items.map((i) => i.bundleId).filter(Boolean)),
+              ].map((bundleId) => {
+                const bundleItems = order.items.filter(
+                  (i) => i.bundleId === bundleId
+                );
+                return (
+                  <li key={bundleId} className="pt-2 text-sm">
+                    <span>دستگاه سفارشی {bundleItems[0].bundleLabel}</span>
+                    <ul className="pl-4 mt-1 space-y-1 text-xs text-muted-foreground">
+                      {bundleItems.map((i) => (
+                        <li key={i.id} className="flex justify-between">
+                          <span>
+                            • {i.product.name} × {i.quantity}
+                          </span>
+                          <span>
+                            {new Intl.NumberFormat("fa-IR").format(
+                              i.price * i.quantity
+                            )}{" "}
+                            تومان
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <p className="text-gray-500 text-sm">هیچ محصولی موجود نیست.</p>

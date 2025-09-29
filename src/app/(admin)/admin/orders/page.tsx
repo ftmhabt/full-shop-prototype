@@ -18,6 +18,11 @@ export default async function OrdersPage() {
           cost: true,
         },
       },
+      items: {
+        include: {
+          product: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",

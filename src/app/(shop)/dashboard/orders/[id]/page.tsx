@@ -1,4 +1,4 @@
-import OrderDetailsClient from "@/components/order/OrderDetails";
+import OrderDetails from "@/components/order/OrderDetails";
 import { getCurrentUserId } from "@/lib/auth";
 import { db } from "@/lib/db";
 
@@ -25,5 +25,5 @@ export default async function OrderDetailsPage({ params }: any) {
     );
   }
 
-  return <OrderDetailsClient order={order} />;
+  return <OrderDetails order={order} />;
 }

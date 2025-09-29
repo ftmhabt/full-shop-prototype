@@ -1,14 +1,62 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Prisma } from "@prisma/client";
+import Link from "next/link";
 import { ScrollArea } from "../ui/scroll-area";
 import OrderStatusDropdown from "./OrderStatusDropdown";
 import PaymentStatusDropdown from "./PaymentStatusDropdown";
 
-export default function OrderDetails({ order }: { order: any }) {
+type BundleGroup = {
+  bundleId: string;
+  label: string | null;
+  items: {
+    id: string;
+    product: { name: string; slug: string };
+    price: number;
+    quantity: number;
+    bundleId?: string;
+    bundleLabel?: string;
+  }[];
+};
+export type OrderWithItems = Prisma.OrderGetPayload<{
+  include: {
+    items: { include: { product: true } };
+    ShippingMethod: true;
+    OrderLog: true;
+    user: true;
+  };
+}>;
+export default function OrderDetails({ order }: { order: OrderWithItems }) {
+  // Group items
+  const individualItems = order.items.filter((i) => !i.bundleId);
+
+  const bundleGroups: BundleGroup[] = Object.values(
+    order.items
+      .filter((i) => i.bundleId)
+      .reduce((acc: Record<string, BundleGroup>, item) => {
+        if (!acc[item.bundleId!]) {
+          acc[item.bundleId!] = {
+            bundleId: item.bundleId!,
+            label: item.bundleLabel ?? "بسته سفارشی",
+            items: [],
+          };
+        }
+        acc[item.bundleId!].items.push({
+          id: item.id,
+          product: { name: item.product.name, slug: item.product.slug },
+          price: item.price,
+          quantity: item.quantity,
+          bundleId: item.bundleId ?? undefined,
+          bundleLabel: item.bundleLabel ?? undefined,
+        });
+        return acc;
+      }, {} as Record<string, BundleGroup>)
+  );
+
+  // Calculate totals
   const totalPrice = order.items.reduce(
-    (sum: number, i: any) => sum + i.product.price * i.quantity,
+    (sum: number, i: any) => sum + i.price * i.quantity,
     0
   );
 
@@ -16,13 +64,14 @@ export default function OrderDetails({ order }: { order: any }) {
     <div className="container mx-auto p-4 grid gap-4 md:grid-cols-3">
       {/* ستون اول: اطلاعات سفارش */}
       <div className="md:col-span-2 space-y-4">
+        {/* اطلاعات کاربر */}
         <Card>
           <CardHeader>
             <CardTitle>📌 اطلاعات کاربر</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p>
-              <strong>نام:</strong> {order.user.fullName}
+              <strong>نام:</strong> {order.fullName}
             </p>
             <p>
               <strong>شماره تماس:</strong> {order.user.phone}
@@ -33,26 +82,53 @@ export default function OrderDetails({ order }: { order: any }) {
           </CardContent>
         </Card>
 
+        {/* محصولات سفارش */}
         <Card>
           <CardHeader>
-            <CardTitle>🛒 محصولات سفارش</CardTitle>
+            <CardTitle>🛒 آیتم‌های سفارش</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {order.items.map((item: any) => (
+              {/* 1️⃣ نمایش محصولات تکی */}
+              {individualItems.map((item: any) => (
                 <div
                   key={item.id}
-                  className="flex justify-between border-b pb-2"
+                  className="flex justify-between border-b pb-2 text-sm"
                 >
-                  <span>
+                  <Link
+                    href={`/product/${item.product.id}`}
+                    className="cursor-pointer"
+                  >
                     {item.product.name} × {item.quantity}
+                  </Link>
+                  <span>
+                    {(item.price * item.quantity).toLocaleString()} تومان
                   </span>
-                  <span>{item.product.price.toLocaleString()} تومان</span>
+                </div>
+              ))}
+
+              {/* 2️⃣ نمایش باندل‌ها */}
+              {bundleGroups.map((bundle) => (
+                <div key={bundle.bundleId} className="border-b pb-2">
+                  <p className="font-medium text-sm">{bundle.label}</p>
+                  <ul className="pl-4 mt-1 space-y-1 text-xs text-muted-foreground">
+                    {bundle.items.map((i: any) => (
+                      <li key={i.id} className="flex justify-between">
+                        <Link href={`/product/${i.product.slug}`}>
+                          • {i.product.name} × {i.quantity}
+                        </Link>
+                        <span>
+                          {(i.price * i.quantity).toLocaleString()} تومان
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               ))}
             </div>
-            <Separator className="my-2" />
-            <div className="flex justify-between">
+
+            {/* 3️⃣ جمع کل و تخفیف */}
+            <div className="flex justify-between mt-2">
               <span>مجموع:</span>
               <span>{totalPrice.toLocaleString()} تومان</span>
             </div>
@@ -66,13 +142,15 @@ export default function OrderDetails({ order }: { order: any }) {
             </div>
           </CardContent>
         </Card>
+
+        {/* تاریخچه وضعیت سفارش */}
         <Card>
           <CardHeader>
             <CardTitle>📦 تاریخچه وضعیت سفارش</CardTitle>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-40">
-              {order.OrderLog ? (
+              {order.OrderLog?.length > 0 ? (
                 <ul className="space-y-2">
                   {order.OrderLog.map((log: any) => (
                     <li key={log.id} className="text-sm flex justify-between">

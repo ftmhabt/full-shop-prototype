@@ -31,17 +31,18 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
             <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
               <div className="flex items-center gap-3">
                 <FallbackImage
-                  src={item.image || "/fallback.png"}
+                  src={
+                    item.type === "BUNDLE"
+                      ? "/package.png"
+                      : item.image || "/fallback.png"
+                  }
                   alt={item.name}
                   width={56}
                   height={56}
                   className="rounded-md"
                 />
                 <div className="leading-6">
-                  <p className="font-semibold">
-                    {item.type === "BUNDLE" ? "📦 " : ""}
-                    {item.name}
-                  </p>
+                  <p className="font-semibold">{item.name}</p>
                   <p className="text-sm text-muted-foreground">
                     {new Intl.NumberFormat("fa-IR").format(item.price)} تومان
                   </p>

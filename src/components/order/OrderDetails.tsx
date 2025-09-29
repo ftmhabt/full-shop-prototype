@@ -151,7 +151,7 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
                   (i) => i.bundleId === bundleId
                 );
                 return (
-                  <li key={bundleId} className="pt-2 text-sm">
+                  <li key={bundleId} className="py-2 text-sm">
                     <span>دستگاه سفارشی {bundleItems[0].bundleLabel}</span>
                     <ul className="pl-4 mt-1 space-y-1 text-xs text-muted-foreground">
                       {bundleItems.map((i) => (

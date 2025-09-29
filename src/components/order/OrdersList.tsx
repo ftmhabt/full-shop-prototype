@@ -89,7 +89,7 @@ export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
                     <div key={idx} className="space-y-1">
                       {isBundle && (
                         <p className="font-medium">
-                          📦 {group[0].bundleLabel || "سفارشی"}:
+                          {group[0].bundleLabel || "سفارشی"}:
                         </p>
                       )}
                       {group.map((item) => (

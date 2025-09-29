@@ -266,19 +266,32 @@ export default function DeviceBuilder({
                 </div>
               </div>
             </CardContent>
+
             <CardFooter className="flex flex-col gap-2 sm:flex-row">
-              <Button
-                onClick={handleAddIndividually}
-                disabled={selectedProducts.length === 0 || adding !== null}
-                variant="secondary"
-              >
-                افزودن جداگانه
-              </Button>
               <Button
                 onClick={handleAddAsBundle}
                 disabled={selectedProducts.length === 0 || adding !== null}
               >
-                افزودن به صورت بسته
+                افزودن به صورت محصول سفارشی
+              </Button>
+              <Button
+                onClick={handleAddIndividually}
+                disabled={selectedProducts.length === 0 || adding !== null}
+                variant="outline"
+              >
+                افزودن جداگانه
+              </Button>
+
+              <Button
+                onClick={() => {
+                  const initial: Record<string, string | null> = {};
+                  categories.forEach((c) => (initial[c.id] = null));
+                  setSelected(initial);
+                }}
+                disabled={selectedProducts.length === 0 || adding !== null}
+                variant="outline"
+              >
+                پاک کردن همه انتخاب‌ها
               </Button>
             </CardFooter>
           </Card>

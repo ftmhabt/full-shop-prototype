@@ -1,11 +1,26 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+// export interface CartItem {
+//   id: string;
+//   name: string;
+//   price: number;
+//   quantity: number;
+//   image?: string;
+// }
+
 export interface CartItem {
-  id: string;
+  id: string; // productId OR bundleId
   name: string;
   price: number;
   quantity: number;
   image?: string;
+  type?: "PRODUCT" | "BUNDLE";
+  bundleItems?: {
+    productId: string;
+    name: string;
+    price: number;
+    quantity: number;
+  }[];
 }
 
 interface CartState {
@@ -27,19 +42,16 @@ const cartSlice = createSlice({
       state.isLoaded = true;
     },
 
-    add(
-      state,
-      action: PayloadAction<Omit<CartItem, "createdAt" | "updatedAt">>
-    ) {
+    add(state, action: PayloadAction<CartItem>) {
       const item = action.payload;
-      const existing = state.items.find((i) => i.id === item.id);
+      const existing = state.items.find(
+        (i) => i.id === item.id && i.type === item.type
+      );
 
       if (existing) {
         existing.quantity += item.quantity;
       } else {
-        state.items.push({
-          ...item,
-        });
+        state.items.push(item);
       }
 
       localStorage.setItem("cart", JSON.stringify(state.items));

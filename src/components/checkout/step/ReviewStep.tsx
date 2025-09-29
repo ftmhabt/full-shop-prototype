@@ -143,11 +143,36 @@ export default function ReviewStep({
         <CardContent className="text-sm text-gray-800 space-y-2">
           {items.length > 0 ? (
             items.map((item) => (
-              <div key={item.id} className="flex justify-between border-b pb-1">
-                <span>
-                  {item.name} × {item.quantity}
-                </span>
-                <span>{formatPrice(item.price * item.quantity)} تومان</span>
+              <div key={item.id} className="border-b pb-2">
+                {/* Main Row */}
+                <div className="flex justify-between">
+                  <span>
+                    {item.type === "BUNDLE"
+                      ? item.name
+                      : item.name + " × " + item.quantity}
+                  </span>
+                  <span>{formatPrice(item.price * item.quantity)} تومان</span>
+                </div>
+
+                {/* Sub-items for bundles */}
+                {item.type === "BUNDLE" &&
+                  (item.bundleItems?.length ?? 0) > 0 && (
+                    <div className="pl-6 pr-2 space-y-1 mt-1 text-xs text-muted-foreground">
+                      {item.bundleItems?.map((sub, idx) => (
+                        <div
+                          key={idx}
+                          className="flex justify-between items-center border-l-2 border-muted-foreground/30 pl-2"
+                        >
+                          <span>
+                            • {sub.name} × {sub.quantity}
+                          </span>
+                          <span>
+                            {formatPrice(sub.price * sub.quantity)} تومان
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
               </div>
             ))
           ) : (
@@ -155,6 +180,7 @@ export default function ReviewStep({
           )}
         </CardContent>
       </Card>
+
       {/* آیتم‌های سبد خرید */}
       <Card className="bg-gray-50 border">
         <CardContent className="text-sm text-gray-800 space-y-2">

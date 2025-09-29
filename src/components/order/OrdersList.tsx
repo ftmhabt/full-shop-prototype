@@ -13,7 +13,11 @@ import { ArrowRight, Package } from "lucide-react";
 import Link from "next/link";
 
 type OrderWithItems = Order & {
-  items: (OrderItem & { productName: string })[];
+  items: (OrderItem & {
+    productName: string;
+    bundleId?: string;
+    bundleName?: string;
+  })[];
 };
 
 export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
@@ -31,69 +35,110 @@ export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
         <Package className="w-6 h-6" /> سفارش‌های من
       </h1>
 
-      {orders.map((order) => (
-        <Card
-          key={order.id}
-          className="rounded-xl shadow-sm hover:shadow-lg transition p-4"
-        >
-          <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-2 pl-2">
-            <CardTitle className="text-base">سفارش #{order.id}</CardTitle>
-            <div className="flex gap-2">
-              <Badge className={orderStatusColor[order.status]}>
-                {orderStatusLabel[order.status]}
-              </Badge>
+      {orders.map((order) => {
+        // Group items by bundleId (or item id if not bundled)
+        const groupedItems = order.items.reduce<
+          Record<string, typeof order.items>
+        >((acc, item) => {
+          const key = item.bundleId || item.id;
+          if (!acc[key]) acc[key] = [];
+          acc[key].push(item);
+          return acc;
+        }, {});
 
-              <Badge className={paymentStatusColor[order.paymentStatus]}>
-                {paymentStatusLabel[order.paymentStatus]}
-              </Badge>
-            </div>
-          </CardHeader>
+        return (
+          <Card
+            key={order.id}
+            className="rounded-xl shadow-sm hover:shadow-lg transition p-4"
+          >
+            <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-2 pl-2">
+              <CardTitle className="text-base">سفارش #{order.id}</CardTitle>
+              <div className="flex gap-2">
+                <Badge className={orderStatusColor[order.status]}>
+                  {orderStatusLabel[order.status]}
+                </Badge>
 
-          <CardContent className="text-sm text-gray-600 space-y-3 px-2">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-              <p>
-                تاریخ:{" "}
-                {new Date(order.createdAt).toLocaleDateString("fa-IR", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-              <p className="font-semibold">
-                مبلغ: {order.finalPrice.toLocaleString("fa-IR")} تومان
-              </p>
-            </div>
-
-            {/* نمایش آیتم‌ها */}
-            <div className="text-xs text-gray-500 space-y-1">
-              {order.items.map((item) => (
-                <p key={item.id}>
-                  {item.productName} × {item.quantity}
-                </p>
-              ))}
-            </div>
-
-            <div className="flex justify-between items-center">
-              {/* آدرس سفارش (اختیاری) */}
-              {order.address && (
-                <p className="text-xs text-gray-500">
-                  آدرس: {order.province}، {order.city}، {order.address}...
-                </p>
-              )}
-
-              {/* دکمه مشاهده جزئیات */}
-              <div className="mt-2">
-                <Link
-                  href={`/dashboard/orders/${order.id}`}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-background rounded-lg text-sm hover:bg-primary/90 transition"
-                >
-                  مشاهده جزئیات <ArrowRight className="w-4 h-4" />
-                </Link>
+                <Badge className={paymentStatusColor[order.paymentStatus]}>
+                  {paymentStatusLabel[order.paymentStatus]}
+                </Badge>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+            </CardHeader>
+
+            <CardContent className="text-sm text-gray-600 space-y-3 px-2">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                <p>
+                  تاریخ:{" "}
+                  {new Date(order.createdAt).toLocaleDateString("fa-IR", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+                <p className="font-semibold">
+                  مبلغ: {order.finalPrice.toLocaleString("fa-IR")} تومان
+                </p>
+              </div>
+
+              {/* نمایش آیتم‌ها */}
+              <div className="text-xs text-gray-500 space-y-1">
+                {Object.values(groupedItems).map((group, idx) => {
+                  const isBundle =
+                    group.length > 1 || group[0].bundleId !== null;
+                  return (
+                    <div key={idx} className="space-y-1">
+                      {isBundle && (
+                        <p className="font-medium">
+                          📦 {group[0].bundleName || "باندل"}:
+                        </p>
+                      )}
+                      {group.map((item) => (
+                        <p
+                          key={item.id}
+                          className={`flex justify-between ${
+                            isBundle ? "pl-4" : ""
+                          }`}
+                        >
+                          <span>
+                            {!isBundle
+                              ? item.productName
+                              : "• " + item.productName}{" "}
+                            × {item.quantity}
+                          </span>
+                          <span>
+                            {new Intl.NumberFormat("fa-IR").format(
+                              item.price * item.quantity
+                            )}{" "}
+                            تومان
+                          </span>
+                        </p>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="flex justify-between items-center">
+                {/* آدرس سفارش (اختیاری) */}
+                {order.address && (
+                  <p className="text-xs text-gray-500">
+                    آدرس: {order.province}، {order.city}، {order.address}...
+                  </p>
+                )}
+
+                {/* دکمه مشاهده جزئیات */}
+                <div className="mt-2">
+                  <Link
+                    href={`/dashboard/orders/${order.id}`}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-background rounded-lg text-sm hover:bg-primary/90 transition"
+                  >
+                    مشاهده جزئیات <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }

@@ -134,16 +134,21 @@ model Order {
 }
 
 model OrderItem {
-  id        String @id @default(cuid())
+  id        String  @id @default(cuid())
   orderId   String
   productId String
   quantity  Int
+  price     Int     @default(0)
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  bundleId    String?
+  bundleLabel String?
 
   @@index([orderId])
   @@index([productId])
+  @@index([bundleId])
+  @@index([orderId, bundleId])
 }
 
 model Attribute {

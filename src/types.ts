@@ -44,6 +44,8 @@ export interface CartItem {
   price: number;
   quantity: number;
   image?: string;
+  bundleId?: string;
+  bundleLabel?: string;
 }
 
 export type OrderStep = "address" | "cart" | "review" | "payment" | "success";

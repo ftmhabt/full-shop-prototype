@@ -23,7 +23,6 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { FallbackImage } from "../FallbackImage";
 
-// Types (based on your Prisma schema)
 type Product = {
   id: string;
   name: string;
@@ -45,26 +44,24 @@ export default function DeviceBuilder({
 }) {
   const categories = categoriesProp;
   const [selected, setSelected] = useState<Record<string, string | null>>({});
-  const [adding, setAdding] = useState(false);
+  const [adding, setAdding] = useState<"INDIVIDUAL" | "BUNDLE" | null>(null);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // initialize selected map with nulls for each category
     const initial: Record<string, string | null> = {};
     categories.forEach((c) => (initial[c.id] = null));
     setSelected(initial);
   }, [categories]);
 
   const selectedProducts = useMemo(() => {
-    const items: Product[] = [];
-    categories.forEach((c) => {
-      const pid = selected[c.id];
-      if (!pid) return;
-      const p = c.products.find((x) => x.id === pid);
-      if (p) items.push(p);
-    });
-    return items;
+    return categories
+      .map((c) => {
+        const pid = selected[c.id];
+        if (!pid) return null;
+        return c.products.find((x) => x.id === pid) || null;
+      })
+      .filter(Boolean) as Product[];
   }, [categories, selected]);
 
   const total = useMemo(
@@ -72,9 +69,10 @@ export default function DeviceBuilder({
     [selectedProducts]
   );
 
-  async function handleAddAllToCart() {
+  // ✅ Add products individually
+  async function handleAddIndividually() {
     if (selectedProducts.length === 0) return;
-    setAdding(true);
+    setAdding("INDIVIDUAL");
 
     try {
       selectedProducts.forEach((p) => {
@@ -85,31 +83,57 @@ export default function DeviceBuilder({
             price: p.price,
             quantity: 1,
             image: p.image?.[0],
+            type: "PRODUCT",
           })
         );
       });
 
-      toast.success("محصولات به سبد خرید اضافه شدند");
+      toast.success("محصولات به صورت جداگانه اضافه شدند");
     } catch (err) {
       console.error(err);
-      toast.error("خطا در اضافه کردن به سبد خرید");
+      toast.error("خطا در اضافه کردن محصولات");
     } finally {
-      setAdding(false);
+      setAdding(null);
+    }
+  }
+
+  // ✅ Add as bundle
+  async function handleAddAsBundle() {
+    if (selectedProducts.length === 0) return;
+    setAdding("BUNDLE");
+
+    try {
+      dispatch(
+        add({
+          id: `bundle-${Date.now().toLocaleString()}`,
+          type: "BUNDLE",
+          name: "دستگاه سفارشی",
+          price: total,
+          quantity: 1,
+          image: selectedProducts[0]?.image?.[0],
+          bundleItems: selectedProducts.map((p) => ({
+            productId: p.id,
+            name: p.name,
+            price: p.price,
+            quantity: 1,
+          })),
+        })
+      );
+
+      toast.success("محصولات به صورت بسته اضافه شدند");
+    } catch (err) {
+      console.error(err);
+      toast.error("خطا در اضافه کردن بسته");
+    } finally {
+      setAdding(null);
     }
   }
 
   return (
     <div className="space-y-6 p-6 w-full">
-      {/* <FallbackImage
-        src="/assemble.png"
-        alt="assemble"
-        width={1000}
-        height={200}
-        className="w-full"
-      /> */}
       <h2 className="text-2xl font-semibold">دستگاه خودت رو بساز</h2>
 
-      <div className=" flex flex-col sm:flex-row gap-6 relative">
+      <div className="flex flex-col sm:flex-row gap-6 relative">
         <div className="space-y-4 min-w-1/3 w-full">
           {categories.map((cat) => (
             <Card key={cat.id}>
@@ -136,7 +160,6 @@ export default function DeviceBuilder({
                         {cat.products.map((p) => (
                           <SelectItem key={p.id} value={p.id}>
                             {p.name}
-                            {/* — {p.price.toLocaleString()} تومان */}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -243,12 +266,19 @@ export default function DeviceBuilder({
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="flex gap-2">
+            <CardFooter className="flex flex-col gap-2 sm:flex-row">
               <Button
-                onClick={handleAddAllToCart}
-                disabled={selectedProducts.length === 0 || adding}
+                onClick={handleAddIndividually}
+                disabled={selectedProducts.length === 0 || adding !== null}
+                variant="secondary"
               >
-                افزودن همه به سبد خرید
+                افزودن جداگانه
+              </Button>
+              <Button
+                onClick={handleAddAsBundle}
+                disabled={selectedProducts.length === 0 || adding !== null}
+              >
+                افزودن به صورت بسته
               </Button>
             </CardFooter>
           </Card>

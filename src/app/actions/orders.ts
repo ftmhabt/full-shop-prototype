@@ -4,7 +4,7 @@ import { AddressSnapshot } from "@/components/checkout/types";
 import { getCurrentUserId } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { generateOrderId } from "@/lib/generateId";
-import { CartItem } from "@/types";
+import { CartItem } from "@/store/cartSlice";
 import { revalidatePath } from "next/cache";
 
 export async function createOrder(
@@ -22,7 +22,7 @@ export async function createOrder(
   });
   if (!method) throw new Error("روش ارسال نامعتبر است");
 
-  // محاسبه مبلغ کل
+  // total price already calculated per line item
   const totalPrice = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -35,7 +35,6 @@ export async function createOrder(
       userId,
       status: "PENDING",
 
-      // snapshot آدرس
       fullName: address.fullName,
       phone: address.phone,
       province: address.province,
@@ -43,26 +42,33 @@ export async function createOrder(
       address: address.address,
       postalCode: address.postalCode,
 
-      // مالی
       totalPrice,
       discount,
       finalPrice,
 
-      // آیتم‌ها
       items: {
-        create: items.map((item) => ({
-          productId: item.id,
-          quantity: item.quantity,
-        })),
+        create: items.flatMap((item) => {
+          if (item.type === "BUNDLE" && item.bundleItems) {
+            return item.bundleItems.map((b) => ({
+              productId: b.productId,
+              quantity: b.quantity * item.quantity,
+              bundleId: item.id,
+              price: b.price * b.quantity,
+            }));
+          }
+          return {
+            productId: item.id,
+            quantity: item.quantity,
+            price: item.price * item.quantity,
+          };
+        }),
       },
 
-      // ارسال
       shippingMethodId: shippingId,
     },
     include: { items: true, ShippingMethod: true },
   });
 
-  // اولین لاگ (PENDING)
   await db.orderLog.create({
     data: {
       orderId: order.id,

@@ -18,13 +18,5 @@ export default async function OrdersPage() {
     },
   });
 
-  const formattedOrders = orders.map((order) => ({
-    ...order,
-    items: order.items.map((item) => ({
-      ...item,
-      productName: item.product.name,
-    })),
-  }));
-
-  return <OrdersList orders={formattedOrders} />;
+  return <OrdersList orders={orders} />;
 }

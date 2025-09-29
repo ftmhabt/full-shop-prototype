@@ -14,9 +14,10 @@ import Link from "next/link";
 
 type OrderWithItems = Order & {
   items: (OrderItem & {
-    productName: string;
-    bundleId?: string;
-    bundleName?: string;
+    product: {
+      id: string;
+      name: string;
+    };
   })[];
 };
 
@@ -88,7 +89,7 @@ export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
                     <div key={idx} className="space-y-1">
                       {isBundle && (
                         <p className="font-medium">
-                          📦 {group[0].bundleName || "باندل"}:
+                          📦 {group[0].bundleLabel || "سفارشی"}:
                         </p>
                       )}
                       {group.map((item) => (
@@ -100,8 +101,8 @@ export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
                         >
                           <span>
                             {!isBundle
-                              ? item.productName
-                              : "• " + item.productName}{" "}
+                              ? item.product.name
+                              : "• " + item.product.name}{" "}
                             × {item.quantity}
                           </span>
                           <span>

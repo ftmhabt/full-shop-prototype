@@ -19,7 +19,6 @@ export async function get4BlogPosts() {
   return db.blogPost.findMany({
     orderBy: { createdAt: "desc" },
     include: {
-      tags: true,
       category: true,
       author: true,
     },

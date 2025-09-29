@@ -29,7 +29,7 @@ import Hero from "@/components/home/Hero";
 import HotProducts from "@/components/home/HotProducts";
 import NewProducts from "@/components/home/NewProducts";
 import db from "@/lib/db";
-import { BlogPost, Category, User } from "@prisma/client";
+import { BlogCategory, BlogPost, User } from "@prisma/client";
 import Link from "next/link";
 import { FallbackImage } from "./FallbackImage";
 import BlogPostCard from "./blog/BlogPostCard";
@@ -217,7 +217,7 @@ function BlogRow({
   blogPosts,
 }: {
   blogPosts: (BlogPost & {
-    category: Category;
+    category: BlogCategory | null;
     author: User;
   })[];
 }) {

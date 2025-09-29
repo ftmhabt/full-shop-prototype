@@ -11,6 +11,7 @@ import {
 import { Order, OrderItem } from "@prisma/client";
 import { ArrowRight, Package } from "lucide-react";
 import Link from "next/link";
+import { Button } from "../ui/button";
 
 type OrderWithItems = Order & {
   items: (OrderItem & {
@@ -128,11 +129,10 @@ export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
 
                 {/* دکمه مشاهده جزئیات */}
                 <div className="mt-2">
-                  <Link
-                    href={`/dashboard/orders/${order.id}`}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-background rounded-lg text-sm hover:bg-primary/90 transition"
-                  >
-                    مشاهده جزئیات <ArrowRight className="w-4 h-4" />
+                  <Link href={`/dashboard/orders/${order.id}`}>
+                    <Button className="flex items-center gap-1">
+                      مشاهده جزئیات <ArrowRight className="w-4 h-4" />
+                    </Button>
                   </Link>
                 </div>
               </div>

@@ -4,7 +4,7 @@ import SearchBar from "@/components/home/SearchBar";
 import { Separator } from "@/components/ui/separator";
 import { store } from "@/store";
 import { hydrate } from "@/store/cartSlice";
-import { Home, Phone, ScrollText, User } from "lucide-react";
+import { Home, Package, Phone, ScrollText, User } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
@@ -91,6 +91,11 @@ function Header({ categoryNav }: { categoryNav: React.ReactNode }) {
           <Link href="/blog">
             <div className="flex items-center gap-1">
               <div>مقالات</div> <ScrollText size={14} />
+            </div>
+          </Link>
+          <Link href="/builder">
+            <div className="flex items-center gap-1">
+              <div>محصول سفارشی</div> <Package size={14} />
             </div>
           </Link>
         </div>

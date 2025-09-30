@@ -95,6 +95,7 @@ model Category {
   name       String
   slug       String      @unique
   icon       String?
+  inBundle   Boolean     @default(false)
   products   Product[]
   attributes Attribute[]
 }

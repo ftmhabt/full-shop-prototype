@@ -7,6 +7,7 @@ export async function createCategory(data: {
   name: string;
   slug: string;
   icon?: string;
+  inBundle: boolean;
 }) {
   const category = await db.category.create({ data });
   revalidatePath("/admin/categories");
@@ -19,6 +20,7 @@ export async function updateCategory(
     name: string;
     slug: string;
     icon?: string;
+    inBundle: boolean;
   }
 ) {
   const category = await db.category.update({

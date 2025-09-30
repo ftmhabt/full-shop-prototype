@@ -55,7 +55,7 @@ export default function IconPicker({
             onClick={() => onChange(name)}
             title={name}
           >
-            <Icon className="h-6 w-6" />
+            <Icon className="h-6 w-6 mx-auto" />
           </button>
         );
       })}

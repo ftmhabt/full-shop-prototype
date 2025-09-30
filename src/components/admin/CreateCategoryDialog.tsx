@@ -107,7 +107,7 @@ export function CategoryDialog({
           <IconPicker value={icon} onChange={setIcon} />
           <div className="flex items-center justify-between space-x-2">
             <Label htmlFor="airplane-mode">
-              در بخش ساخت دستگاه سفارشی قرار گیرد؟
+              در بخش ساخت محصول سفارشی قرار گیرد؟
             </Label>
             <Switch
               checked={inBundle}

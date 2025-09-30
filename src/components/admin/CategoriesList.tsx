@@ -7,6 +7,7 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { ConfirmDialogButton } from "../common/ConfirmDialogButton";
 import { DynamicIcon } from "../DynamicIcon";
+import { Badge } from "../ui/badge";
 import { CategoryDialog } from "./CreateCategoryDialog";
 
 export function CategoriesList({ categories }: { categories: any[] }) {
@@ -32,7 +33,10 @@ export function CategoriesList({ categories }: { categories: any[] }) {
               <h3 className="font-bold text-lg">{cat.name}</h3>
               <DynamicIcon iconName={cat.icon} className="text-primary/70" />
             </div>
-            <p className="text-sm text-muted-foreground italic"> {cat.slug}</p>
+            <p className="text-sm text-muted-foreground italic flex gap-2 items-center">
+              <div>{cat.slug}</div>
+              {cat.inBundle && <Badge variant="secondary">قطعه سفارشی</Badge>}
+            </p>
           </div>
 
           <div className="flex justify-between mt-4 gap-2">

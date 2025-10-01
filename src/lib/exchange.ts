@@ -6,14 +6,8 @@ import path from "path";
 import db from "./db";
 
 const CACHE_FILE = path.resolve("./rateCache.json");
-const DEFAULT_MAX_AGE_MIN = 30; // minutes
+const DEFAULT_MAX_AGE_MIN = 60 * 3; // 3 hours
 const MARKUP_PERCENT = 30; // if needed later
-
-// --- Helpers ---
-function isFresh(fetchedAt: number | Date, maxAgeMs: number) {
-  const ts = fetchedAt instanceof Date ? fetchedAt.getTime() : fetchedAt;
-  return Date.now() - ts < maxAgeMs;
-}
 
 // Ensure cache file exists
 async function ensureCacheFile() {
@@ -129,37 +123,59 @@ export async function fetchAndCacheRate() {
   }
 }
 
-// --- Get latest rate (file → DB → API) ---
-export async function getLatestRate(opts?: { maxAgeMinutes?: number }) {
-  const maxAgeMs = (opts?.maxAgeMinutes ?? DEFAULT_MAX_AGE_MIN) * 60 * 1000;
+// file → API → DB → stale file
+export async function getLatestRate() {
+  const DEFAULT_MAX_AGE_MS = DEFAULT_MAX_AGE_MIN * 60 * 1000;
 
-  // 1) Check file cache
-  const cached = await readCache();
-  if (cached && isFresh(cached.fetchedAt, maxAgeMs)) {
-    return {
-      rateToman: cached.rate,
-      source: "file",
-      fetchedAt: new Date(cached.fetchedAt),
-      stale: false,
-    };
+  // 1 Try file cache first
+  try {
+    const cached = await readCache();
+    if (cached && Date.now() - cached.fetchedAt < DEFAULT_MAX_AGE_MS) {
+      return {
+        rateToman: cached.rate,
+        source: "file",
+        fetchedAt: new Date(cached.fetchedAt),
+        stale: false,
+      };
+    }
+  } catch (_) {
+    // ignore corrupted cache
   }
 
-  // 2) Check DB
-  const database = await db.exchangeRate.findFirst({
+  // 2 Try API
+  try {
+    return await fetchAndCacheRate(); // marks stale=false internally
+  } catch (apiErr) {
+    console.warn("API failed, falling back to DB:", apiErr);
+  }
+
+  // 3 Fallback to DB
+  const lastDb = await db.exchangeRate.findFirst({
     orderBy: { fetchedAt: "desc" },
   });
-  if (database && isFresh(database.fetchedAt, maxAgeMs)) {
-    await writeCache(database.rateTomanPerUsd); // refresh file cache
+  if (lastDb) {
     return {
-      rateToman: database.rateTomanPerUsd.toNumber(),
-      source: database.source,
-      fetchedAt: database.fetchedAt,
-      stale: false,
+      rateToman: lastDb.rateTomanPerUsd.toNumber(),
+      source: "db",
+      fetchedAt: lastDb.fetchedAt,
+      stale: true,
     };
   }
 
-  // 3) Fetch fresh
-  return await fetchAndCacheRate();
+  // 4 Fallback to stale file
+  // Only return file if it has a valid rate (>0)
+  const cached = await readCache();
+  if (cached && cached.rate > 0) {
+    return {
+      rateToman: cached.rate,
+      source: "file-stale",
+      fetchedAt: new Date(cached.fetchedAt),
+      stale: true,
+    };
+  }
+
+  // If cache empty or invalid → throw
+  throw new Error("Unable to fetch exchange rate from API, DB, or cache");
 }
 
 export async function tomanToUsdWithMarkup(
@@ -168,7 +184,7 @@ export async function tomanToUsdWithMarkup(
 ): Promise<number> {
   if (!basePriceToman) throw new Error("base price required");
 
-  const { rateToman } = await getLatestRate({ maxAgeMinutes: 30 });
+  const { rateToman } = await getLatestRate();
 
   // convert to USD
   let usd = basePriceToman / rateToman;
@@ -181,7 +197,7 @@ export async function tomanToUsdWithMarkup(
 }
 
 export async function usdToToman(usdPrice: number): Promise<number> {
-  const { rateToman } = await getLatestRate({ maxAgeMinutes: 30 });
+  const { rateToman } = await getLatestRate();
 
   const toman = usdPrice * rateToman;
 

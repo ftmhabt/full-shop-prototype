@@ -1,5 +1,6 @@
 import ProductForm from "@/components/admin/ProductForm";
 import { db } from "@/lib/db";
+import { usdToToman } from "@/lib/exchange";
 
 export default async function EditPage({ params }: any) {
   const product = await db.product.findUnique({
@@ -9,6 +10,7 @@ export default async function EditPage({ params }: any) {
 
   const categories = await db.category.findMany();
   const attributes = await db.attribute.findMany({ include: { values: true } });
+  const priceInToman = await usdToToman(product?.price.toNumber() ?? 0);
 
   return (
     <ProductForm
@@ -19,8 +21,8 @@ export default async function EditPage({ params }: any) {
         name: product?.name || "",
         slug: product?.slug || "",
         description: product?.description || "",
-        price: product?.price || 0,
-        oldPrice: product?.oldPrice || undefined,
+        price: priceInToman || 0,
+        oldPrice: product?.oldPrice?.toNumber() || undefined,
         stock: product?.stock || 0,
         badge: product?.badge || undefined,
         categoryId: product?.categoryId || "",

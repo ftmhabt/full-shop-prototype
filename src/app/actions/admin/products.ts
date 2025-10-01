@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { tomanToUsdWithMarkup } from "@/lib/exchange";
 import { revalidatePath } from "next/cache";
 
 // Create Product
@@ -17,16 +18,20 @@ export async function createProduct(data: {
   image: string[];
   attributeValueIds: string[];
 }) {
+  const finalPriceUSD = await tomanToUsdWithMarkup(data.price ?? 0, true);
+
   const product = await db.product.create({
     data: {
       name: data.name,
       slug: data.slug,
       description: data.description,
-      price: data.price,
+      price: finalPriceUSD,
       oldPrice: data.oldPrice,
       stock: data.stock,
       badge: data.badge,
-      categoryId: data.categoryId,
+      category: {
+        connect: { id: data.categoryId },
+      },
       image: data.image,
     },
   });
@@ -40,7 +45,7 @@ export async function createProduct(data: {
     });
   }
 
-  return product;
+  return;
 }
 
 // Update Product
@@ -73,17 +78,17 @@ export async function updateProduct(data: UpdateProductInput) {
     image,
     attributeValueIds = [],
   } = data;
-
+  const finalPriceUSD = await tomanToUsdWithMarkup(price ?? 0, false);
   // Start a transaction to update product and attributes together
   return db.$transaction(async (tx) => {
     // Update main product fields
-    const product = await tx.product.update({
+    await tx.product.update({
       where: { id },
       data: {
         name,
         slug,
         description,
-        price,
+        price: finalPriceUSD,
         oldPrice,
         stock,
         badge,
@@ -104,7 +109,7 @@ export async function updateProduct(data: UpdateProductInput) {
       await tx.productAttribute.createMany({ data: attributeRelations });
     }
 
-    return product;
+    return;
   });
 }
 

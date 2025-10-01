@@ -10,6 +10,7 @@ type ProductCardProps = {
     id: string;
     name: string;
     price: number;
+    priceToman: number;
     stock: number;
     image: string[];
   };
@@ -33,7 +34,7 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
         <div>
           <h3 className="font-bold text-lg">{product.name}</h3>
           <p className="text-sm text-muted-foreground">
-            قیمت: {product.price} تومان
+            قیمت: {product.priceToman} تومان
           </p>
           <p className="text-sm text-muted-foreground">
             موجودی: {product.stock}

@@ -1,0 +1,189 @@
+import { Prisma } from "@prisma/client";
+import axios from "axios";
+import fsSync from "fs";
+import fs from "fs/promises";
+import path from "path";
+import db from "./db";
+
+const CACHE_FILE = path.resolve("./rateCache.json");
+const DEFAULT_MAX_AGE_MIN = 30; // minutes
+const MARKUP_PERCENT = 30; // if needed later
+
+// --- Helpers ---
+function isFresh(fetchedAt: number | Date, maxAgeMs: number) {
+  const ts = fetchedAt instanceof Date ? fetchedAt.getTime() : fetchedAt;
+  return Date.now() - ts < maxAgeMs;
+}
+
+// Ensure cache file exists
+async function ensureCacheFile() {
+  const dir = path.dirname(CACHE_FILE);
+  if (!fsSync.existsSync(dir)) {
+    await fs.mkdir(dir, { recursive: true });
+  }
+  if (!fsSync.existsSync(CACHE_FILE)) {
+    await fs.writeFile(CACHE_FILE, JSON.stringify({ rate: 0, fetchedAt: 0 }));
+  }
+}
+
+// --- Fetch from Navasan API ---
+async function fetchFromNavasan(): Promise<number> {
+  const key = process.env.EXCHANGE_API_ACCESS_KEY;
+  if (!key) throw new Error("Invalid API key");
+
+  const res = await axios.get("https://api.navasan.tech/latest", {
+    params: { api_key: key, item: "usd" },
+    timeout: 5000,
+  });
+
+  const tomanRate = res.data?.usd?.value;
+
+  if (typeof tomanRate !== "number" || tomanRate <= 0) {
+    throw new Error("Unexpected API response format");
+  }
+
+  return tomanRate;
+}
+
+// --- File cache helpers ---
+async function readCache(): Promise<{
+  rate: number;
+  fetchedAt: number;
+} | null> {
+  try {
+    await ensureCacheFile();
+    const data = await fs.readFile(CACHE_FILE, "utf-8");
+    return JSON.parse(data);
+  } catch (err: any) {
+    console.warn("Cache read failed, ignoring:", err.message);
+    return null;
+  }
+}
+
+async function writeCache(rate: number | Prisma.Decimal) {
+  await ensureCacheFile();
+
+  const value = rate instanceof Prisma.Decimal ? rate.toNumber() : rate;
+  const tmpFile = CACHE_FILE + ".tmp";
+  const data = JSON.stringify({ rate: value, fetchedAt: Date.now() });
+
+  await fs.writeFile(tmpFile, data);
+  await fs.rename(tmpFile, CACHE_FILE);
+}
+
+// --- Fetch fresh + persist to DB + cache ---
+export async function fetchAndCacheRate() {
+  try {
+    const rateToman = await fetchFromNavasan();
+    const rate = new Prisma.Decimal(rateToman);
+
+    // persist to DB
+    await db.exchangeRate.upsert({
+      where: { source: "navasan" },
+      update: { rateTomanPerUsd: rate, fetchedAt: new Date() },
+      create: {
+        source: "navasan",
+        rateTomanPerUsd: rate,
+        fetchedAt: new Date(),
+      },
+    });
+
+    // persist to file cache
+    await writeCache(rate);
+
+    return {
+      rateToman,
+      source: "navasan",
+      fetchedAt: new Date(),
+      stale: false,
+    };
+  } catch (err) {
+    console.error("Fetch from Navasan failed:", err);
+
+    // fallback to last DB record
+    const last = await db.exchangeRate.findFirst({
+      orderBy: { fetchedAt: "desc" },
+    });
+
+    if (last) {
+      return {
+        rateToman: last.rateTomanPerUsd.toNumber(),
+        source: last.source,
+        fetchedAt: last.fetchedAt,
+        stale: true,
+      };
+    }
+
+    // final stale file fallback
+    const staleFile = await readCache();
+    if (staleFile && staleFile.rate > 0) {
+      return {
+        rateToman: staleFile.rate,
+        source: "file-stale",
+        fetchedAt: new Date(staleFile.fetchedAt),
+        stale: true,
+      };
+    }
+
+    throw err;
+  }
+}
+
+// --- Get latest rate (file → DB → API) ---
+export async function getLatestRate(opts?: { maxAgeMinutes?: number }) {
+  const maxAgeMs = (opts?.maxAgeMinutes ?? DEFAULT_MAX_AGE_MIN) * 60 * 1000;
+
+  // 1) Check file cache
+  const cached = await readCache();
+  if (cached && isFresh(cached.fetchedAt, maxAgeMs)) {
+    return {
+      rateToman: cached.rate,
+      source: "file",
+      fetchedAt: new Date(cached.fetchedAt),
+      stale: false,
+    };
+  }
+
+  // 2) Check DB
+  const database = await db.exchangeRate.findFirst({
+    orderBy: { fetchedAt: "desc" },
+  });
+  if (database && isFresh(database.fetchedAt, maxAgeMs)) {
+    await writeCache(database.rateTomanPerUsd); // refresh file cache
+    return {
+      rateToman: database.rateTomanPerUsd.toNumber(),
+      source: database.source,
+      fetchedAt: database.fetchedAt,
+      stale: false,
+    };
+  }
+
+  // 3) Fetch fresh
+  return await fetchAndCacheRate();
+}
+
+export async function tomanToUsdWithMarkup(
+  basePriceToman: number,
+  applyMarkup = true
+): Promise<number> {
+  if (!basePriceToman) throw new Error("base price required");
+
+  const { rateToman } = await getLatestRate({ maxAgeMinutes: 30 });
+
+  // convert to USD
+  let usd = basePriceToman / rateToman;
+
+  // apply markup
+  if (applyMarkup) usd *= 1 + MARKUP_PERCENT / 100;
+
+  // no rounding in USD
+  return Number(usd);
+}
+
+export async function usdToToman(usdPrice: number): Promise<number> {
+  const { rateToman } = await getLatestRate({ maxAgeMinutes: 30 });
+
+  const toman = usdPrice * rateToman;
+
+  return Number(Math.round(toman));
+}

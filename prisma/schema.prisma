@@ -74,9 +74,9 @@ model Product {
   description String
   image       String[]
   badge       String?
-  oldPrice    Int?
+  oldPrice    Decimal?
   rating      Int?
-  price       Int
+  price       Decimal
   stock       Int                @default(0)
   soldCount   Int                @default(0)
   categoryId  String
@@ -88,6 +88,15 @@ model Product {
   orderItems OrderItem[]
   cartItems  CartItem[]
   reviews    Review[]
+}
+
+model ExchangeRate {
+  id              Int      @id @default(autoincrement())
+  source          String   @unique // e.g. "exchangerate.host" or "navasan"
+  rateTomanPerUsd Decimal  @db.Decimal(18, 2)
+  fetchedAt       DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Category {
@@ -139,7 +148,7 @@ model OrderItem {
   orderId   String
   productId String
   quantity  Int
-  price     Int     @default(0)
+  price     Decimal @default(0)
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 

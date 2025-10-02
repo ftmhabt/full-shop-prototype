@@ -31,6 +31,10 @@ export default async function BlogPostPage({ params }: any) {
     take: 4,
   });
 
+  const standardizedRelatedProducts = relatedProducts.map((p) => ({
+    ...p,
+    price: p.price.toNumber(),
+  }));
   return (
     <div className="container py-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-auto">
       {/* Main Content Column */}
@@ -87,11 +91,11 @@ export default async function BlogPostPage({ params }: any) {
         </Card>
 
         {/* Related Products Section */}
-        {relatedProducts.length > 0 && (
+        {standardizedRelatedProducts.length > 0 && (
           <div className="mt-8">
             <h2 className="text-2xl font-bold mb-4">محصولات مرتبط</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {relatedProducts.map((product) => (
+              {standardizedRelatedProducts.map((product) => (
                 <Link
                   key={product.id}
                   href={`/products/${product.slug}`}
@@ -110,7 +114,7 @@ export default async function BlogPostPage({ params }: any) {
                     <CardContent className="p-4">
                       <h3 className="font-semibold text-lg">{product.name}</h3>
                       <p className="text-primary font-bold mt-2">
-                        {product.price.toNumber().toLocaleString("fa-IR")} تومان
+                        {product.price.toLocaleString("fa-IR")} تومان
                       </p>
                     </CardContent>
                   </Card>

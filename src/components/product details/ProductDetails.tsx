@@ -79,7 +79,9 @@ export default function ProductDetails({
         {/* سمت راست: اطلاعات */}
         <div className="flex flex-col space-y-4">
           <h1 className="text-2xl font-bold">{product.name}</h1>
-          <p className="text-xl font-semibold">{product.price} تومان</p>
+          <p className="text-xl font-semibold">
+            {product.price.toNumber()} تومان
+          </p>
           <Rating value={averageRating} />
 
           <Badge variant="secondary">موجود در انبار</Badge>

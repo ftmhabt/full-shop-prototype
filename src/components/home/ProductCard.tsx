@@ -21,32 +21,38 @@ function ProductCard({ p }: { p: ProductWithAttributes }) {
     p.reviews.length > 0
       ? p.reviews.reduce((sum, r) => sum + r.rating, 0) / p.reviews.length
       : 0;
+
+  const product = {
+    ...p,
+    price: p.price.toNumber(),
+    oldPrice: p.oldPrice?.toNumber(),
+  };
   return (
     <Card className="group overflow-hidden rounded-2xl border-muted/40">
       <CardContent className="p-4">
         <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-muted">
           <FallbackImage
-            src={p.image[0]}
-            alt={p.name}
+            src={product.image[0]}
+            alt={product.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
-          {p.badge && (
+          {product.badge && (
             <Badge className="absolute right-2 top-2 rounded-full px-3 py-1 text-xs">
-              <Percent className="ml-1 h-3 w-3" /> {p.badge}
+              <Percent className="ml-1 h-3 w-3" /> {product.badge}
             </Badge>
           )}
           <QuantitySelector product={p} quantity={quantity} size="sm" />
         </div>
         <div className="mt-3 space-y-2">
           <Link
-            href={"/product/" + p.slug}
+            href={"/product/" + product.slug}
             className="line-clamp-2 text-sm font-medium leading-6 h-12 flex items-center"
           >
-            {p.name}
+            {product.name}
           </Link>
           <div className="flex flex-col gap-2 items-center justify-between">
-            <Price value={p.price.toNumber()} old={p.oldPrice?.toNumber()} />
+            <Price value={product.price} old={product.oldPrice} />
             <Rating value={averageRating} />
           </div>
         </div>

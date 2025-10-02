@@ -46,7 +46,7 @@ function ProductCard({ p }: { p: ProductWithAttributes }) {
             {p.name}
           </Link>
           <div className="flex flex-col gap-2 items-center justify-between">
-            <Price value={p.price} old={p.oldPrice} />
+            <Price value={p.price.toNumber()} old={p.oldPrice?.toNumber()} />
             <Rating value={averageRating} />
           </div>
         </div>

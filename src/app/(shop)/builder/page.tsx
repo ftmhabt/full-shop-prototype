@@ -19,5 +19,9 @@ export default async function DeviceBuilderPage() {
     },
   });
 
-  return <DeviceBuilder categoriesProp={categories} />;
+  const standardizedCategories = categories.map((cat) => ({
+    ...cat,
+    products: cat.products.map((p) => ({ ...p, price: p.price.toNumber() })),
+  }));
+  return <DeviceBuilder categoriesProp={standardizedCategories} />;
 }

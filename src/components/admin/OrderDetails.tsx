@@ -45,7 +45,7 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
         acc[item.bundleId!].items.push({
           id: item.id,
           product: { name: item.product.name, slug: item.product.slug },
-          price: item.price,
+          price: item.price.toNumber(),
           quantity: item.quantity,
           bundleId: item.bundleId ?? undefined,
           bundleLabel: item.bundleLabel ?? undefined,
@@ -56,7 +56,7 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
 
   // Calculate totals
   const totalPrice = order.items.reduce(
-    (sum: number, i: any) => sum + i.product.price * i.quantity,
+    (sum: number, i: any) => sum + i.product.price.toNumber() * i.quantity,
     0
   );
 
@@ -102,7 +102,8 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
                     {item.product.name} × {item.quantity}
                   </Link>
                   <span>
-                    {(item.price * item.quantity).toLocaleString()} تومان
+                    {(item.price.toNumber() * item.quantity).toLocaleString()}{" "}
+                    تومان
                   </span>
                 </div>
               ))}
@@ -118,7 +119,8 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
                           • {i.product.name} × {i.quantity}
                         </Link>
                         <span>
-                          {(i.price * i.quantity).toLocaleString()} تومان
+                          {(i.price.toNumber() * i.quantity).toLocaleString()}{" "}
+                          تومان
                         </span>
                       </li>
                     ))}

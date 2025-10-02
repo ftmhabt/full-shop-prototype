@@ -108,7 +108,7 @@ export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
                           </span>
                           <span>
                             {new Intl.NumberFormat("fa-IR").format(
-                              item.price * item.quantity
+                              item.price.toNumber() * item.quantity
                             )}{" "}
                             تومان
                           </span>

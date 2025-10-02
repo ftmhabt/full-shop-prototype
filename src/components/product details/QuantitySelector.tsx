@@ -8,50 +8,42 @@ import { ShoppingCart } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function QuantitySelector({
-  quantity,
   product,
   size = "lg",
 }: {
   quantity: number;
-  product: ProductWithAttributes | CartItem | ProductWithAttributes;
+  product: ProductWithAttributes | CartItem;
   size?: "lg" | "sm";
 }) {
   const dispatch = useDispatch();
   const items = useSelector(selectCartItems);
   const number = items.find((i) => i.id === product.id)?.quantity ?? 0;
+
+  const handleAdd = () => {
+    dispatch(
+      add({
+        id: product.id,
+        name: product.name,
+        price: Number(product.price),
+        quantity: 1,
+        image: product.image?.[0] ?? "",
+      })
+    );
+  };
+
   return (
     <>
       {number === 0 ? (
         size === "lg" ? (
           <Button
-            onClick={() =>
-              dispatch(
-                add({
-                  id: product.id,
-                  name: product.name,
-                  price: product.price,
-                  quantity: 1,
-                  image: product.image?.[0] ?? "",
-                })
-              )
-            }
+            onClick={handleAdd}
             className="w-60 bg-primary text-white text-lg py-1 rounded-lg"
           >
             افزودن به سبد خرید
           </Button>
         ) : (
           <Button
-            onClick={() =>
-              dispatch(
-                add({
-                  id: product.id,
-                  name: product.name,
-                  price: product.price,
-                  quantity: 1,
-                  image: product.image?.[0] ?? "",
-                })
-              )
-            }
+            onClick={handleAdd}
             size="sm"
             className="absolute bottom-2 left-2 rounded-full"
             variant="secondary"

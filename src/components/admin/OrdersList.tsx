@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Prisma } from "@prisma/client";
+import { OrderWithUserAndShipping } from "@/types";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
@@ -33,17 +33,6 @@ function serializeOrder<T extends { createdAt: Date; updatedAt?: Date }>(
     updatedAt: order.updatedAt ? order.updatedAt.toISOString() : undefined,
   };
 }
-
-// --- Type including relations ---
-export type OrderWithUserAndShipping = Prisma.OrderGetPayload<{
-  include: {
-    user: { select: { firstName: true; lastName: true; phone: true } };
-    ShippingMethod: { select: { id: true; name: true; cost: true } };
-    items: {
-      select: { id: true; bundleId: true; product: true; quantity: true };
-    };
-  };
-}>;
 
 export default function OrdersList({
   orders,

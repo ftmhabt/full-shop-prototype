@@ -10,46 +10,10 @@ import {
   paymentStatusColor,
   paymentStatusLabel,
 } from "@/lib/orderStatus";
+import { OrderForDetails } from "@/types";
 import { Hash, Home, MapPin, Package, Phone, Truck, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-
-export type OrderForDetails = {
-  id: string;
-  status: string;
-  paymentStatus: string;
-  createdAt: Date;
-  finalPrice: number; // you’re formatting this
-  trackingCode?: string | null;
-
-  fullName: string;
-  phone: string;
-  province: string;
-  city: string;
-  address: string;
-  postalCode?: string | null;
-
-  items: {
-    id: string;
-    price: number; // converted from Decimal
-    priceToman: number;
-    quantity: number;
-    bundleId?: string | null;
-    bundleLabel?: string | null;
-    product: {
-      id: string;
-      name: string;
-      price: number; // converted from Decimal
-      priceToman: number;
-    };
-  }[];
-
-  ShippingMethod: {
-    id: string;
-    name: string;
-    cost: number; // converted from Decimal
-  } | null;
-};
 
 export default function OrderDetails({ order }: { order: OrderForDetails }) {
   const [isLoading, setIsLoading] = useState(false);

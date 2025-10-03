@@ -1,6 +1,7 @@
 "use client";
 import QuantitySelector from "@/components/product details/QuantitySelector";
 import { selectCartItems } from "@/store/selectors";
+import { StandardizedProduct } from "@/types";
 import { Percent } from "lucide-react";
 import Link from "next/link";
 import { useSelector } from "react-redux";
@@ -8,7 +9,6 @@ import { FallbackImage } from "../FallbackImage";
 import Rating from "../product details/Rating";
 import { Badge } from "../ui/badge";
 import { Card, CardContent } from "../ui/card";
-import { StandardizedProduct } from "./HotProducts";
 import Price from "./Price";
 
 function ProductCard({ p }: { p: StandardizedProduct }) {

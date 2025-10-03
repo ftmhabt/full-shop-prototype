@@ -1,3 +1,4 @@
+import { StandardizedProduct } from "@/types";
 import {
   Carousel,
   CarouselContent,
@@ -7,52 +8,6 @@ import {
 } from "../ui/carousel";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import ProductCard from "./ProductCard";
-export type StandardizedProduct = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  image: string[];
-  badge: string | null;
-  oldPrice: number | null; // Decimal -> number
-  oldPriceToman: number | null;
-  price: number; // Decimal -> number
-  priceToman: number;
-  rating: number | null;
-  stock: number;
-  soldCount: number;
-  categoryId: string;
-  createdAt: Date;
-  updatedAt: Date;
-
-  attributes: {
-    id: string;
-    value: {
-      id: string;
-      value: string;
-      attribute: {
-        id: string;
-        name: string;
-        slug: string;
-      };
-    };
-  }[];
-
-  reviews: {
-    id: string;
-    rating: number;
-    comment: string;
-    user: {
-      displayName: string;
-    };
-  }[];
-
-  category: {
-    id: string;
-    name: string;
-    slug: string;
-  };
-};
 
 function HotProducts({ products }: { products: StandardizedProduct[] }) {
   return (

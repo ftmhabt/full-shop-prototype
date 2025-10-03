@@ -3,10 +3,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { selectCartItems } from "@/store/selectors";
+import { StandardizedProduct } from "@/types";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { FallbackImage } from "../FallbackImage";
-import { StandardizedProduct } from "../home/HotProducts";
 import QuantitySelector from "./QuantitySelector";
 import Rating from "./Rating";
 import RelatedProducts from "./RelatedProducts";

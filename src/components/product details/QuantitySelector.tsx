@@ -3,20 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { add, decrease, increase } from "@/store/cartSlice";
 import { selectCartItems } from "@/store/selectors";
+import { StandardizedCartProduct, StandardizedProduct } from "@/types";
 import { ShoppingCart } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { StandardizedProduct } from "../home/HotProducts";
-
-export type StandardizedCartProduct = {
-  id: string;
-  name: string;
-  price: number; // Decimal -> number
-  image?: string;
-  slug?: string;
-  quantity?: number;
-  bundleId?: string;
-  bundleLabel?: string;
-};
 
 export default function QuantitySelector({
   product,

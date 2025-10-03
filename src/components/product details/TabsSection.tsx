@@ -4,8 +4,8 @@ import { createReview, getReviews } from "@/app/actions/reviews";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { StandardizedProduct } from "@/types";
 import { useEffect, useState, useTransition } from "react";
-import { StandardizedProduct } from "../home/HotProducts";
 
 export default function TabsSection({
   product,

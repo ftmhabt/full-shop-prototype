@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User } from "@prisma/client";
+import { AdminOrderForDetails } from "@/types";
 import Link from "next/link";
 import { ScrollArea } from "../ui/scroll-area";
 import OrderStatusDropdown from "./OrderStatusDropdown";
@@ -17,51 +17,6 @@ type BundleGroup = {
     quantity: number;
     bundleId?: string;
     bundleLabel?: string;
-  }[];
-};
-// 👇 new custom type just for this component
-export type AdminOrderForDetails = {
-  id: string;
-  fullName: string;
-  address: string;
-  discount: number;
-  finalPrice: number;
-  status: string;
-  paymentStatus: string;
-
-  user: User;
-
-  //handle later
-  province: string;
-  city: string;
-  createdAt: Date;
-  //////////////
-  items: {
-    id: string;
-    quantity: number;
-    price: number; // Decimal → number
-    priceToman: number;
-    bundleId?: string | null;
-    bundleLabel?: string | null;
-    product: {
-      id: string;
-      name: string;
-      slug: string;
-      price: number; // Decimal → number
-      priceToman: number;
-    };
-  }[];
-
-  ShippingMethod: {
-    id: string;
-    name: string;
-    cost: number; // Decimal → number
-  } | null;
-
-  OrderLog: {
-    id: string;
-    status: string;
-    createdAt: Date;
   }[];
 };
 

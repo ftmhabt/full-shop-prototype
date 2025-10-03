@@ -1,4 +1,4 @@
-import { StandardizedProduct } from "./HotProducts";
+import { StandardizedProduct } from "@/types";
 import ProductCard from "./ProductCard";
 
 export default async function NewProducts({

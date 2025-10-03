@@ -8,32 +8,10 @@ import {
   paymentStatusColor,
   paymentStatusLabel,
 } from "@/lib/orderStatus";
-import { Prisma } from "@prisma/client";
+import { OrderWithItemsNumbered } from "@/types";
 import { ArrowRight, Package } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
-
-export type OrderWithItems = Prisma.OrderGetPayload<{
-  include: {
-    items: {
-      include: {
-        product: true;
-      };
-    };
-  };
-}>;
-
-type OrderWithItemsNumbered = Omit<OrderWithItems, "finalPrice" | "items"> & {
-  finalPrice: number;
-  items: (Omit<OrderWithItems["items"][0], "price" | "product"> & {
-    price: number;
-    priceToman: number; // added Toman field
-    product: Omit<OrderWithItems["items"][0]["product"], "price"> & {
-      price: number;
-      priceToman: number; // added Toman field for product
-    };
-  })[];
-};
 
 export default function OrdersList({
   orders,

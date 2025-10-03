@@ -1,4 +1,4 @@
-import { StandardizedProduct } from "@/components/home/HotProducts";
+import { StandardizedProduct } from "@/types";
 import { Product as PrismaProduct } from "@prisma/client";
 import { usdToToman } from "./exchange";
 

@@ -9,12 +9,12 @@ import {
 import { usdToToman } from "@/lib/exchange";
 import { formatPrice } from "@/lib/format";
 import { selectCartItems } from "@/store/selectors";
+import { StandardizedProduct } from "@/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import QuantitySelector from "../components/product details/QuantitySelector";
 import { FallbackImage } from "./FallbackImage";
-import { StandardizedProduct } from "./home/HotProducts";
 
 export default function ProductCard({
   product,

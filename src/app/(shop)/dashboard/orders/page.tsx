@@ -22,8 +22,6 @@ export default async function OrdersPage() {
   const standardizedOrders = await Promise.all(
     orders.map(async (order) => ({
       ...order,
-      finalPrice: Number(order.finalPrice),
-      finalPriceToman: await usdToToman(Number(order.finalPrice)),
       items: await Promise.all(
         order.items.map(async (item) => ({
           ...item,

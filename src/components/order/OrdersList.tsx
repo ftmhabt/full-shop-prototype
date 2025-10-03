@@ -27,8 +27,10 @@ type OrderWithItemsNumbered = Omit<OrderWithItems, "finalPrice" | "items"> & {
   finalPrice: number;
   items: (Omit<OrderWithItems["items"][0], "price" | "product"> & {
     price: number;
+    priceToman: number; // added Toman field
     product: Omit<OrderWithItems["items"][0]["product"], "price"> & {
       price: number;
+      priceToman: number; // added Toman field for product
     };
   })[];
 };
@@ -123,7 +125,7 @@ export default function OrdersList({
                           </span>
                           <span>
                             {new Intl.NumberFormat("fa-IR").format(
-                              item.price * item.quantity
+                              item.priceToman * item.quantity
                             )}{" "}
                             تومان
                           </span>

@@ -32,6 +32,7 @@ export type OrderForDetails = {
   items: {
     id: string;
     price: number; // converted from Decimal
+    priceToman: number;
     quantity: number;
     bundleId?: string | null;
     bundleLabel?: string | null;
@@ -39,6 +40,7 @@ export type OrderForDetails = {
       id: string;
       name: string;
       price: number; // converted from Decimal
+      priceToman: number;
     };
   }[];
 
@@ -163,7 +165,7 @@ export default function OrderDetails({ order }: { order: OrderForDetails }) {
                     </span>
                     <span>
                       {new Intl.NumberFormat("fa-IR").format(
-                        item.price * item.quantity
+                        item.priceToman * item.quantity
                       )}{" "}
                       تومان
                     </span>
@@ -188,7 +190,7 @@ export default function OrderDetails({ order }: { order: OrderForDetails }) {
                           </span>
                           <span>
                             {new Intl.NumberFormat("fa-IR").format(
-                              i.price * i.quantity
+                              i.priceToman * i.quantity
                             )}{" "}
                             تومان
                           </span>

@@ -47,7 +47,7 @@ function ProductCard({ p }: { p: StandardizedProduct }) {
             {p.name}
           </Link>
           <div className="flex flex-col gap-2 items-center justify-between">
-            <Price value={p.price} old={p.oldPrice} />
+            <Price value={p.priceToman} old={p.oldPriceToman} />
             <Rating value={averageRating} />
           </div>
         </div>

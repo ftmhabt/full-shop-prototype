@@ -143,7 +143,7 @@ export default async function BlogCategoryPage({ params }: any) {
                   <div>
                     <h4 className="text-sm font-semibold">{product.name}</h4>
                     <p className="text-primary font-bold mt-1">
-                      {product.price.toLocaleString("fa-IR")} تومان
+                      {product.priceToman.toLocaleString("fa-IR")} تومان
                     </p>
                   </div>
                 </Link>

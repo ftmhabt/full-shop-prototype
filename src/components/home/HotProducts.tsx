@@ -15,6 +15,7 @@ export type StandardizedProduct = {
   image: string[];
   badge: string | null;
   oldPrice: number | null; // Decimal -> number
+  oldPriceToman: number | null;
   price: number; // Decimal -> number
   priceToman: number;
   rating: number | null;

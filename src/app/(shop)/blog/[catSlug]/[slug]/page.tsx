@@ -119,7 +119,7 @@ export default async function BlogPostPage({ params }: any) {
                     <CardContent className="p-4">
                       <h3 className="font-semibold text-lg">{product.name}</h3>
                       <p className="text-primary font-bold mt-2">
-                        {product.price.toLocaleString("fa-IR")} تومان
+                        {product.priceToman.toLocaleString("fa-IR")} تومان
                       </p>
                     </CardContent>
                   </Card>

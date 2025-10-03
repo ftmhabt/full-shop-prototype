@@ -27,6 +27,7 @@ type Product = {
   id: string;
   name: string;
   price: number;
+  priceToman: number;
   image: string[];
   stock?: number;
 };
@@ -65,7 +66,7 @@ export default function DeviceBuilder({
   }, [categories, selected]);
 
   const total = useMemo(
-    () => selectedProducts.reduce((s, p) => s + p.price, 0),
+    () => selectedProducts.reduce((s, p) => s + p.priceToman, 0),
     [selectedProducts]
   );
 
@@ -80,7 +81,7 @@ export default function DeviceBuilder({
           add({
             id: p.id,
             name: p.name,
-            price: p.price,
+            price: p.priceToman,
             quantity: 1,
             image: p.image?.[0],
             type: "PRODUCT",
@@ -114,7 +115,7 @@ export default function DeviceBuilder({
           bundleItems: selectedProducts.map((p) => ({
             productId: p.id,
             name: p.name,
-            price: p.price,
+            price: p.priceToman,
             quantity: 1,
           })),
         })
@@ -191,7 +192,7 @@ export default function DeviceBuilder({
                             <div>
                               <div className="font-medium">{prod.name}</div>
                               <div className="text-sm text-muted-foreground">
-                                {prod.price.toLocaleString()} تومان
+                                {prod.priceToman.toLocaleString()} تومان
                               </div>
                               {typeof prod.stock === "number" &&
                                 prod.stock <= 0 && (
@@ -250,11 +251,13 @@ export default function DeviceBuilder({
                       <div className="text-sm">
                         <div className="font-medium">{p.name}</div>
                         <div className="text-xs text-muted-foreground">
-                          {p.price.toLocaleString()} تومان
+                          {p.priceToman.toLocaleString()} تومان
                         </div>
                       </div>
                     </div>
-                    <div className="text-sm">{p.price.toLocaleString()}</div>
+                    <div className="text-sm">
+                      {p.priceToman.toLocaleString()}
+                    </div>
                   </div>
                 ))}
                 <Separator className="my-2" />

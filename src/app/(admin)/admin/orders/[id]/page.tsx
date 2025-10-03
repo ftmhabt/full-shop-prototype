@@ -15,6 +15,13 @@ export default async function OrderPage({ params }: any) {
   if (!order) {
     return <div className="p-6">سفارشی پیدا نشد</div>;
   }
-
-  return <OrderDetails order={order} />;
+  const standardizedOrder = {
+    ...order,
+    items: order.items.map((i) => ({
+      ...i,
+      product: { ...i.product, price: i.product.price.toNumber() },
+      price: i.price.toNumber(),
+    })),
+  };
+  return <OrderDetails order={standardizedOrder} />;
 }

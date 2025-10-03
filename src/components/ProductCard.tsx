@@ -8,16 +8,16 @@ import {
 } from "@/components/ui/card";
 import { formatPrice } from "@/lib/format";
 import { selectCartItems } from "@/store/selectors";
-import { ProductWithAttributes } from "@/types";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import QuantitySelector from "../components/product details/QuantitySelector";
 import { FallbackImage } from "./FallbackImage";
+import { StandardizedProduct } from "./home/HotProducts";
 
 export default function ProductCard({
   product,
 }: {
-  product: ProductWithAttributes;
+  product: StandardizedProduct;
 }) {
   const items = useSelector(selectCartItems);
 
@@ -41,7 +41,7 @@ export default function ProductCard({
         <CardContent className="flex-1 flex flex-col gap-2 text-center ">
           <h2 className="text-base font-semibold">{product.name}</h2>
           <p className="text-primary font-bold text-lg">
-            {formatPrice(product.price.toNumber())} تومان
+            {formatPrice(product.price)} تومان
           </p>
         </CardContent>
       </Link>

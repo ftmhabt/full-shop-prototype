@@ -18,5 +18,18 @@ export default async function OrdersPage() {
     },
   });
 
-  return <OrdersList orders={orders} />;
+  const standardizedOrders = orders.map((order) => ({
+    ...order,
+    finalPrice: Number(order.finalPrice),
+    items: order.items.map((item) => ({
+      ...item,
+      price: Number(item.price),
+      product: {
+        ...item.product,
+        price: Number(item.product.price),
+      },
+    })),
+  }));
+
+  return <OrdersList orders={standardizedOrders} />;
 }

@@ -1,10 +1,10 @@
-import { ProductWithAttributes } from "@/types";
+import { StandardizedProduct } from "./HotProducts";
 import ProductCard from "./ProductCard";
 
 export default async function NewProducts({
   products,
 }: {
-  products: ProductWithAttributes[];
+  products: StandardizedProduct[];
 }) {
   return (
     <section className="mt-8">

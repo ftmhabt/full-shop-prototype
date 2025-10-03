@@ -1,4 +1,3 @@
-import { ProductWithAttributes } from "@/types";
 import {
   Carousel,
   CarouselContent,
@@ -8,8 +7,52 @@ import {
 } from "../ui/carousel";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import ProductCard from "./ProductCard";
+export type StandardizedProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  image: string[];
+  badge: string | null;
+  oldPrice: number | null; // Decimal -> number
+  price: number; // Decimal -> number
+  rating: number | null;
+  stock: number;
+  soldCount: number;
+  categoryId: string;
+  createdAt: Date;
+  updatedAt: Date;
 
-function HotProducts({ products }: { products: ProductWithAttributes[] }) {
+  attributes: {
+    id: string;
+    value: {
+      id: string;
+      value: string;
+      attribute: {
+        id: string;
+        name: string;
+        slug: string;
+      };
+    };
+  }[];
+
+  reviews: {
+    id: string;
+    rating: number;
+    comment: string;
+    user: {
+      displayName: string;
+    };
+  }[];
+
+  category: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+};
+
+function HotProducts({ products }: { products: StandardizedProduct[] }) {
   return (
     <section className="mt-10">
       <div className="mb-4 flex items-center justify-between">

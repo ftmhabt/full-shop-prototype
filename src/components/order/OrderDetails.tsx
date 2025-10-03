@@ -10,19 +10,46 @@ import {
   paymentStatusColor,
   paymentStatusLabel,
 } from "@/lib/orderStatus";
-import { Prisma } from "@prisma/client";
 import { Hash, Home, MapPin, Package, Phone, Truck, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-export type OrderWithItems = Prisma.OrderGetPayload<{
-  include: {
-    items: { include: { product: true } };
-    ShippingMethod: true;
-  };
-}>;
+export type OrderForDetails = {
+  id: string;
+  status: string;
+  paymentStatus: string;
+  createdAt: Date;
+  finalPrice: number; // you’re formatting this
+  trackingCode?: string | null;
 
-export default function OrderDetails({ order }: { order: OrderWithItems }) {
+  fullName: string;
+  phone: string;
+  province: string;
+  city: string;
+  address: string;
+  postalCode?: string | null;
+
+  items: {
+    id: string;
+    price: number; // converted from Decimal
+    quantity: number;
+    bundleId?: string | null;
+    bundleLabel?: string | null;
+    product: {
+      id: string;
+      name: string;
+      price: number; // converted from Decimal
+    };
+  }[];
+
+  ShippingMethod: {
+    id: string;
+    name: string;
+    cost: number; // converted from Decimal
+  } | null;
+};
+
+export default function OrderDetails({ order }: { order: OrderForDetails }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRetryPayment = async () => {
@@ -136,7 +163,7 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
                     </span>
                     <span>
                       {new Intl.NumberFormat("fa-IR").format(
-                        item.price.toNumber() * item.quantity
+                        item.price * item.quantity
                       )}{" "}
                       تومان
                     </span>
@@ -161,7 +188,7 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
                           </span>
                           <span>
                             {new Intl.NumberFormat("fa-IR").format(
-                              i.price.toNumber() * i.quantity
+                              i.price * i.quantity
                             )}{" "}
                             تومان
                           </span>

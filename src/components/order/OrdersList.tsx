@@ -8,21 +8,36 @@ import {
   paymentStatusColor,
   paymentStatusLabel,
 } from "@/lib/orderStatus";
-import { Order, OrderItem } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { ArrowRight, Package } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 
-type OrderWithItems = Order & {
-  items: (OrderItem & {
-    product: {
-      id: string;
-      name: string;
+export type OrderWithItems = Prisma.OrderGetPayload<{
+  include: {
+    items: {
+      include: {
+        product: true;
+      };
+    };
+  };
+}>;
+
+type OrderWithItemsNumbered = Omit<OrderWithItems, "finalPrice" | "items"> & {
+  finalPrice: number;
+  items: (Omit<OrderWithItems["items"][0], "price" | "product"> & {
+    price: number;
+    product: Omit<OrderWithItems["items"][0]["product"], "price"> & {
+      price: number;
     };
   })[];
 };
 
-export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
+export default function OrdersList({
+  orders,
+}: {
+  orders: OrderWithItemsNumbered[];
+}) {
   if (orders.length === 0) {
     return (
       <div className="text-center p-6">
@@ -108,7 +123,7 @@ export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
                           </span>
                           <span>
                             {new Intl.NumberFormat("fa-IR").format(
-                              item.price.toNumber() * item.quantity
+                              item.price * item.quantity
                             )}{" "}
                             تومان
                           </span>

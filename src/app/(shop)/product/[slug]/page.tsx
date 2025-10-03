@@ -26,7 +26,17 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 export default async function ProductPage({ params }: any) {
   const { slug } = params;
   const product = await getProductBySlug(slug);
-
+  const standardizedProducts = {
+    ...product,
+    price: product.price.toNumber(),
+    oldPrice: product.oldPrice ? product.oldPrice.toNumber() : null,
+    reviews: product.reviews.map((r) => ({
+      id: r.id,
+      rating: r.rating,
+      comment: r.content ?? null,
+      user: { displayName: r.user.displayName ?? "" },
+    })),
+  };
   return (
     <>
       {/* JSON-LD Schema */}
@@ -49,7 +59,7 @@ export default async function ProductPage({ params }: any) {
           }),
         }}
       />
-      <ProductDetails product={product} />
+      <ProductDetails product={standardizedProducts} />
     </>
   );
 }

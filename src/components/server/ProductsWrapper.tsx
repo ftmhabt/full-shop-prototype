@@ -29,10 +29,20 @@ export default async function ProductsWrapper({
   }
 
   if (!data.length) return <p>هیچ محصولی یافت نشد</p>;
-
+  const standardizedProducts = data.map((p) => ({
+    ...p,
+    price: p.price.toNumber(),
+    oldPrice: p.oldPrice ? p.oldPrice.toNumber() : null,
+    reviews: p.reviews.map((r) => ({
+      id: r.id,
+      rating: r.rating,
+      comment: r.content ?? null,
+      user: { displayName: r.user.displayName ?? "" },
+    })),
+  }));
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-      {data?.map((p) => (
+      {standardizedProducts?.map((p) => (
         <ProductCard key={p.id} p={p} />
       ))}
     </div>

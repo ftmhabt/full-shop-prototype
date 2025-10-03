@@ -29,6 +29,7 @@ import Hero from "@/components/home/Hero";
 import HotProducts from "@/components/home/HotProducts";
 import NewProducts from "@/components/home/NewProducts";
 import db from "@/lib/db";
+import { standardizeProducts } from "@/lib/standardisation";
 import { BlogCategory, BlogPost, User } from "@prisma/client";
 import Link from "next/link";
 import { FallbackImage } from "./FallbackImage";
@@ -359,6 +360,8 @@ export default async function HomePage() {
       icon: iconKey,
     };
   });
+  const standardizedNewProducts = standardizeProducts(newProducts);
+  const standardizedPopularProducts = standardizeProducts(popularProducts);
   const blogPosts = await get4BlogPosts();
   return (
     <main dir="rtl" className="container mx-auto max-w-7xl px-3 py-6">
@@ -366,8 +369,8 @@ export default async function HomePage() {
       <CategorySection categories={standardizedCategories} />
       {/* <DealStrip /> */}
       <BuilderStrip />
-      <NewProducts products={newProducts} />
-      <HotProducts products={popularProducts} />
+      <NewProducts products={standardizedNewProducts} />
+      <HotProducts products={standardizedPopularProducts} />
       <PromoRow />
       <Collections />
       <BrandStrip />

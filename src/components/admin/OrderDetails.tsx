@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Prisma } from "@prisma/client";
+import { User } from "@prisma/client";
 import Link from "next/link";
 import { ScrollArea } from "../ui/scroll-area";
 import OrderStatusDropdown from "./OrderStatusDropdown";
@@ -19,15 +19,56 @@ type BundleGroup = {
     bundleLabel?: string;
   }[];
 };
-export type OrderWithItems = Prisma.OrderGetPayload<{
-  include: {
-    items: { include: { product: true } };
-    ShippingMethod: true;
-    OrderLog: true;
-    user: true;
-  };
-}>;
-export default function OrderDetails({ order }: { order: OrderWithItems }) {
+// 👇 new custom type just for this component
+export type AdminOrderForDetails = {
+  id: string;
+  fullName: string;
+  address: string;
+  discount: number;
+  finalPrice: number;
+  status: string;
+  paymentStatus: string;
+
+  user: User;
+
+  //handle later
+  province: string;
+  city: string;
+  createdAt: Date;
+  //////////////
+  // product: StandardizedProduct;
+  items: {
+    id: string;
+    quantity: number;
+    price: number; // Decimal → number
+    bundleId?: string | null;
+    bundleLabel?: string | null;
+    product: {
+      id: string;
+      name: string;
+      slug: string;
+      price: number; // Decimal → number
+    };
+  }[];
+
+  ShippingMethod: {
+    id: string;
+    name: string;
+    cost: number; // Decimal → number
+  } | null;
+
+  OrderLog: {
+    id: string;
+    status: string;
+    createdAt: Date;
+  }[];
+};
+
+export default function OrderDetails({
+  order,
+}: {
+  order: AdminOrderForDetails;
+}) {
   // Group items
   const individualItems = order.items.filter((i) => !i.bundleId);
 
@@ -45,7 +86,7 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
         acc[item.bundleId!].items.push({
           id: item.id,
           product: { name: item.product.name, slug: item.product.slug },
-          price: item.price.toNumber(),
+          price: item.price,
           quantity: item.quantity,
           bundleId: item.bundleId ?? undefined,
           bundleLabel: item.bundleLabel ?? undefined,
@@ -56,7 +97,7 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
 
   // Calculate totals
   const totalPrice = order.items.reduce(
-    (sum: number, i: any) => sum + i.product.price.toNumber() * i.quantity,
+    (sum: number, i: any) => sum + i.product.price * i.quantity,
     0
   );
 
@@ -102,8 +143,7 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
                     {item.product.name} × {item.quantity}
                   </Link>
                   <span>
-                    {(item.price.toNumber() * item.quantity).toLocaleString()}{" "}
-                    تومان
+                    {(item.price * item.quantity).toLocaleString()} تومان
                   </span>
                 </div>
               ))}
@@ -119,8 +159,7 @@ export default function OrderDetails({ order }: { order: OrderWithItems }) {
                           • {i.product.name} × {i.quantity}
                         </Link>
                         <span>
-                          {(i.price.toNumber() * i.quantity).toLocaleString()}{" "}
-                          تومان
+                          {(i.price * i.quantity).toLocaleString()} تومان
                         </span>
                       </li>
                     ))}

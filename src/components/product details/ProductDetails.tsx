@@ -3,10 +3,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { selectCartItems } from "@/store/selectors";
-import { ProductWithAttributes } from "@/types";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { FallbackImage } from "../FallbackImage";
+import { StandardizedProduct } from "../home/HotProducts";
 import QuantitySelector from "./QuantitySelector";
 import Rating from "./Rating";
 import RelatedProducts from "./RelatedProducts";
@@ -15,7 +15,7 @@ import TabsSection from "./TabsSection";
 export default function ProductDetails({
   product,
 }: {
-  product: ProductWithAttributes;
+  product: StandardizedProduct;
 }) {
   const [activeImage, setActiveImage] = useState(product.image[0]);
   const items = useSelector(selectCartItems);
@@ -79,9 +79,7 @@ export default function ProductDetails({
         {/* سمت راست: اطلاعات */}
         <div className="flex flex-col space-y-4">
           <h1 className="text-2xl font-bold">{product.name}</h1>
-          <p className="text-xl font-semibold">
-            {product.price.toNumber()} تومان
-          </p>
+          <p className="text-xl font-semibold">{product.price} تومان</p>
           <Rating value={averageRating} />
 
           <Badge variant="secondary">موجود در انبار</Badge>

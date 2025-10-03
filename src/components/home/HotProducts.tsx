@@ -16,6 +16,7 @@ export type StandardizedProduct = {
   badge: string | null;
   oldPrice: number | null; // Decimal -> number
   price: number; // Decimal -> number
+  priceToman: number;
   rating: number | null;
   stock: number;
   soldCount: number;

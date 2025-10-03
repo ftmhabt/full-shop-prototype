@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import db from "@/lib/db";
+import { usdToToman } from "@/lib/exchange";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -36,10 +37,14 @@ export default async function BlogCategoryPage({ params }: any) {
     },
     take: 6,
   });
-  const standardizedRelatedProducts = relatedProducts.map((p) => ({
-    ...p,
-    price: p.price.toNumber(),
-  }));
+  const standardizedRelatedProducts = await Promise.all(
+    relatedProducts.map(async (p) => ({
+      ...p,
+      price: p.price.toNumber(),
+      priceToman: await usdToToman(p.price.toNumber()),
+    }))
+  );
+
   return (
     <div className="container py-8 grid grid-cols-1 lg:grid-cols-4 gap-8 mb-auto">
       {/* Blog Posts Column */}

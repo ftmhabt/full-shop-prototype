@@ -360,8 +360,10 @@ export default async function HomePage() {
       icon: iconKey,
     };
   });
-  const standardizedNewProducts = standardizeProducts(newProducts);
-  const standardizedPopularProducts = standardizeProducts(popularProducts);
+  const standardizedNewProducts = await standardizeProducts(newProducts);
+  const standardizedPopularProducts = await standardizeProducts(
+    popularProducts
+  );
   const blogPosts = await get4BlogPosts();
   return (
     <main dir="rtl" className="container mx-auto max-w-7xl px-3 py-6">

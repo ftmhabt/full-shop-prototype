@@ -1,6 +1,7 @@
 import OrdersList from "@/components/order/OrdersList";
 import { getCurrentUserId } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { usdToToman } from "@/lib/exchange";
 
 export default async function OrdersPage() {
   const userId = await getCurrentUserId();
@@ -18,18 +19,25 @@ export default async function OrdersPage() {
     },
   });
 
-  const standardizedOrders = orders.map((order) => ({
-    ...order,
-    finalPrice: Number(order.finalPrice),
-    items: order.items.map((item) => ({
-      ...item,
-      price: Number(item.price),
-      product: {
-        ...item.product,
-        price: Number(item.product.price),
-      },
-    })),
-  }));
+  const standardizedOrders = await Promise.all(
+    orders.map(async (order) => ({
+      ...order,
+      finalPrice: Number(order.finalPrice),
+      finalPriceToman: await usdToToman(Number(order.finalPrice)),
+      items: await Promise.all(
+        order.items.map(async (item) => ({
+          ...item,
+          price: Number(item.price),
+          priceToman: await usdToToman(Number(item.price)),
+          product: {
+            ...item.product,
+            price: Number(item.product.price),
+            priceToman: await usdToToman(Number(item.product.price)),
+          },
+        }))
+      ),
+    }))
+  );
 
   return <OrdersList orders={standardizedOrders} />;
 }

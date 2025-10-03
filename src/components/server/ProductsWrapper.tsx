@@ -1,5 +1,6 @@
 import { getProductsByCategorySlug } from "@/app/actions/products";
 import { getProductsBySearch } from "@/app/actions/search";
+import { usdToToman } from "@/lib/exchange";
 import type { ProductWithAttributes } from "@/types";
 import ProductCard from "../home/ProductCard";
 
@@ -29,17 +30,24 @@ export default async function ProductsWrapper({
   }
 
   if (!data.length) return <p>هیچ محصولی یافت نشد</p>;
-  const standardizedProducts = data.map((p) => ({
-    ...p,
-    price: p.price.toNumber(),
-    oldPrice: p.oldPrice ? p.oldPrice.toNumber() : null,
-    reviews: p.reviews.map((r) => ({
-      id: r.id,
-      rating: r.rating,
-      comment: r.content ?? null,
-      user: { displayName: r.user.displayName ?? "" },
-    })),
-  }));
+  const standardizedProducts = await Promise.all(
+    data.map(async (p) => ({
+      ...p,
+      price: p.price.toNumber(),
+      priceToman: await usdToToman(p.price.toNumber()),
+      oldPrice: p.oldPrice ? p.oldPrice.toNumber() : null,
+      oldPriceToman: p.oldPrice
+        ? await usdToToman(p.oldPrice.toNumber())
+        : null,
+      reviews: p.reviews.map((r) => ({
+        id: r.id,
+        rating: r.rating,
+        comment: r.content ?? null,
+        user: { displayName: r.user.displayName ?? "" },
+      })),
+    }))
+  );
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
       {standardizedProducts?.map((p) => (

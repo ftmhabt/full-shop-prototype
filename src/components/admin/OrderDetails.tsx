@@ -36,7 +36,6 @@ export type AdminOrderForDetails = {
   city: string;
   createdAt: Date;
   //////////////
-  // product: StandardizedProduct;
   items: {
     id: string;
     quantity: number;

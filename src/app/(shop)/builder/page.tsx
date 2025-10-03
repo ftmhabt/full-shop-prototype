@@ -1,5 +1,6 @@
 import DeviceBuilder from "@/components/builder/DeviceBuilder";
 import db from "@/lib/db";
+import { usdToToman } from "@/lib/exchange";
 
 export default async function DeviceBuilderPage() {
   const categories = await db.category.findMany({
@@ -19,9 +20,18 @@ export default async function DeviceBuilderPage() {
     },
   });
 
-  const standardizedCategories = categories.map((cat) => ({
-    ...cat,
-    products: cat.products.map((p) => ({ ...p, price: p.price.toNumber() })),
-  }));
+  const standardizedCategories = await Promise.all(
+    categories.map(async (cat) => ({
+      ...cat,
+      products: await Promise.all(
+        cat.products.map(async (p) => ({
+          ...p,
+          price: p.price.toNumber(),
+          priceToman: await usdToToman(p.price.toNumber()),
+        }))
+      ),
+    }))
+  );
+
   return <DeviceBuilder categoriesProp={standardizedCategories} />;
 }

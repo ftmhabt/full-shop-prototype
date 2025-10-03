@@ -6,9 +6,11 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import { usdToToman } from "@/lib/exchange";
 import { formatPrice } from "@/lib/format";
 import { selectCartItems } from "@/store/selectors";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import QuantitySelector from "../components/product details/QuantitySelector";
 import { FallbackImage } from "./FallbackImage";
@@ -24,6 +26,15 @@ export default function ProductCard({
   const cartItem = items.find((i) => i.id === product.id);
   const quantity = cartItem?.quantity || 0;
 
+  const [tomanPrice, setTomanPrice] = useState<number | null>(null);
+
+  useEffect(() => {
+    async function fetchTomanPrice() {
+      const price = await usdToToman(product.price);
+      setTomanPrice(price);
+    }
+    fetchTomanPrice();
+  }, [product.price]);
   return (
     <Card className="flex flex-col gap-0 rounded-2xl shadow hover:shadow-lg transition">
       <Link href={"/product/" + product.slug}>
@@ -41,7 +52,9 @@ export default function ProductCard({
         <CardContent className="flex-1 flex flex-col gap-2 text-center ">
           <h2 className="text-base font-semibold">{product.name}</h2>
           <p className="text-primary font-bold text-lg">
-            {formatPrice(product.price)} تومان
+            {tomanPrice !== null
+              ? `${formatPrice(tomanPrice)} تومان`
+              : "در حال بارگذاری..."}
           </p>
         </CardContent>
       </Link>

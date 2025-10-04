@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { formatPrice } from "@/lib/format";
 import { clear, remove } from "@/store/cartSlice";
 import { selectCartItems, selectCartTotalPrice } from "@/store/selectors";
 import { Trash } from "lucide-react";
@@ -44,7 +45,7 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
                 <div className="leading-6">
                   <p className="font-semibold">{item.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {new Intl.NumberFormat("fa-IR").format(item.price)} تومان
+                    {formatPrice(item.price)} تومان
                   </p>
                 </div>
               </div>

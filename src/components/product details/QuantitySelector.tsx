@@ -24,7 +24,7 @@ export default function QuantitySelector({
       add({
         id: product.id,
         name: product.name,
-        price: product.price,
+        price: product.priceToman,
         quantity: 1,
         image: product.image?.[0] ?? "",
       })

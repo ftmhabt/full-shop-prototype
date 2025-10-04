@@ -231,6 +231,7 @@ export type StandardizedCartProduct = {
   id: string;
   name: string;
   price: number; // Decimal -> number
+  priceToman: number;
   image?: string;
   slug?: string;
   quantity?: number;

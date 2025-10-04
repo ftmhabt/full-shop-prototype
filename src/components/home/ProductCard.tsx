@@ -41,7 +41,7 @@ function ProductCard({ p }: { p: StandardizedProduct }) {
         </div>
         <div className="mt-3 space-y-2">
           <Link
-            href={"/p/" + p.slug}
+            href={"/product/" + p.slug}
             className="line-clamp-2 text-sm font-medium leading-6 h-12 flex items-center"
           >
             {p.name}

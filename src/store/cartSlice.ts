@@ -12,6 +12,7 @@ export interface CartItem {
   id: string; // productId OR bundleId
   name: string;
   price: number;
+  priceToman: number;
   quantity: number;
   image?: string;
   type?: "PRODUCT" | "BUNDLE";

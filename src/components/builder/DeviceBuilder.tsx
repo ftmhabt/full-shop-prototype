@@ -82,6 +82,7 @@ export default function DeviceBuilder({
             id: p.id,
             name: p.name,
             price: p.priceToman,
+            priceToman: p.priceToman,
             quantity: 1,
             image: p.image?.[0],
             type: "PRODUCT",
@@ -110,6 +111,7 @@ export default function DeviceBuilder({
           type: "BUNDLE",
           name: "دستگاه سفارشی",
           price: total,
+          priceToman: total,
           quantity: 1,
           image: selectedProducts[0]?.image?.[0],
           bundleItems: selectedProducts.map((p) => ({

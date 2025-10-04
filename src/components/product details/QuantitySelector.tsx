@@ -3,7 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { add, decrease, increase } from "@/store/cartSlice";
 import { selectCartItems } from "@/store/selectors";
-import { StandardizedCartProduct, StandardizedProduct } from "@/types";
+import {
+  CartItem,
+  StandardizedCartProduct,
+  StandardizedProduct,
+} from "@/types";
 import { ShoppingCart } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -12,7 +16,7 @@ export default function QuantitySelector({
   size = "lg",
 }: {
   quantity: number;
-  product: StandardizedProduct | StandardizedCartProduct;
+  product: StandardizedProduct | StandardizedCartProduct | CartItem;
   size?: "lg" | "sm";
 }) {
   const dispatch = useDispatch();
@@ -25,6 +29,7 @@ export default function QuantitySelector({
         id: product.id,
         name: product.name,
         price: product.priceToman,
+        priceToman: product.priceToman,
         quantity: 1,
         image: product.image?.[0] ?? "",
       })

@@ -43,6 +43,7 @@ export interface CartItem {
   id: string;
   name: string;
   price: number;
+  priceToman: number;
   quantity: number;
   image?: string;
   bundleId?: string;

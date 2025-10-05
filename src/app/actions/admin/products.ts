@@ -45,6 +45,7 @@ export async function createProduct(data: {
     });
   }
 
+  revalidatePath("/admin/products");
   return;
 }
 
@@ -108,7 +109,7 @@ export async function updateProduct(data: UpdateProductInput) {
       }));
       await tx.productAttribute.createMany({ data: attributeRelations });
     }
-
+    revalidatePath("/admin/products");
     return;
   });
 }

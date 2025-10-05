@@ -42,7 +42,6 @@ export function DynamicIcon({ iconName, className, size }: DynamicIconProps) {
   const IconComponent = ICONS[iconName];
 
   if (!IconComponent) {
-    console.warn(`Icon '${iconName}' not found. Using Box as a fallback.`);
     return <Box className={className} size={size} />;
   }
 

@@ -41,7 +41,7 @@ const formSchema = z.object({
   stock: z.coerce.number().min(0),
   badge: z.string().optional(),
   categoryId: z.string().min(1, "Category is required"),
-  images: z.array(z.string()).min(1, "At least one image is required"),
+  images: z.array(z.string()).optional(),
   attributeValueIds: z.array(z.string()).optional(),
 });
 

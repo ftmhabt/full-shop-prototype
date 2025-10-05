@@ -84,7 +84,7 @@ export type AdminOrderForDetails = {
     id: string;
     quantity: number;
     price: number; // Decimal → number
-    priceToman: number;
+    // priceToman: number;
     bundleId?: string | null;
     bundleLabel?: string | null;
     product: {
@@ -92,7 +92,7 @@ export type AdminOrderForDetails = {
       name: string;
       slug: string;
       price: number; // Decimal → number
-      priceToman: number;
+      // priceToman: number;
     };
   }[];
 
@@ -184,7 +184,7 @@ export type OrderForDetails = {
   items: {
     id: string;
     price: number; // converted from Decimal
-    priceToman: number;
+    // priceToman: number;
     quantity: number;
     bundleId?: string | null;
     bundleLabel?: string | null;
@@ -192,7 +192,7 @@ export type OrderForDetails = {
       id: string;
       name: string;
       price: number; // converted from Decimal
-      priceToman: number;
+      // priceToman: number;
     };
   }[];
 

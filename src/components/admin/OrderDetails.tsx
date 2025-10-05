@@ -42,7 +42,7 @@ export default function OrderDetails({
         acc[item.bundleId!].items.push({
           id: item.id,
           product: { name: item.product.name, slug: item.product.slug },
-          price: item.priceToman,
+          price: item.price,
           quantity: item.quantity,
           bundleId: item.bundleId ?? undefined,
           bundleLabel: item.bundleLabel ?? undefined,
@@ -53,7 +53,7 @@ export default function OrderDetails({
 
   // Calculate totals
   const totalPrice = order.items.reduce(
-    (sum: number, i: any) => sum + i.product.priceToman * i.quantity,
+    (sum: number, i: any) => sum + i.product.price * i.quantity,
     0
   );
 
@@ -99,7 +99,7 @@ export default function OrderDetails({
                     {item.product.name} × {item.quantity}
                   </Link>
                   <span>
-                    {(item.priceToman * item.quantity).toLocaleString()} تومان
+                    {(item.price * item.quantity).toLocaleString()} تومان
                   </span>
                 </div>
               ))}
@@ -115,7 +115,7 @@ export default function OrderDetails({
                           • {i.product.name} × {i.quantity}
                         </Link>
                         <span>
-                          {(i.priceToman * i.quantity).toLocaleString()} تومان
+                          {(i.price * i.quantity).toLocaleString()} تومان
                         </span>
                       </li>
                     ))}

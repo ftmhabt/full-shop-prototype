@@ -1,7 +1,6 @@
 import OrderDetails from "@/components/order/OrderDetails";
 import { getCurrentUserId } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { usdToToman } from "@/lib/exchange";
 
 export default async function OrderDetailsPage({ params }: any) {
   const userId = await getCurrentUserId();
@@ -34,10 +33,10 @@ export default async function OrderDetailsPage({ params }: any) {
         product: {
           ...i.product,
           price: i.product.price.toNumber(),
-          priceToman: await usdToToman(i.product.price.toNumber()),
+          // priceToman: await usdToToman(i.product.price.toNumber()),
         },
         price: i.price.toNumber(),
-        priceToman: await usdToToman(i.price.toNumber()),
+        // priceToman: await usdToToman(i.price.toNumber()),
       }))
     ),
   };

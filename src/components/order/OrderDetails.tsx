@@ -129,7 +129,7 @@ export default function OrderDetails({ order }: { order: OrderForDetails }) {
                     </span>
                     <span>
                       {new Intl.NumberFormat("fa-IR").format(
-                        item.priceToman * item.quantity
+                        item.price * item.quantity
                       )}{" "}
                       تومان
                     </span>
@@ -154,7 +154,7 @@ export default function OrderDetails({ order }: { order: OrderForDetails }) {
                           </span>
                           <span>
                             {new Intl.NumberFormat("fa-IR").format(
-                              i.priceToman * i.quantity
+                              i.price * i.quantity
                             )}{" "}
                             تومان
                           </span>

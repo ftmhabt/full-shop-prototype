@@ -112,7 +112,7 @@ export default function ProductForm({
     const data = await res.json();
 
     if (data.urls) {
-      const newImages = [...form.getValues("images"), ...data.urls];
+      const newImages = [...(form.getValues("images") || []), ...data.urls];
       form.setValue("images", newImages);
       setPreviewImages(newImages);
     }
@@ -127,13 +127,13 @@ export default function ProductForm({
         await updateProduct({
           ...values,
           id: initialData.id || "",
-          image: values.images,
+          image: values.images || [],
           attributeValueIds: values.attributeValueIds || [],
         });
       } else {
         await createProduct({
           ...values,
-          image: values.images,
+          image: values.images || [],
           attributeValueIds: values.attributeValueIds || [],
         });
       }

@@ -5,7 +5,9 @@ import fs from "fs/promises";
 import path from "path";
 import db from "./db";
 
-const CACHE_FILE = path.resolve("./rateCache.json");
+// const CACHE_FILE = path.resolve("./rateCache.json");
+const CACHE_FILE = path.join(process.cwd(), "rateCache.json");
+
 const DEFAULT_MAX_AGE_MIN = 60 * 3; // 3 hours
 const MARKUP_PERCENT = 30; // if needed later
 

@@ -29,10 +29,11 @@ async function fetchFromNavasan(): Promise<number> {
     params: { api_key: key, item: "usd" },
     timeout: 5000,
   });
-
+  console.log("navasan", res.data);
   const tomanRate = res.data?.usd?.value;
 
-  if (typeof tomanRate !== "number" || tomanRate <= 0) {
+  const tomanRateNumber = Number(tomanRate);
+  if (tomanRateNumber <= 0) {
     throw new Error("Unexpected API response format");
   }
 

@@ -1,3 +1,5 @@
+export const revalidate = 60 * 60 * 3;
+
 import { Button } from "@/components/ui/button";
 import {
   Card,

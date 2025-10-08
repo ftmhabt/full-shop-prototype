@@ -23,7 +23,7 @@ export default async function HomePage() {
   } = await getHomeData();
 
   return (
-    <main dir="rtl" className="container mx-auto max-w-7xl px-3 py-6">
+    <main dir="rtl" className="container mx-auto max-w-7xl p-0 sm:px-3 sm:py-6">
       <Hero heroSlides={heroSlides} />
       <CategorySection categories={standardizedCategories} />
       <BuilderStrip />

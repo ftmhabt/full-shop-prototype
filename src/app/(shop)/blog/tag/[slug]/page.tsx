@@ -10,7 +10,7 @@ import db from "@/lib/db";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { BlogTag } from "@prisma/client";
+import { BlogTagJSONLD } from "@/lib/json-ld";
 import type { Metadata } from "next";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
@@ -41,23 +41,6 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
       type: "website",
     },
   };
-}
-
-export function BlogTagJSONLD(tag: BlogTag) {
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          name: tag.name,
-          description: `مطالب و مقالات مرتبط با برچسب ${tag.name} در زمینه دزدگیر، دوربین مداربسته و تجهیزات امنیتی.`,
-          url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/tag/${tag.slug}`,
-        }),
-      }}
-    />
-  );
 }
 
 export default async function TagPage({ params }: any) {

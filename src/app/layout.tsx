@@ -1,9 +1,7 @@
 import "./globals.css";
 
-export const metadataBase = new URL(
-  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost"
-);
 export const metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost"),
   title: {
     default: "فروشگاه سیستم‌های حفاظتی | امنیت خانه و محل کار",
     template: "%s | فروشگاه سیستم‌های حفاظتی",

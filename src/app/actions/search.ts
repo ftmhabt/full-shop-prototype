@@ -92,10 +92,10 @@ export async function getProductsBySearch(
           user: { select: { displayName: true } },
         },
       },
+      brand: true,
     },
     orderBy: orderByClause,
   });
 
-  // ✅ No need to remap manually — Prisma already includes `reviews`.
   return { products };
 }

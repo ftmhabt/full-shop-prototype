@@ -1,8 +1,35 @@
 import "./globals.css";
 
+export const metadataBase = new URL(
+  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost"
+);
 export const metadata = {
-  title: "My App",
-  description: "Welcome to my app!",
+  title: {
+    default: "فروشگاه سیستم‌های حفاظتی | امنیت خانه و محل کار",
+    template: "%s | فروشگاه سیستم‌های حفاظتی",
+  },
+  description:
+    "فروش و نصب انواع سیستم‌های حفاظتی شامل دزدگیر، دوربین مداربسته، تجهیزات نظارتی و قطعات جانبی با بهترین قیمت و گارانتی معتبر.",
+  keywords: [
+    "دزدگیر",
+    "دوربین مداربسته",
+    "سیستم حفاظتی",
+    "نصب دوربین",
+    "امنیت منزل",
+    "فروش تجهیزات امنیتی",
+  ],
+  openGraph: {
+    title: "فروشگاه سیستم‌های حفاظتی",
+    description:
+      "عرضه‌کننده‌ی انواع دزدگیر، دوربین مداربسته و قطعات حفاظتی با گارانتی و خدمات نصب.",
+    siteName: "فروشگاه سیستم‌های حفاظتی",
+    locale: "fa_IR",
+    type: "website",
+    url: process.env.NEXT_PUBLIC_SITE_URL,
+  },
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_SITE_URL,
+  },
 };
 
 export default function RootLayout({

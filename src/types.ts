@@ -3,6 +3,7 @@ import type {
   Attribute as AttributeModel,
   AttributeValue,
   AttributeValue as AttributeValueModel,
+  Brand,
   Category,
   Prisma,
   Product,
@@ -19,6 +20,7 @@ export type ProductWithAttributes = Product & {
     user: Pick<User, "displayName">;
   })[];
   category: Pick<Category, "id" | "name" | "slug">;
+  brand: Pick<Brand, "id" | "name" | "slug"> | null;
 };
 
 export type AttributeWithValues = AttributeModel & {

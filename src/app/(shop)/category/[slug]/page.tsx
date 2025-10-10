@@ -3,7 +3,39 @@ import FiltersFormWrapper from "@/components/FiltersFormWrapper";
 import ProductsSkeleton from "@/components/loading/ProductSkeleton";
 import ProductsWrapper from "@/components/server/ProductsWrapper";
 import SortBar from "@/components/SortBar";
+import db from "@/lib/db";
+import type { Metadata } from "next";
 import { Suspense } from "react";
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const category = await db.category.findUnique({
+    where: { slug: params.slug },
+  });
+
+  if (!category) {
+    return {
+      title: "دسته‌بندی یافت نشد | فروشگاه سیستم‌های حفاظتی",
+      description: "این دسته‌بندی در فروشگاه سیستم‌های حفاظتی موجود نیست.",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  return {
+    title: `${category.name} | فروشگاه سیستم‌های حفاظتی`,
+    description: `خرید آنلاین محصولات ${category.name} با بهترین قیمت و گارانتی اصلی.`,
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/category/${category.slug}`,
+    },
+    openGraph: {
+      title: `${category.name} | فروشگاه سیستم‌های حفاظتی`,
+      description: `محصولات ${category.name} شامل دزدگیر، دوربین مدار بسته و تجهیزات امنیتی.`,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/category/${category.slug}`,
+      siteName: "فروشگاه سیستم‌های حفاظتی",
+      locale: "fa_IR",
+      type: "website",
+    },
+  };
+}
 
 export default async function CategoryPage({ params, searchParams }: any) {
   const { slug } = params;

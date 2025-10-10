@@ -88,6 +88,8 @@ model Product {
   orderItems OrderItem[]
   cartItems  CartItem[]
   reviews    Review[]
+  brand      Brand?      @relation(fields: [brandId], references: [id])
+  brandId    String?
 }
 
 model ExchangeRate {
@@ -318,4 +320,15 @@ model Review {
 
   @@index([productId])
   @@index([userId])
+}
+
+model Brand {
+  id       String    @id @default(cuid())
+  name     String
+  slug     String    @unique
+  logo     String?
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

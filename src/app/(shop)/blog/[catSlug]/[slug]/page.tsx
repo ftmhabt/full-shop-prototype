@@ -10,8 +10,48 @@ import {
 import { Separator } from "@/components/ui/separator";
 import db from "@/lib/db";
 import { usdToToman } from "@/lib/exchange";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const post = await db.blogPost.findUnique({
+    where: { slug: params.slug },
+    include: {
+      author: { select: { displayName: true } },
+      category: true,
+      tags: true,
+    },
+  });
+
+  if (!post) {
+    return {
+      title: "مقاله یافت نشد | فروشگاه سیستم‌های حفاظتی",
+      description:
+        "پست مورد نظر در مقالات فروشگاه سیستم‌های حفاظتی موجود نیست.",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  return {
+    title: `${post.title} | مقالات سیستم‌های حفاظتی`,
+    description:
+      post.excerpt ||
+      "مطالب آموزشی و راهنمایی‌های مرتبط با دزدگیر، دوربین مداربسته و تجهیزات امنیتی.",
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${post.slug}`,
+    },
+    authors: [{ name: post.author.displayName || "نویسنده ناشناس" }],
+    openGraph: {
+      title: post.title,
+      description:
+        post.excerpt ||
+        "مطالب آموزشی و راهنمایی‌های مرتبط با دزدگیر، دوربین مداربسته و تجهیزات امنیتی.",
+      // images: post.featuredImage ? [post.featuredImage] : [],
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${post.slug}`,
+    },
+  };
+}
 
 export default async function BlogPostPage({ params }: any) {
   const post = await db.blogPost.findUnique({

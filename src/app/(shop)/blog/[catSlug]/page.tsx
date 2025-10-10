@@ -12,6 +12,41 @@ import { usdToToman } from "@/lib/exchange";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import type { Metadata } from "next";
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const category = await db.blogCategory.findUnique({
+    where: { slug: params.catSlug },
+  });
+
+  if (!category) {
+    return {
+      title: "دسته‌بندی یافت نشد | مقالات سیستم‌های حفاظتی",
+      description:
+        "این دسته‌بندی در مقالات فروشگاه سیستم‌های حفاظتی موجود نیست.",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  return {
+    title: `${category.name} | مقالات سیستم‌های حفاظتی`,
+    description:
+      category.description || `مطالب آموزشی و مقالات ${category.name}.`,
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${category.slug}`,
+    },
+    openGraph: {
+      title: `${category.name} | مقالات سیستم‌های حفاظتی`,
+      description:
+        category.description || `مطالب آموزشی و مقالات ${category.name}.`,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${category.slug}`,
+      siteName: "مقالات سیستم‌های حفاظتی",
+      locale: "fa_IR",
+      type: "website",
+    },
+  };
+}
+
 export default async function BlogCategoryPage({ params }: any) {
   const category = await db.blogCategory.findUnique({
     where: { slug: params.catSlug },

@@ -4,7 +4,6 @@ import { db } from "@/lib/db";
 import type { AttributeWithValues, ProductWithAttributes } from "@/types";
 import { Prisma } from "@prisma/client";
 
-// Get a single product by slug, including attributes, category, and reviews
 export async function getProductBySlug(
   slug: string
 ): Promise<ProductWithAttributes> {
@@ -21,6 +20,7 @@ export async function getProductBySlug(
         },
       },
       category: true,
+      brand: { select: { id: true, name: true, slug: true } },
       reviews: {
         include: {
           user: { select: { displayName: true } },
@@ -114,6 +114,7 @@ export async function getProductsByCategorySlug(
       reviews: {
         include: { user: { select: { displayName: true } } },
       },
+      brand: { select: { id: true, name: true, slug: true } },
     },
     orderBy: orderByClause,
   });
@@ -189,6 +190,7 @@ export async function getProductsBySearch(
       },
       category: true,
       reviews: { include: { user: { select: { displayName: true } } } },
+      brand: { select: { id: true, name: true, slug: true } },
     },
     orderBy: orderByClause,
   });

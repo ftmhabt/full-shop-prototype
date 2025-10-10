@@ -10,6 +10,7 @@ import db from "@/lib/db";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import BreadcrumbJSONLD from "@/components/BreadcrumbJSONLD";
 import { BlogTagJSONLD } from "@/lib/json-ld";
 import type { Metadata } from "next";
 
@@ -62,6 +63,18 @@ export default async function TagPage({ params }: any) {
   return (
     <>
       <BlogTagJSONLD {...tag} />
+
+      <BreadcrumbJSONLD
+        items={[
+          { name: "خانه", url: process.env.NEXT_PUBLIC_SITE_URL as string },
+          { name: "مقالات", url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog` },
+          {
+            name: `برچسب: ${tag.name}`,
+            url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/tag/${tag.slug}`,
+          },
+        ]}
+      />
+
       <div className="container py-8 grid grid-cols-1 lg:grid-cols-4 gap-8 mb-auto">
         {/* Blog Posts Column */}
         <div className="lg:col-span-3">

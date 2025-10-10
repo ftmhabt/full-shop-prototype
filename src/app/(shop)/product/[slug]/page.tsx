@@ -1,4 +1,5 @@
 import { getProductBySlug } from "@/app/actions/products";
+import BreadcrumbJSONLD from "@/components/BreadcrumbJSONLD";
 import ProductDetails from "@/components/product details/ProductDetails";
 import { usdToToman } from "@/lib/exchange";
 import { Metadata } from "next";
@@ -115,6 +116,21 @@ export default async function ProductPage({ params }: any) {
                 : undefined,
           }),
         }}
+      />
+
+      {/* Breadcrumb JSON-LD */}
+      <BreadcrumbJSONLD
+        items={[
+          { name: "خانه", url: process.env.NEXT_PUBLIC_SITE_URL as string },
+          {
+            name: product.category.name,
+            url: `${process.env.NEXT_PUBLIC_SITE_URL}/category/${product.category.slug}`,
+          },
+          {
+            name: product.name,
+            url: `${process.env.NEXT_PUBLIC_SITE_URL}/product/${product.slug}`,
+          },
+        ]}
       />
 
       <ProductDetails product={standardizedProducts} />

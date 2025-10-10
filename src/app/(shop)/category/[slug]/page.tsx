@@ -1,10 +1,12 @@
 import { getAttributesByCategorySlug } from "@/app/actions/products";
+import BreadcrumbJSONLD from "@/components/BreadcrumbJSONLD";
 import FiltersFormWrapper from "@/components/FiltersFormWrapper";
 import ProductsSkeleton from "@/components/loading/ProductSkeleton";
 import ProductsWrapper from "@/components/server/ProductsWrapper";
 import SortBar from "@/components/SortBar";
 import db from "@/lib/db";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
@@ -41,6 +43,13 @@ export default async function CategoryPage({ params, searchParams }: any) {
   const { slug } = params;
   const resolvedSearchParams = searchParams;
 
+  const category = await db.category.findUnique({
+    where: { slug },
+  });
+
+  if (!category) {
+    return notFound();
+  }
   const filters: Record<string, string[]> = {};
   Object.entries(resolvedSearchParams || {}).forEach(([key, value]) => {
     if (!value) return;
@@ -52,32 +61,44 @@ export default async function CategoryPage({ params, searchParams }: any) {
   const query = resolvedSearchParams.q as string | undefined;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 p-4 lg:p-6 w-full">
-      {/* Sidebar */}
-      <aside className="lg:col-span-1 space-y-4">
-        <FiltersFormWrapper
-          slug={slug}
-          filters={filters}
-          attributes={attributes}
-          query={query}
-        />
-      </aside>
+    <>
+      <BreadcrumbJSONLD
+        items={[
+          { name: "خانه", url: process.env.NEXT_PUBLIC_SITE_URL as string },
+          {
+            name: category.name,
+            url: `${process.env.NEXT_PUBLIC_SITE_URL}/category/${category.slug}`,
+          },
+        ]}
+      />
 
-      {/* Main */}
-      <main className="lg:col-span-3 space-y-4">
-        <div className="flex items-center justify-between gap-3 sm:mb-4">
-          <h1 className="text-xl sm:text-2xl font-bold block">محصولات</h1>
-          <SortBar />
-        </div>
-        <Suspense fallback={<ProductsSkeleton />}>
-          <ProductsWrapper
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 p-4 lg:p-6 w-full">
+        {/* Sidebar */}
+        <aside className="lg:col-span-1 space-y-4">
+          <FiltersFormWrapper
             slug={slug}
             filters={filters}
-            orderBy={orderBy}
+            attributes={attributes}
             query={query}
           />
-        </Suspense>
-      </main>
-    </div>
+        </aside>
+
+        {/* Main */}
+        <main className="lg:col-span-3 space-y-4">
+          <div className="flex items-center justify-between gap-3 sm:mb-4">
+            <h1 className="text-xl sm:text-2xl font-bold block">محصولات</h1>
+            <SortBar />
+          </div>
+          <Suspense fallback={<ProductsSkeleton />}>
+            <ProductsWrapper
+              slug={slug}
+              filters={filters}
+              orderBy={orderBy}
+              query={query}
+            />
+          </Suspense>
+        </main>
+      </div>
+    </>
   );
 }

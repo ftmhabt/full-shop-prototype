@@ -43,6 +43,17 @@ export async function getCategories() {
   });
 }
 
+export async function getRelatedProducts(
+  categorySlug: string,
+  limit: number = 4
+) {
+  return db.product.findMany({
+    where: { category: { slug: categorySlug } },
+    take: limit,
+    orderBy: { createdAt: "desc" },
+  });
+}
+
 // Get products by category slug with filters and orderBy
 export async function getProductsByCategorySlug(
   slug: string,

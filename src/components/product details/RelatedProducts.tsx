@@ -1,54 +1,47 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { getRelatedProducts } from "@/app/actions/products";
+import { standardizeProducts } from "@/lib/standardizeProduct";
 import { useEffect, useState } from "react";
-import { FallbackImage } from "../FallbackImage";
+import "swiper/css";
+import ProductSlider from "../home/ProductSlider";
+import ProductSliderSkeleton from "./ProductSliderSkeleton";
 
 export default function RelatedProducts({
-  categoryId,
+  categorySlug,
 }: {
-  categoryId: string;
+  categorySlug: string;
 }) {
   const [related, setRelated] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // TODO: Replace with API fetch
-    setRelated([
-      {
-        id: "1",
-        name: "Sample Related Product",
-        price: 99,
-        image: "/placeholder.png",
-      },
-    ]);
-  }, [categoryId]);
+    async function fetchRelated() {
+      try {
+        setLoading(true);
+        const products = await getRelatedProducts(categorySlug, 8);
+        const standardized = await standardizeProducts(products);
+        setRelated(standardized);
+      } catch {
+        setRelated([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchRelated();
+  }, [categorySlug]);
 
   return (
-    <section className="mt-10">
-      <h2 className="text-xl font-semibold mb-4">Related Products</h2>
-      <motion.div className="flex gap-4 overflow-x-auto pb-4">
-        {related.map((p) => (
-          <Card key={p.id} className="min-w-[200px]">
-            <CardContent className="p-2 flex flex-col">
-              <div className="relative h-40">
-                <FallbackImage
-                  src={p.image}
-                  alt={p.name}
-                  fill
-                  className="object-cover rounded-xl"
-                />
-              </div>
-              <h3 className="mt-2 font-medium">{p.name}</h3>
-              <p className="text-sm">${p.price}</p>
-              <Button size="sm" className="mt-2">
-                Add to Cart
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </motion.div>
-    </section>
+    <div className="relative h-[420px] px-12 transition-all duration-300">
+      {loading ? (
+        <div className="absolute inset-0 opacity-100 transition-opacity duration-300">
+          <ProductSliderSkeleton />
+        </div>
+      ) : (
+        <div className="absolute inset-0 opacity-100 transition-opacity duration-300">
+          <ProductSlider products={related} />
+        </div>
+      )}
+    </div>
   );
 }

@@ -51,6 +51,18 @@ export async function getRelatedProducts(
     where: { category: { slug: categorySlug } },
     take: limit,
     orderBy: { createdAt: "desc" },
+    // include: {
+    //   attributes: {
+    //     include: {
+    //       value: { include: { attribute: true } },
+    //     },
+    //   },
+    //   category: true,
+    //   reviews: {
+    //     include: { user: { select: { displayName: true } } },
+    //   },
+    //   brand: { select: { id: true, name: true, slug: true } },
+    // },
   });
 }
 

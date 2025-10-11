@@ -19,14 +19,15 @@ export async function standardizeProducts(
     reviews: {
       id: string;
       rating: number;
-      content: string; // Prisma field
-      user: { displayName: string | null }; // Prisma allows null
+      content: string;
+      user: { displayName: string | null };
     }[];
     category: {
       id: string;
       name: string;
       slug: string;
     };
+    brand: { id: string; name: string; slug: string } | null;
   })[]
 ): Promise<StandardizedProduct[]> {
   return await Promise.all(
@@ -75,6 +76,9 @@ export async function standardizeProducts(
         name: p.category.name,
         slug: p.category.slug,
       },
+      brand: p.brand
+        ? { id: p.brand.id, name: p.brand.name, slug: p.brand.slug }
+        : null,
     }))
   );
 }

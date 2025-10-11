@@ -19,6 +19,7 @@ export async function getHomeData() {
           attributes: { include: { value: { include: { attribute: true } } } },
           category: true,
           reviews: { include: { user: true } },
+          brand: true,
         },
       }),
       db.product.findMany({
@@ -28,6 +29,7 @@ export async function getHomeData() {
           attributes: { include: { value: { include: { attribute: true } } } },
           category: true,
           reviews: { include: { user: true } },
+          brand: true,
         },
       }),
       get4BlogPosts(),

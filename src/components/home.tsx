@@ -330,6 +330,7 @@ export default async function HomePage() {
           },
           category: true,
           reviews: { include: { user: true } },
+          brand: true,
         },
       }),
       db.product.findMany({
@@ -347,6 +348,7 @@ export default async function HomePage() {
           },
           category: true,
           reviews: { include: { user: true } },
+          brand: true,
         },
       }),
     ]);

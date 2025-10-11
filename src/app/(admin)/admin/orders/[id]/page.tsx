@@ -1,5 +1,6 @@
 import OrderDetails from "@/components/admin/OrderDetails";
 import db from "@/lib/db";
+import { OrderItem, Product } from "@prisma/client";
 
 export default async function OrderPage({ params }: any) {
   const order = await db.order.findUnique({
@@ -18,7 +19,7 @@ export default async function OrderPage({ params }: any) {
   const standardizedOrder = {
     ...order,
     items: await Promise.all(
-      order.items.map(async (i) => ({
+      order.items.map(async (i: OrderItem & { product: Product }) => ({
         ...i,
         product: {
           ...i.product,

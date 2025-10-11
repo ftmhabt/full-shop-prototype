@@ -27,11 +27,13 @@ export default async function EditBlogPage({ params }: any) {
           category: post.category
             ? { value: post.category.id, label: post.category.name }
             : null,
-          tags: post.tags.map((t) => ({
-            id: t.id,
-            name: t.name,
-            slug: t.slug,
-          })),
+          tags: post.tags.map(
+            (t: { id: string; name: string; slug: string }) => ({
+              id: t.id,
+              name: t.name,
+              slug: t.slug,
+            })
+          ),
         }}
       />
     </div>

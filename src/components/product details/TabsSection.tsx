@@ -50,19 +50,19 @@ export default function TabsSection({
             value="features"
             className="flex-1 basis-0 px-4 py-2 rounded-lg min-w-0 truncate data-[state=active]:text-primary"
           >
-            ویژگی‌ها
+            <h2>ویژگی‌ها</h2>
           </TabsTrigger>
           <TabsTrigger
             value="description"
             className="flex-1 basis-0 px-4 py-2 rounded-lg min-w-0 truncate data-[state=active]:text-primary"
           >
-            توضیحات
+            <h2>توضیحات</h2>
           </TabsTrigger>
           <TabsTrigger
             value="reviews"
             className="flex-1 basis-0 px-4 py-2 rounded-lg min-w-0 truncate data-[state=active]:text-primary"
           >
-            نظرات
+            <h2>نظرات</h2>
           </TabsTrigger>
         </TabsList>
 

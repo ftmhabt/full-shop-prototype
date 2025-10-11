@@ -166,6 +166,12 @@ export type StandardizedProduct = {
     name: string;
     slug: string;
   };
+
+  brand: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
 };
 
 export type OrderForDetails = {

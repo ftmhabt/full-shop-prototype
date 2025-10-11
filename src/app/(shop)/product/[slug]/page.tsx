@@ -117,7 +117,6 @@ export default async function ProductPage({ params }: any) {
           }),
         }}
       />
-
       {/* Breadcrumb JSON-LD */}
       <BreadcrumbJSONLD
         items={[
@@ -132,7 +131,6 @@ export default async function ProductPage({ params }: any) {
           },
         ]}
       />
-
       <ProductDetails product={standardizedProducts} />
     </>
   );

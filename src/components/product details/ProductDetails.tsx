@@ -1,7 +1,16 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Card } from "@/components/ui/card";
+import { formatPrice } from "@/lib/format";
 import { selectCartItems } from "@/store/selectors";
 import { StandardizedProduct } from "@/types";
 import { useState } from "react";
@@ -32,26 +41,40 @@ export default function ProductDetails({
   return (
     <div className="container mx-auto px-4 py-6">
       {/* مسیر صفحه */}
-      <nav className="text-sm mb-4">
-        <ol className="flex space-x-2">
-          <li>خانه</li>
-          <li>{">"}</li>
-          <li>{product.category?.name ?? "دسته‌بندی"}</li>
-          <li>{">"}</li>
-          <li className="font-semibold">{product.name}</li>
-        </ol>
+      <nav className="mb-4">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">خانه</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="rotate-180" />
+            <BreadcrumbItem>
+              <BreadcrumbLink
+                href={`/category/${product.category?.slug ?? ""}`}
+              >
+                {product.category?.name ?? "دسته‌بندی"}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="rotate-180" />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{product.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
       </nav>
 
       {/* بخش بالا */}
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
         {/* سمت چپ: تصویر */}
         <div>
+          <h2 className="sr-only">تصاویر محصول</h2>
           <div className="aspect-square relative border mb-2 rounded-2xl">
             <FallbackImage
               src={activeImage}
               alt={product.name}
               fill
               className="object-contain rounded-2xl"
+              priority={activeImage === product.image[0]}
               unoptimized
             />
           </div>
@@ -69,6 +92,7 @@ export default function ProductDetails({
                   alt={`تصویر کوچک ${i + 1}`}
                   fill
                   className="object-cover rounded-lg"
+                  priority={activeImage === product.image[0]}
                   unoptimized
                 />
               </button>
@@ -76,16 +100,24 @@ export default function ProductDetails({
           </div>
         </div>
 
-        {/* سمت راست: اطلاعات */}
+        {/* وسط: اطلاعات */}
         <div className="flex flex-col space-y-4">
           <h1 className="text-2xl font-bold">{product.name}</h1>
-          <p className="text-xl font-semibold">{product.priceToman} تومان</p>
-          <Rating value={averageRating} />
-
+          <h2 className="text-xl font-semibold">
+            {formatPrice(product.priceToman)} تومان
+          </h2>
+          <div>
+            <h3 className="sr-only">امتیاز محصول</h3>
+            <Rating value={averageRating} />
+          </div>
           <Badge variant="secondary">موجود در انبار</Badge>
-          <p>{product.description}</p>
-          <QuantitySelector product={product} quantity={quantity} />
-
+          <div>
+            <h3 className="font-semibold mt-2 mb-1">توضیحات محصول</h3>
+            <p>{product.description}</p>
+          </div>
+          <div>
+            <QuantitySelector product={product} quantity={quantity} />
+          </div>
           <div className="flex space-x-2 mt-2">
             <Badge>گارانتی</Badge>
             <Badge>پرداخت امن</Badge>
@@ -93,8 +125,8 @@ export default function ProductDetails({
           </div>
         </div>
 
-        {/* سمت راست: اطلاعات */}
-        <Card className="flex flex-col p-5 bg-card ">
+        {/* راست: گارانتی */}
+        <Card className="flex flex-col p-5 bg-card sm:col-span-2 md:col-span-1">
           <h2>گارانتی محصول: تعهد ما به کیفیت و رضایت شما</h2>
           <p>
             گارانتی یک محصول، در واقع تعهد رسمی و قانونی شرکت تولیدکننده یا
@@ -109,10 +141,16 @@ export default function ProductDetails({
       </div>
 
       {/* تب‌ها */}
-      <TabsSection product={product} />
+      <section className="mt-8">
+        <h2 className="text-xl font-bold mb-4">اطلاعات تکمیلی و نظرات</h2>
+        <TabsSection product={product} />
+      </section>
 
       {/* محصولات مرتبط */}
-      <RelatedProducts categoryId={product.category.id} />
+      <section className="mt-8">
+        <h2 className="text-xl font-bold mb-4">محصولات مرتبط</h2>
+        <RelatedProducts categorySlug={product.category.slug} />
+      </section>
     </div>
   );
 }

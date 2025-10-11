@@ -24,6 +24,11 @@ export const metadata = {
     locale: "fa_IR",
     type: "website",
     url: process.env.NEXT_PUBLIC_SITE_URL,
+    verification: {
+      google: process.env.GOOGLE_VERIFICATION_CODE,
+      bing: process.env.BING_VERIFICATION_CODE,
+      yandex: process.env.YANDEX_VERIFICATION_CODE,
+    },
   },
   alternates: {
     canonical: process.env.NEXT_PUBLIC_SITE_URL,

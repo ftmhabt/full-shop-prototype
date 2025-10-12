@@ -90,7 +90,7 @@ function parseCategorySearchParams(
   return { filters, orderBy, query };
 }
 
-export async function standardizeProducts(products: ProductWithAttributes[]) {
+async function standardizeProducts(products: ProductWithAttributes[]) {
   return Promise.all(
     products.map(async (p) => ({
       ...p,

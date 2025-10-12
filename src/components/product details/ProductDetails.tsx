@@ -9,7 +9,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Card } from "@/components/ui/card";
 import { formatPrice } from "@/lib/format";
 import { selectCartItems } from "@/store/selectors";
 import { StandardizedProduct } from "@/types";
@@ -19,7 +18,9 @@ import { FallbackImage } from "../FallbackImage";
 import QuantitySelector from "./QuantitySelector";
 import Rating from "./Rating";
 import RelatedProducts from "./RelatedProducts";
+import ShippingAndServiceCard from "./ShippingAndServiceCard";
 import TabsSection from "./TabsSection";
+import WhyUsCard from "./WhyUsCard";
 
 export default function ProductDetails({
   product,
@@ -64,7 +65,7 @@ export default function ProductDetails({
       </nav>
 
       {/* بخش بالا */}
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-10">
         {/* سمت چپ: تصویر */}
         <div>
           <h2 className="sr-only">تصاویر محصول</h2>
@@ -126,23 +127,14 @@ export default function ProductDetails({
         </div>
 
         {/* راست: گارانتی */}
-        <Card className="flex flex-col p-5 bg-card sm:col-span-2 md:col-span-1">
-          <h2>گارانتی محصول: تعهد ما به کیفیت و رضایت شما</h2>
-          <p>
-            گارانتی یک محصول، در واقع تعهد رسمی و قانونی شرکت تولیدکننده یا
-            فروشنده به مشتری است که اطمینان می‌دهد کالا مطابق با استانداردهای
-            تعیین‌شده و بدون نقص به دست مصرف‌کننده می‌رسد و در صورت بروز هرگونه
-            مشکل ناشی از کیفیت ساخت یا عملکرد محصول در مدت زمان مشخص، مشتری
-            می‌تواند از خدمات تعمیر، تعویض یا بازپرداخت بهره‌مند شود. هدف اصلی
-            گارانتی، ایجاد اعتماد و اطمینان خاطر برای مشتری است تا با خیال راحت
-            محصول را خریداری و استفاده کند.
-          </p>
-        </Card>
+        <div className="space-y-4 bg-card sm:col-span-2 md:col-span-1">
+          <ShippingAndServiceCard />
+          <WhyUsCard />
+        </div>
       </div>
 
       {/* تب‌ها */}
       <section className="mt-8">
-        <h2 className="text-xl font-bold mb-4">اطلاعات تکمیلی و نظرات</h2>
         <TabsSection product={product} />
       </section>
 

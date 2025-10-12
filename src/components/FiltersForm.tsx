@@ -48,7 +48,7 @@ export default function FiltersForm({
     const params = new URLSearchParams();
 
     // query
-    if (query) params.set("q", query);
+    if (query) params.set("query", query);
 
     // orderBy رو حفظ کن
     if (currentOrderBy) params.set("orderBy", currentOrderBy);
@@ -80,10 +80,10 @@ export default function FiltersForm({
 
     // نگه داشتن query و orderBy
     const currentParams = new URLSearchParams(window.location.search);
-    const currentQ = currentParams.get("q");
+    const currentQ = currentParams.get("query");
     const currentOrderBy = currentParams.get("orderBy");
 
-    if (currentQ) params.set("q", currentQ);
+    if (currentQ) params.set("query", currentQ);
     if (currentOrderBy) params.set("orderBy", currentOrderBy);
 
     startTransition(() => {

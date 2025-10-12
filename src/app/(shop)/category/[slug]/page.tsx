@@ -83,7 +83,7 @@ function parseCategorySearchParams(
   Object.entries(searchParams || {}).forEach(([key, value]) => {
     if (!value) return;
     if (key === "orderBy") orderBy = Array.isArray(value) ? value[0] : value;
-    else if (key === "q") query = Array.isArray(value) ? value[0] : value;
+    else if (key === "query") query = Array.isArray(value) ? value[0] : value;
     else filters[key] = Array.isArray(value) ? value.filter(Boolean) : [value];
   });
 

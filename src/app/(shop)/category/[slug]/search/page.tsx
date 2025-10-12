@@ -18,16 +18,18 @@ export default async function CategorySearchPage({
   const filters: Record<string, string[]> = {};
   Object.entries(resolvedSearchParams || {}).forEach(([key, value]) => {
     if (!value) return;
+    if (key === "query" || key === "orderBy") return;
     filters[key] = Array.isArray(value) ? value.filter(Boolean) : [value];
   });
 
   const orderBy = resolvedSearchParams.orderBy as string | undefined;
-  const query = resolvedSearchParams.q as string | undefined;
+  const query = resolvedSearchParams.query as string | undefined;
 
   const attributes = await getAttributesByCategorySlug(slug);
 
   const categories = await getCategories();
   const currentCategory = categories.find((cat) => cat.slug === slug);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 p-4 lg:p-6 w-full">
       {/* Sidebar */}

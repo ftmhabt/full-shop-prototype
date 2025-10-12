@@ -22,10 +22,17 @@ export default function SearchBar() {
         action="/search"
         method="get"
         className="hidden sm:flex flex-1 max-w-xl items-center gap-2"
+        onSubmit={(e) => {
+          const input =
+            e.currentTarget.querySelector<HTMLInputElement>("[name='query']");
+          if (!input?.value.trim()) {
+            e.preventDefault();
+          }
+        }}
       >
         <Input
           type="text"
-          name="q"
+          name="query"
           placeholder="جستجوی محصولات..."
           className="rounded-full w-full"
         />
@@ -50,14 +57,25 @@ export default function SearchBar() {
               action="/search"
               method="get"
               className="flex items-center gap-2"
-              onSubmit={() => setOpen(false)}
+              onSubmit={(e) => {
+                const input =
+                  e.currentTarget.querySelector<HTMLInputElement>(
+                    "[name='query']"
+                  );
+                if (!input?.value.trim()) {
+                  e.preventDefault();
+                  return;
+                }
+                setOpen(false);
+              }}
             >
               <Input
                 type="text"
-                name="q"
+                name="query"
                 placeholder="جستجوی محصولات..."
                 className="rounded-full flex-1"
                 autoFocus
+                minLength={1}
               />
               <Button type="submit" size="icon" className="rounded-full">
                 <Search className="h-4 w-4" />

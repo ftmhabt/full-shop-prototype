@@ -36,7 +36,7 @@ export async function getProductsBySearch(
   orderBy: string = "newest",
   slug?: string
 ): Promise<{ products: ProductWithAttributes[] }> {
-  const { inStock, orderBy: _orderBy, q, ...otherFilters } = filters;
+  const { inStock, ...otherFilters } = filters;
 
   const where: Prisma.ProductWhereInput = {
     ...(slug ? { category: { slug } } : {}),

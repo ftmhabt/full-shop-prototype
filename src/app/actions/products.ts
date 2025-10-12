@@ -69,7 +69,8 @@ export async function getRelatedProducts(
 // Get products by category slug with filters and orderBy
 export async function getProductsByCategorySlug(
   slug: string,
-  filters: Record<string, string[]>
+  filters: Record<string, string[]>,
+  limit?: number // new optional limit
 ): Promise<ProductWithAttributes[]> {
   const { orderBy, query, ...otherFilters } = filters;
 
@@ -140,6 +141,7 @@ export async function getProductsByCategorySlug(
       brand: { select: { id: true, name: true, slug: true } },
     },
     orderBy: orderByClause,
+    take: limit, // <-- here we limit the number of products
   });
 }
 

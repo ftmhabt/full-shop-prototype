@@ -1,3 +1,4 @@
+import { SiteSchemas } from "@/components/SEO/SiteSchemas";
 import "./globals.css";
 
 export const metadata = {
@@ -42,7 +43,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        {children}
+        <SiteSchemas />
+      </body>
     </html>
   );
 }

@@ -16,7 +16,7 @@ export default async function SearchWrapper({ searchParams }: any) {
           categories.map((cat) => (
             <a
               key={cat.id}
-              href={`/category/${cat.slug}/search?q=${q}`}
+              href={`/category/${cat.slug}/search?query=${q}`}
               className="p-4 border rounded-lg hover:bg-gray-50 transition"
             >
               {cat.name}

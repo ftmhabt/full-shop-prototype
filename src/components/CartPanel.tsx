@@ -45,13 +45,13 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
                 <div className="leading-6">
                   <p className="font-semibold">{item.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {formatPrice(item.price)} تومان
+                    {formatPrice(item.priceToman)} تومان
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <QuantitySelector product={item} quantity={item.quantity} />
+                <QuantitySelector product={item} />
                 <Button
                   size="sm"
                   variant="destructive"
@@ -73,7 +73,8 @@ export default function CartPanel({ onClose }: { onClose?: () => void }) {
                   >
                     <span>• {sub.name}</span>
                     <span>
-                      {new Intl.NumberFormat("fa-IR").format(sub.price)} تومان
+                      {new Intl.NumberFormat("fa-IR").format(sub.priceToman)}{" "}
+                      تومان
                     </span>
                   </div>
                 ))}

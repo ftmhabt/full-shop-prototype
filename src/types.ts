@@ -44,7 +44,7 @@ export interface Address {
 export interface CartItem {
   id: string;
   name: string;
-  price: number;
+  slug: string;
   priceToman: number;
   quantity: number;
   image?: string;
@@ -85,17 +85,11 @@ export type AdminOrderForDetails = {
   items: {
     id: string;
     quantity: number;
-    price: number; // Decimal → number
-    // priceToman: number;
+    priceToman: number;
     bundleId?: string | null;
     bundleLabel?: string | null;
-    product: {
-      id: string;
-      name: string;
-      slug: string;
-      price: number; // Decimal → number
-      // priceToman: number;
-    };
+    productName: string;
+    productSlug: string;
   }[];
 
   ShippingMethod: {
@@ -115,9 +109,7 @@ export type OrderWithUserAndShipping = Prisma.OrderGetPayload<{
   include: {
     user: { select: { firstName: true; lastName: true; phone: true } };
     ShippingMethod: { select: { id: true; name: true; cost: true } };
-    items: {
-      select: { id: true; bundleId: true; product: true; quantity: true };
-    };
+    items: true;
   };
 }>;
 
@@ -191,17 +183,12 @@ export type OrderForDetails = {
 
   items: {
     id: string;
-    price: number; // converted from Decimal
-    // priceToman: number;
+    priceToman: number;
     quantity: number;
     bundleId?: string | null;
     bundleLabel?: string | null;
-    product: {
-      id: string;
-      name: string;
-      price: number; // converted from Decimal
-      // priceToman: number;
-    };
+    productId: string;
+    productName: string;
   }[];
 
   ShippingMethod: {
@@ -213,28 +200,9 @@ export type OrderForDetails = {
 
 export type OrderWithItems = Prisma.OrderGetPayload<{
   include: {
-    items: {
-      include: {
-        product: true;
-      };
-    };
+    items: true;
   };
 }>;
-
-export type OrderWithItemsNumbered = Omit<
-  OrderWithItems,
-  "finalPrice" | "items"
-> & {
-  finalPrice: number;
-  items: (Omit<OrderWithItems["items"][0], "price" | "product"> & {
-    price: number;
-    priceToman: number; // added Toman field
-    product: Omit<OrderWithItems["items"][0]["product"], "price"> & {
-      price: number;
-      priceToman: number; // added Toman field for product
-    };
-  })[];
-};
 
 export type StandardizedCartProduct = {
   id: string;

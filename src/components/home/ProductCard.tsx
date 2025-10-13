@@ -37,7 +37,17 @@ function ProductCard({ p }: { p: StandardizedProduct }) {
               <Percent className="ml-1 h-3 w-3" /> {p.badge}
             </Badge>
           )}
-          <QuantitySelector product={p} quantity={quantity} size="sm" />
+          <QuantitySelector
+            product={{
+              id: p.id,
+              name: p.name,
+              slug: p.slug,
+              priceToman: p.priceToman,
+              quantity,
+              image: p.image?.[0] ?? "",
+            }}
+            size="sm"
+          />
         </div>
         <div className="mt-3 space-y-2">
           <Link

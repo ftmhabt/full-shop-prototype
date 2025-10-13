@@ -26,6 +26,7 @@ import { FallbackImage } from "../FallbackImage";
 type Product = {
   id: string;
   name: string;
+  slug: string;
   price: number;
   priceToman: number;
   image: string[];
@@ -81,7 +82,7 @@ export default function DeviceBuilder({
           add({
             id: p.id,
             name: p.name,
-            price: p.priceToman,
+            slug: p.slug,
             priceToman: p.priceToman,
             quantity: 1,
             image: p.image?.[0],
@@ -110,14 +111,15 @@ export default function DeviceBuilder({
           id: `bundle-${Date.now().toLocaleString()}`,
           type: "BUNDLE",
           name: "دستگاه سفارشی",
-          price: total,
+          slug: `bundle-${Date.now().toLocaleString()}`,
           priceToman: total,
           quantity: 1,
           image: selectedProducts[0]?.image?.[0],
           bundleItems: selectedProducts.map((p) => ({
             productId: p.id,
             name: p.name,
-            price: p.priceToman,
+            slug: p.slug,
+            priceToman: p.priceToman,
             quantity: 1,
           })),
         })

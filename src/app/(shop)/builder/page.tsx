@@ -12,6 +12,7 @@ export default async function DeviceBuilderPage() {
         select: {
           id: true,
           name: true,
+          slug: true,
           price: true,
           image: true,
           stock: true,

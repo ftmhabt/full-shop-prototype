@@ -24,7 +24,7 @@ export async function createOrder(
 
   // total price already calculated per line item
   const totalPrice = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.priceToman * item.quantity,
     0
   );
   const finalPrice = totalPrice + method.cost - discount;
@@ -47,21 +47,32 @@ export async function createOrder(
       finalPrice,
 
       items: {
-        create: items.flatMap((item) => {
-          if (item.type === "BUNDLE" && item.bundleItems) {
-            return item.bundleItems.map((b) => ({
-              productId: b.productId,
-              quantity: b.quantity * item.quantity,
-              bundleId: item.id,
-              price: b.price * b.quantity,
-            }));
-          }
-          return {
-            productId: item.id,
-            quantity: item.quantity,
-            price: item.price * item.quantity,
-          };
-        }),
+        createMany: {
+          data: items.flatMap((item) => {
+            if (item.type === "BUNDLE" && item.bundleItems) {
+              return item.bundleItems.map((b) => ({
+                productId: b.productId,
+                productName: b.name,
+                productSlug: b.slug,
+                productImage: b.image || null,
+                quantity: b.quantity * item.quantity,
+                bundleId: item.id,
+                priceToman: b.priceToman,
+                totalPriceToman: b.priceToman * b.quantity * item.quantity,
+              }));
+            }
+
+            return {
+              productId: item.id,
+              productName: item.name,
+              productSlug: item.slug,
+              productImage: item.image || null,
+              quantity: item.quantity,
+              priceToman: item.priceToman,
+              totalPriceToman: item.priceToman * item.quantity,
+            };
+          }),
+        },
       },
 
       shippingMethodId: shippingId,

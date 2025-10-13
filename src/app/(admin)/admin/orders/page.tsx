@@ -18,11 +18,7 @@ export default async function OrdersPage() {
           cost: true,
         },
       },
-      items: {
-        include: {
-          product: true,
-        },
-      },
+      items: true,
     },
     orderBy: {
       createdAt: "desc",

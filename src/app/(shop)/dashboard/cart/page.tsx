@@ -33,7 +33,7 @@ export default function CartPage() {
                 <p className="font-semibold">{item.name}</p>
                 <p>
                   {item.quantity} ×{" "}
-                  {new Intl.NumberFormat("fa-IR").format(item.price)} تومان
+                  {new Intl.NumberFormat("fa-IR").format(item.priceToman)} تومان
                 </p>
               </div>
             </div>

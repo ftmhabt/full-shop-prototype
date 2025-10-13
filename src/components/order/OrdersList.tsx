@@ -8,16 +8,12 @@ import {
   paymentStatusColor,
   paymentStatusLabel,
 } from "@/lib/orderStatus";
-import { OrderWithItemsNumbered } from "@/types";
+import { OrderWithItems } from "@/types";
 import { ArrowRight, Package } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 
-export default function OrdersList({
-  orders,
-}: {
-  orders: OrderWithItemsNumbered[];
-}) {
+export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
   if (orders.length === 0) {
     return (
       <div className="text-center p-6">
@@ -97,13 +93,13 @@ export default function OrdersList({
                         >
                           <span>
                             {!isBundle
-                              ? item.product.name
-                              : "• " + item.product.name}{" "}
+                              ? item.productName
+                              : "• " + item.productName}{" "}
                             × {item.quantity}
                           </span>
                           <span>
                             {new Intl.NumberFormat("fa-IR").format(
-                              item.price * item.quantity
+                              item.priceToman * item.quantity
                             )}{" "}
                             تومان
                           </span>

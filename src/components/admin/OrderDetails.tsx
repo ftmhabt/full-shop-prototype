@@ -41,8 +41,8 @@ export default function OrderDetails({
         }
         acc[item.bundleId!].items.push({
           id: item.id,
-          product: { name: item.product.name, slug: item.product.slug },
-          price: item.price,
+          product: { name: item.productName, slug: item.productSlug },
+          price: item.priceToman,
           quantity: item.quantity,
           bundleId: item.bundleId ?? undefined,
           bundleLabel: item.bundleLabel ?? undefined,

@@ -125,11 +125,11 @@ export default function OrderDetails({ order }: { order: OrderForDetails }) {
                     className="flex justify-between py-2 text-sm"
                   >
                     <span>
-                      {item.product.name} × {item.quantity}
+                      {item.productName} × {item.quantity}
                     </span>
                     <span>
                       {new Intl.NumberFormat("fa-IR").format(
-                        item.price * item.quantity
+                        item.priceToman * item.quantity
                       )}{" "}
                       تومان
                     </span>
@@ -150,11 +150,11 @@ export default function OrderDetails({ order }: { order: OrderForDetails }) {
                       {bundleItems.map((i) => (
                         <li key={i.id} className="flex justify-between">
                           <span>
-                            • {i.product.name} × {i.quantity}
+                            • {i.productName} × {i.quantity}
                           </span>
                           <span>
                             {new Intl.NumberFormat("fa-IR").format(
-                              i.price * i.quantity
+                              i.priceToman * i.quantity
                             )}{" "}
                             تومان
                           </span>

@@ -11,7 +11,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface CartItem {
   id: string; // productId OR bundleId
   name: string;
-  price: number;
+  slug: string;
   priceToman: number;
   quantity: number;
   image?: string;
@@ -19,7 +19,9 @@ export interface CartItem {
   bundleItems?: {
     productId: string;
     name: string;
-    price: number;
+    slug: string;
+    image?: string;
+    priceToman: number;
     quantity: number;
   }[];
 }

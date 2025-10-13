@@ -37,7 +37,7 @@ export default function ReviewStep({
   const [loading, setLoading] = useState(false);
   // ✅ Calculate totals
   const itemsTotal = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.priceToman * item.quantity,
     0
   );
   const shippingCost = shippingMethod?.cost || 0;
@@ -151,7 +151,9 @@ export default function ReviewStep({
                       ? item.name
                       : item.name + " × " + item.quantity}
                   </span>
-                  <span>{formatPrice(item.price * item.quantity)} تومان</span>
+                  <span>
+                    {formatPrice(item.priceToman * item.quantity)} تومان
+                  </span>
                 </div>
 
                 {/* Sub-items for bundles */}
@@ -167,7 +169,7 @@ export default function ReviewStep({
                             • {sub.name} × {sub.quantity}
                           </span>
                           <span>
-                            {formatPrice(sub.price * sub.quantity)} تومان
+                            {formatPrice(sub.priceToman * sub.quantity)} تومان
                           </span>
                         </div>
                       ))}

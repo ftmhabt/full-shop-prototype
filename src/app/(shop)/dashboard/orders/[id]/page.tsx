@@ -10,11 +10,7 @@ export default async function OrderDetailsPage({ params }: any) {
   const order = await db.order.findFirst({
     where: { id, userId },
     include: {
-      items: {
-        include: {
-          product: true,
-        },
-      },
+      items: true,
       ShippingMethod: true,
     },
   });
@@ -25,21 +21,5 @@ export default async function OrderDetailsPage({ params }: any) {
     );
   }
 
-  const standardizedOrder = {
-    ...order,
-    items: await Promise.all(
-      order.items.map(async (i) => ({
-        ...i,
-        product: {
-          ...i.product,
-          price: i.product.price.toNumber(),
-          // priceToman: await usdToToman(i.product.price.toNumber()),
-        },
-        price: i.price.toNumber(),
-        // priceToman: await usdToToman(i.price.toNumber()),
-      }))
-    ),
-  };
-
-  return <OrderDetails order={standardizedOrder} />;
+  return <OrderDetails order={order} />;
 }

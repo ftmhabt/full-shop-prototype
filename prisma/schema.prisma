@@ -146,13 +146,17 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  productId String
-  quantity  Int
-  price     Decimal @default(0)
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  id              String  @id @default(cuid())
+  orderId         String
+  productId       String
+  productName     String  @default("")
+  productSlug     String  @default("")
+  productImage    String?
+  quantity        Int
+  priceToman      Int     @default(0)
+  totalPriceToman Int     @default(0)
+  order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product         Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   bundleId    String?
   bundleLabel String?

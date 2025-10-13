@@ -117,7 +117,16 @@ export default function ProductDetails({
             <p>{product.description}</p>
           </div>
           <div>
-            <QuantitySelector product={product} quantity={quantity} />
+            <QuantitySelector
+              product={{
+                id: product.id,
+                name: product.name,
+                slug: product.slug,
+                priceToman: product.priceToman,
+                quantity,
+                image: product.image?.[0] ?? "",
+              }}
+            />
           </div>
           <div className="flex space-x-2 mt-2">
             <Badge>گارانتی</Badge>

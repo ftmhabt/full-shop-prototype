@@ -1,4 +1,4 @@
-import ProductsGrid from "@/components/admin/ProductsGrid";
+import ProductsList from "@/components/admin/ProductList";
 import { db } from "@/lib/db";
 import { usdToToman } from "@/lib/exchange";
 
@@ -19,5 +19,5 @@ export default async function ProductsPage() {
     }))
   );
 
-  return <ProductsGrid products={productsWithToman} />;
+  return <ProductsList products={productsWithToman} />;
 }

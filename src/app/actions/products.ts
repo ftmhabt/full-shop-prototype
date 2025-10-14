@@ -70,7 +70,8 @@ export async function getRelatedProducts(
 export async function getProductsByCategorySlug(
   slug: string,
   filters: Record<string, string[]>,
-  limit?: number // new optional limit
+  limit?: number,
+  cursor?: string
 ): Promise<ProductWithAttributes[]> {
   const { orderBy, query, ...otherFilters } = filters;
 
@@ -106,25 +107,35 @@ export async function getProductsByCategorySlug(
     }));
   }
 
-  // Order by
-  let orderByClause: Prisma.ProductOrderByWithRelationInput = {
-    createdAt: "desc",
-  };
+  // Determine sorting
+  let primaryOrder: Prisma.SortOrder = "desc";
+  let sortField: keyof Prisma.ProductOrderByWithRelationInput = "createdAt";
+
   if (orderBy?.length) {
     switch (orderBy[0]) {
       case "oldest":
-        orderByClause = { createdAt: "asc" };
+        sortField = "createdAt";
+        primaryOrder = "asc";
         break;
       case "priceAsc":
-        orderByClause = { price: "asc" };
+        sortField = "price";
+        primaryOrder = "asc";
         break;
       case "priceDesc":
-        orderByClause = { price: "desc" };
+        sortField = "price";
+        primaryOrder = "desc";
         break;
       default:
-        orderByClause = { createdAt: "desc" };
+        sortField = "createdAt";
+        primaryOrder = "desc";
     }
   }
+
+  // ✅ Stable order to avoid duplicates when multiple have same value
+  const orderByClause: Prisma.ProductOrderByWithRelationInput[] = [
+    { [sortField]: primaryOrder },
+    { id: "asc" }, // secondary unique sort
+  ];
 
   return db.product.findMany({
     where,
@@ -141,7 +152,8 @@ export async function getProductsByCategorySlug(
       brand: { select: { id: true, name: true, slug: true } },
     },
     orderBy: orderByClause,
-    take: limit, // <-- here we limit the number of products
+    take: limit,
+    ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
   });
 }
 

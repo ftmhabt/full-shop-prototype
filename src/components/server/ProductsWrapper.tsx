@@ -1,58 +1,61 @@
 import { getProductsByCategorySlug } from "@/app/actions/products";
-import { getProductsBySearch } from "@/app/actions/search";
 import { usdToToman } from "@/lib/exchange";
-import type { ProductWithAttributes } from "@/types";
-import ProductCard from "../home/ProductCard";
+import InfiniteProducts from "../product/InfiniteProducts";
 
 interface ProductsWrapperProps {
   slug?: string;
   filters?: Record<string, string[]>;
   orderBy?: string;
   query?: string;
+  take?: number;
 }
 
 export default async function ProductsWrapper({
   slug,
   filters = {},
   orderBy = "newest",
-  query,
+  take = 12,
 }: ProductsWrapperProps) {
-  let data: ProductWithAttributes[] = [];
+  if (!slug) return null;
 
-  if (query && slug) {
-    // سرچ داخل یک کتگوری
-    const res = await getProductsBySearch(query, filters, orderBy, slug);
+  // make sure orderBy in filters if you want the action to read it consistently
+  if (orderBy) filters.orderBy = [orderBy];
 
-    data = res.products;
-  } else if (slug) {
-    // نمایش محصولات دسته‌بندی
-    data = await getProductsByCategorySlug(slug, filters);
-  }
+  const data = await getProductsByCategorySlug(slug, filters, take);
 
-  if (!data.length) return <p>هیچ محصولی یافت نشد</p>;
-  const standardizedProducts = await Promise.all(
+  if (!data?.length) return <p>هیچ محصولی یافت نشد</p>;
+
+  const standardized = await Promise.all(
     data.map(async (p) => ({
       ...p,
-      price: p.price.toNumber(),
-      priceToman: await usdToToman(p.price.toNumber()),
-      oldPrice: p.oldPrice ? p.oldPrice.toNumber() : null,
+      price: (p.price as any).toNumber
+        ? (p.price as any).toNumber()
+        : Number(p.price),
+      oldPrice: p.oldPrice
+        ? (p.oldPrice as any).toNumber?.() ?? Number(p.oldPrice)
+        : null,
+      priceToman: await usdToToman(
+        (p.price as any).toNumber
+          ? (p.price as any).toNumber()
+          : Number(p.price)
+      ),
       oldPriceToman: p.oldPrice
-        ? await usdToToman(p.oldPrice.toNumber())
+        ? await usdToToman(
+            (p.oldPrice as any).toNumber
+              ? (p.oldPrice as any).toNumber()
+              : Number(p.oldPrice)
+          )
         : null,
       reviews: p.reviews.map((r) => ({
         id: r.id,
         rating: r.rating,
-        comment: r.content ?? null,
-        user: { displayName: r.user.displayName ?? "" },
+        comment: (r as any).content ?? null,
+        user: { displayName: r.user?.displayName ?? "" },
       })),
     }))
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-      {standardizedProducts?.map((p) => (
-        <ProductCard key={p.id} p={p} />
-      ))}
-    </div>
+    <InfiniteProducts initialProducts={standardized} slug={slug} take={take} />
   );
 }

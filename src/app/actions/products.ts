@@ -71,7 +71,8 @@ export async function getProductsByCategorySlug(
   slug: string,
   filters: Record<string, string[]>,
   limit?: number,
-  cursor?: string
+  cursor?: string,
+  page?: number
 ): Promise<ProductWithAttributes[]> {
   const { orderBy, query, ...otherFilters } = filters;
 
@@ -134,27 +135,37 @@ export async function getProductsByCategorySlug(
   // ✅ Stable order to avoid duplicates when multiple have same value
   const orderByClause: Prisma.ProductOrderByWithRelationInput[] = [
     { [sortField]: primaryOrder },
-    { id: "asc" }, // secondary unique sort
+    { id: "asc" },
   ];
 
-  return db.product.findMany({
+  const take = limit ?? 12;
+
+  // 🧠 Decide which pagination mode to use
+  const isCursorMode = !!cursor;
+
+  const queryOptions: Prisma.ProductFindManyArgs = {
     where,
     include: {
-      attributes: {
-        include: {
-          value: { include: { attribute: true } },
-        },
-      },
+      attributes: { include: { value: { include: { attribute: true } } } },
       category: true,
-      reviews: {
-        include: { user: { select: { displayName: true } } },
-      },
+      reviews: { include: { user: { select: { displayName: true } } } },
       brand: { select: { id: true, name: true, slug: true } },
     },
     orderBy: orderByClause,
-    take: limit,
-    ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-  });
+    take,
+  };
+
+  if (isCursorMode) {
+    // Infinite scroll mode
+    queryOptions.cursor = { id: cursor! };
+    queryOptions.skip = 1; // skip the cursor item itself
+  } else if (page && page > 1) {
+    // Page-based mode
+    queryOptions.skip = (page - 1) * take;
+  }
+
+  const products = await db.product.findMany(queryOptions);
+  return products as ProductWithAttributes[];
 }
 
 // Get attributes with values for a category

@@ -30,14 +30,35 @@ export default async function CategoryPage({ params, searchParams }: any) {
     parseCategorySearchParams(resolvedSearchParams);
   const attributes = await getAttributesByCategorySlug(slug);
 
+  const productsPerPage = 12;
+  const totalProducts = await db.product.count({
+    where: { categoryId: category.id },
+  });
+  const totalPages = Math.ceil(totalProducts / productsPerPage);
+  const currentPage = Number(resolvedSearchParams.page) || 1;
+
   // For schema only
-  const rawProducts = await getProductsByCategorySlug(slug, filters, 10);
+  const rawProducts = await getProductsByCategorySlug(
+    slug,
+    filters,
+    productsPerPage,
+    undefined,
+    currentPage
+  );
   const standardizedProducts = await standardizeProducts(rawProducts);
 
   return (
     <>
       {/* SEO Schemas for Google */}
       <CategorySchemas category={category} products={standardizedProducts} />
+
+      {/* Invisible SEO pagination */}
+      {currentPage > 1 && (
+        <link rel="prev" href={`/category/${slug}?page=${currentPage - 1}`} />
+      )}
+      {currentPage < totalPages && (
+        <link rel="next" href={`/category/${slug}?page=${currentPage + 1}`} />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 p-4 lg:p-6 w-full">
         {/* Sidebar */}

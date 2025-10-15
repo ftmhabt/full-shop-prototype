@@ -6,6 +6,7 @@ import {
   FileText,
   Home,
   Package,
+  Settings,
   Tags,
   Users,
   X,
@@ -60,6 +61,11 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       label: "وبلاگ",
       href: "/admin/blog",
       icon: <FileText className="w-4 h-4" />,
+    },
+    {
+      label: "تنظیمات",
+      href: "/admin/setting",
+      icon: <Settings className="w-4 h-4" />,
     },
   ];
 

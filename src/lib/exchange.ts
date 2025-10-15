@@ -1,6 +1,12 @@
 "use server";
+import { cache } from "react";
+import db from "./db";
 import { getLatestRate } from "./latestRate";
-const MARKUP_PERCENT = 30; // if needed later
+
+const getConstants = cache(async () => {
+  const constants = await db.constants.findFirst();
+  return constants ?? { markupPercent: 30 };
+});
 
 export async function tomanToUsdWithMarkup(
   basePriceToman: number,
@@ -9,12 +15,13 @@ export async function tomanToUsdWithMarkup(
   if (!basePriceToman) throw new Error("base price required");
 
   const { rateToman } = await getLatestRate();
+  const { markupPercent } = await getConstants();
 
   // convert to USD
   let usd = basePriceToman / rateToman;
 
   // apply markup
-  if (applyMarkup) usd *= 1 + MARKUP_PERCENT / 100;
+  if (applyMarkup) usd *= 1 + markupPercent / 100;
 
   // no rounding in USD
   return Number(usd);

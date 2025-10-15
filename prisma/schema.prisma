@@ -223,6 +223,13 @@ model ShippingMethod {
   orders Order[]
 }
 
+model Constants {
+  id            Int      @id
+  brands        String[]
+  maxFileSize   Int
+  markupPercent Int
+}
+
 model OrderLog {
   id        String      @id @default(cuid())
   orderId   String

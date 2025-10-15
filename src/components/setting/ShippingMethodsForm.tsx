@@ -1,67 +1,73 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  addShippingMethod,
+  deleteShippingMethod,
+  getShippingMethods,
+} from "@/app/actions/admin/setting";
+import { ShippingMethod } from "@prisma/client";
+import { useEffect, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
-interface ShippingMethod {
-  id: number;
-  name: string;
-  cost: number;
-}
-
 export default function ShippingMethodsForm() {
   const [methods, setMethods] = useState<ShippingMethod[]>([]);
-  const [form, setForm] = useState({ name: "", cost: "" });
-
-  async function fetchMethods() {
-    const res = await fetch("/api/settings/shipping");
-    const data = await res.json();
-    setMethods(data);
-  }
-
-  async function addMethod() {
-    if (!form.name || !form.cost) return;
-    await fetch("/api/settings/shipping", {
-      method: "POST",
-      body: JSON.stringify({ name: form.name, cost: parseFloat(form.cost) }),
-    });
-    toast.success("Added!");
-    setForm({ name: "", cost: "" });
-    fetchMethods();
-  }
-
-  async function deleteMethod(id: number) {
-    await fetch("/api/settings/shipping", {
-      method: "DELETE",
-      body: JSON.stringify({ id }),
-    });
-    toast.success("Deleted!");
-    fetchMethods();
-  }
+  const [name, setName] = useState("");
+  const [cost, setCost] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    fetchMethods();
+    (async () => {
+      const data = await getShippingMethods();
+      setMethods(data);
+    })();
   }, []);
+
+  const handleAdd = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("cost", cost);
+
+    startTransition(async () => {
+      await addShippingMethod(formData);
+      const updated = await getShippingMethods();
+      setMethods(updated);
+      toast.success("Added!");
+      setName("");
+      setCost("");
+    });
+  };
+
+  const handleDelete = (id: string) => {
+    startTransition(async () => {
+      await deleteShippingMethod(id);
+      const updated = await getShippingMethods();
+      setMethods(updated);
+      toast.success("Deleted!");
+    });
+  };
 
   return (
     <div className="p-4 border rounded-lg space-y-4">
       <h2 className="text-lg font-semibold">Shipping Methods</h2>
-      <div className="flex gap-2">
+      <form onSubmit={handleAdd} className="flex gap-2">
         <Input
           placeholder="Name"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
         <Input
           placeholder="Cost"
           type="number"
-          value={form.cost}
-          onChange={(e) => setForm({ ...form, cost: e.target.value })}
+          value={cost}
+          onChange={(e) => setCost(e.target.value)}
         />
-        <Button onClick={addMethod}>Add</Button>
-      </div>
+        <Button disabled={isPending} type="submit">
+          Add
+        </Button>
+      </form>
 
       <ul className="space-y-2">
         {methods.map((m) => (
@@ -72,7 +78,11 @@ export default function ShippingMethodsForm() {
             <span>
               {m.name} — ${m.cost}
             </span>
-            <Button variant="destructive" onClick={() => deleteMethod(m.id)}>
+            <Button
+              variant="destructive"
+              disabled={isPending}
+              onClick={() => handleDelete(m.id)}
+            >
               Delete
             </Button>
           </li>

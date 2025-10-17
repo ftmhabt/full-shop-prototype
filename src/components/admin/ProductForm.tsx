@@ -41,6 +41,7 @@ const formSchema = z.object({
   stock: z.coerce.number().min(0),
   badge: z.string().optional(),
   categoryId: z.string().min(1, "Category is required"),
+  brandId: z.string().optional(),
   images: z.array(z.string()).optional(),
   attributeValueIds: z.array(z.string()).optional(),
 });
@@ -50,6 +51,7 @@ type ProductFormValues = FormValues & { id?: string };
 export default function ProductForm({
   categories,
   attributes,
+  brands,
   initialData,
 }: {
   categories: { id: string; name: string }[];
@@ -59,6 +61,7 @@ export default function ProductForm({
     categoryId: string;
     values: { id: string; value: string }[];
   }[];
+  brands: { id: string; name: string }[];
   initialData?: ProductFormValues | null;
 }) {
   const [previewImages, setPreviewImages] = useState<string[]>([]);
@@ -76,6 +79,7 @@ export default function ProductForm({
       stock: initialData?.stock || 0,
       badge: initialData?.badge || "",
       categoryId: initialData?.categoryId || "",
+      brandId: initialData?.brandId || "",
       images: initialData?.images || [],
       attributeValueIds: initialData?.attributeValueIds || [],
     },
@@ -145,7 +149,7 @@ export default function ProductForm({
   return (
     <div className="max-w-3xl mx-auto">
       <h1 className="text-2xl font-semibold mb-6">
-        {initialData ? "Edit Product" : "Create Product"}
+        {initialData ? "ویرایش محصول" : "ایجاد محصول"}
       </h1>
 
       <Form {...form}>
@@ -156,7 +160,7 @@ export default function ProductForm({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>نام محصول</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -171,7 +175,7 @@ export default function ProductForm({
             name="slug"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Slug</FormLabel>
+                <FormLabel>اسلاگ</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -193,7 +197,7 @@ export default function ProductForm({
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>توضیحات</FormLabel>
                 <FormControl>
                   <Textarea rows={4} {...field} />
                 </FormControl>
@@ -201,14 +205,38 @@ export default function ProductForm({
               </FormItem>
             )}
           />
-
+          {/* Brand */}
+          {brands.length > 0 && (
+            <FormField
+              control={form.control}
+              name="brandId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>نام برند</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select brand" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {brands.map((b) => (
+                        <SelectItem key={b.id} value={b.id}>
+                          {b.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           {/* Category */}
           <FormField
             control={form.control}
             name="categoryId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category</FormLabel>
+                <FormLabel>دسته‌بندی</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
@@ -228,7 +256,7 @@ export default function ProductForm({
           {/* Attribute Selector */}
           {selectedAttributes.length > 0 && (
             <div>
-              <FormLabel>ویژگی‌ها</FormLabel>
+              {/* <FormLabel>ویژگی‌ها</FormLabel> */}
               <div className="space-y-4 mt-2">
                 {selectedAttributes.map((attr) => (
                   <div key={attr.id}>
@@ -278,7 +306,7 @@ export default function ProductForm({
             name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Price</FormLabel>
+                <FormLabel>قیمت</FormLabel>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -293,7 +321,7 @@ export default function ProductForm({
             name="oldPrice"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Old Price</FormLabel>
+                <FormLabel>قیمت قدیم</FormLabel>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -308,7 +336,7 @@ export default function ProductForm({
             name="stock"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Stock</FormLabel>
+                <FormLabel>موجودی</FormLabel>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -323,9 +351,9 @@ export default function ProductForm({
             name="badge"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Badge</FormLabel>
+                <FormLabel>برچسب</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="e.g. New, Sale, Hot" />
+                  <Input {...field} placeholder="مثلا جدید، تخفیف، داغ" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -334,7 +362,7 @@ export default function ProductForm({
 
           {/* Image Upload */}
           <div>
-            <FormLabel>Images</FormLabel>
+            <FormLabel>تصاویر</FormLabel>
             <input
               type="file"
               multiple
@@ -393,11 +421,11 @@ export default function ProductForm({
           <Button type="submit" disabled={isPending}>
             {isPending
               ? initialData
-                ? "Updating..."
-                : "Creating..."
+                ? "در حال به‌روزرسانی..."
+                : "در حال ایجاد..."
               : initialData
-              ? "Update Product"
-              : "Create Product"}
+              ? "به‌روزرسانی محصول"
+              : "ایجاد محصول"}
           </Button>
         </form>
       </Form>

@@ -224,8 +224,7 @@ model ShippingMethod {
 }
 
 model Constants {
-  id            Int      @id
-  brands        String[]
+  id            Int @id
   maxFileSize   Int
   markupPercent Int
 }

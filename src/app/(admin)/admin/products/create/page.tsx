@@ -14,6 +14,14 @@ export default async function Page() {
       values: { select: { id: true, value: true } },
     },
   });
-
-  return <ProductForm categories={categories} attributes={attributes} />;
+  const brands = await db.brand.findMany({
+    select: { id: true, name: true },
+  });
+  return (
+    <ProductForm
+      categories={categories}
+      attributes={attributes}
+      brands={brands}
+    />
+  );
 }

@@ -6,6 +6,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { StandardizedProduct } from "@/types";
 import { useEffect, useState, useTransition } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
 
 export default function TabsSection({
   product,
@@ -67,13 +75,36 @@ export default function TabsSection({
         </TabsList>
 
         <TabsContent value="features">
-          <ul className="border rounded-xl p-3 list-disc pr-10">
-            {product.attributes?.map((attr) => (
-              <li key={attr.id}>
-                {attr.value.attribute.name}: {attr.value.value}
-              </li>
-            ))}
-          </ul>
+          <div className="border rounded-xl">
+            <Table dir="rtl">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-1/2 bg-accent rounded-tr-xl">
+                    ویژگی
+                  </TableHead>
+                  <TableHead className="bg-accent rounded-tl-xl">
+                    مقدار
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {product.brand && (
+                  <TableRow>
+                    <TableCell className="font-medium">برند</TableCell>
+                    <TableCell>{product.brand.name}</TableCell>
+                  </TableRow>
+                )}
+                {product.attributes?.map((attr) => (
+                  <TableRow key={attr.id}>
+                    <TableCell className="font-medium">
+                      {attr.value.attribute.name}
+                    </TableCell>
+                    <TableCell>{attr.value.value}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </TabsContent>
 
         <TabsContent value="description">

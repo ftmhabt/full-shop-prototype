@@ -15,6 +15,7 @@ export async function createProduct(data: {
   stock: number;
   badge?: string;
   categoryId: string;
+  brandId?: string;
   image: string[];
   attributeValueIds: string[];
 }) {
@@ -31,6 +32,9 @@ export async function createProduct(data: {
       badge: data.badge,
       category: {
         connect: { id: data.categoryId },
+      },
+      brand: {
+        connect: { id: data.brandId },
       },
       image: data.image,
     },
@@ -61,6 +65,7 @@ interface UpdateProductInput {
   stock: number;
   badge?: string;
   categoryId: string;
+  brandId?: string;
   image: string[]; // all images
   attributeValueIds?: string[];
 }
@@ -76,6 +81,7 @@ export async function updateProduct(data: UpdateProductInput) {
     stock,
     badge,
     categoryId,
+    brandId,
     image,
     attributeValueIds = [],
   } = data;
@@ -94,6 +100,7 @@ export async function updateProduct(data: UpdateProductInput) {
         stock,
         badge,
         categoryId,
+        brandId,
         image,
       },
     });

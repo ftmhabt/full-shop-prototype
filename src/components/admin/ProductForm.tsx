@@ -29,7 +29,15 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useSlugValidator } from "@/hooks/useSlugValidator";
 import { cn } from "@/lib/utils";
+import { Label } from "@radix-ui/react-label";
+import Gapcursor from "@tiptap/extension-gapcursor";
+import HardBreak from "@tiptap/extension-hard-break";
+import Link from "@tiptap/extension-link";
+import TextAlign from "@tiptap/extension-text-align";
+import { useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 import { X } from "lucide-react";
+import Editor from "../blog/Editor";
 import { FallbackImage } from "../FallbackImage";
 
 const formSchema = z.object({
@@ -90,6 +98,36 @@ export default function ProductForm({
   const { isValid, errorMessage } = useSlugValidator(slugValue);
   const showError = slugValue.trim().length > 0 && !isValid;
 
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Gapcursor,
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
+      HardBreak.configure({
+        HTMLAttributes: {
+          class: "hard-break",
+        },
+      }),
+      Link.configure({
+        HTMLAttributes: {
+          class:
+            "text-blue-600 underline hover:text-blue-800 transition-colors",
+        },
+      }),
+    ],
+    content: initialData?.description || "<p></p>",
+    editorProps: {
+      attributes: {
+        class:
+          "prose prose-rose dark:prose-invert focus:outline-none text-right",
+      },
+    },
+    immediatelyRender: false,
+    parseOptions: {
+      preserveWhitespace: "full",
+    },
+  });
+
   const selectedAttributes = useMemo(() => {
     return attributes.filter((a) => a.categoryId === form.watch("categoryId"));
   }, [attributes, form.watch("categoryId")]);
@@ -101,6 +139,13 @@ export default function ProductForm({
     }
   }, [initialData]);
 
+  useEffect(() => {
+    if (!editor) return;
+
+    editor.on("update", () => {
+      form.setValue("description", editor.getHTML());
+    });
+  }, [editor, form]);
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -209,19 +254,12 @@ export default function ProductForm({
           />
 
           {/* Description */}
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>توضیحات</FormLabel>
-                <FormControl>
-                  <Textarea rows={4} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-col gap-1">
+            <Label>توضیحات</Label>
+            <div className="border rounded p-2 min-h-[300px]">
+              {editor && <Editor editor={editor} />}
+            </div>
+          </div>
 
           {/* Brand */}
           {brands.length > 0 && (

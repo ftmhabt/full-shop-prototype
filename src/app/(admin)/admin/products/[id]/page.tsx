@@ -23,6 +23,7 @@ export default async function EditPage({ params }: any) {
         id: product?.id || "",
         name: product?.name || "",
         slug: product?.slug || "",
+        summary: product?.summary || "",
         description: product?.description || "",
         price: priceInToman || 0,
         oldPrice: product?.oldPrice?.toNumber() || undefined,

@@ -108,7 +108,17 @@ export default function TabsSection({
         </TabsContent>
 
         <TabsContent value="description">
-          <p className="border rounded-xl p-3">{product.description}</p>
+          <div
+            dir="rtl"
+            className="prose max-w-none whitespace-pre-wrap border rounded-xl p-6"
+            style={
+              {
+                "--tw-prose-links": "#2563eb", // blue-600
+                "--tw-prose-links-hover": "#1e40af", // blue-800 (optional)
+              } as React.CSSProperties
+            }
+            dangerouslySetInnerHTML={{ __html: product.description }}
+          />
         </TabsContent>
 
         <TabsContent value="reviews">

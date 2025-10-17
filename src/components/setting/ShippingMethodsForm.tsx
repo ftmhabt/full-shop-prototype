@@ -5,7 +5,9 @@ import {
   deleteShippingMethod,
   getShippingMethods,
 } from "@/app/actions/admin/setting";
+import { formatPrice } from "@/lib/format";
 import { ShippingMethod } from "@prisma/client";
+import { Plus, Trash } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import { Button } from "../ui/button";
@@ -34,7 +36,7 @@ export default function ShippingMethodsForm() {
       await addShippingMethod(formData);
       const updated = await getShippingMethods();
       setMethods(updated);
-      toast.success("Added!");
+      toast.success("افزوده شد!");
       setName("");
       setCost("");
     });
@@ -45,27 +47,27 @@ export default function ShippingMethodsForm() {
       await deleteShippingMethod(id);
       const updated = await getShippingMethods();
       setMethods(updated);
-      toast.success("Deleted!");
+      toast.success("حذف شد!");
     });
   };
 
   return (
     <div className="p-4 border rounded-lg space-y-4">
-      <h2 className="text-lg font-semibold">Shipping Methods</h2>
+      <h2 className="text-lg font-semibold">روش ارسال</h2>
       <form onSubmit={handleAdd} className="flex gap-2">
         <Input
-          placeholder="Name"
+          placeholder="عنوان"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <Input
-          placeholder="Cost"
+          placeholder="هزینه"
           type="number"
           value={cost}
           onChange={(e) => setCost(e.target.value)}
         />
         <Button disabled={isPending} type="submit">
-          Add
+          <Plus />
         </Button>
       </form>
 
@@ -75,15 +77,14 @@ export default function ShippingMethodsForm() {
             key={m.id}
             className="flex justify-between items-center border-b pb-1"
           >
-            <span>
-              {m.name} — ${m.cost}
-            </span>
+            <span className="w-30 text-nowrap">{m.name}</span>
+            <span>{formatPrice(m.cost)} تومن</span>
             <Button
               variant="destructive"
               disabled={isPending}
               onClick={() => handleDelete(m.id)}
             >
-              Delete
+              <Trash />
             </Button>
           </li>
         ))}

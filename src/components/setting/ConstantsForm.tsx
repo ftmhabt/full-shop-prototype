@@ -8,7 +8,6 @@ import { Input } from "../ui/input";
 
 export default function ConstantsForm() {
   const [brands, setBrands] = useState<string[]>([]);
-  const [newBrand, setNewBrand] = useState("");
   const [maxFileSize, setMaxFileSize] = useState(2 * 1024 * 1024);
   const [markup, setMarkup] = useState(30);
   const [isPending, startTransition] = useTransition();
@@ -31,43 +30,20 @@ export default function ConstantsForm() {
         maxFileSize,
         markupPercent: markup,
       });
-      toast.success("Constants updated!");
+      toast.success("تنظیمات با موفقیت ذخیره شد!");
     });
   };
 
   return (
     <div className="p-4 border rounded-lg space-y-4">
-      <h2 className="text-lg font-semibold">App Constants</h2>
+      <h2 className="text-lg font-semibold">تنظیمات کلی</h2>
 
-      <div>
-        <label>Brands</label>
-        <div className="flex gap-2 flex-wrap">
-          {brands.map((b, i) => (
-            <span key={i} className="border px-2 py-1 rounded">
-              {b}
-            </span>
-          ))}
-        </div>
-        <div className="flex gap-2 mt-2">
-          <Input
-            placeholder="Add brand"
-            value={newBrand}
-            onChange={(e) => setNewBrand(e.target.value)}
-          />
-          <Button
-            onClick={() => {
-              if (newBrand) setBrands([...brands, newBrand]);
-              setNewBrand("");
-            }}
-          >
-            Add
-          </Button>
-        </div>
-      </div>
-
-      <div>
-        <label>Max File Size (MB)</label>
+      <div className="flex gap-3">
+        <label className="w-full text-nowrap">
+          حداکثر اندازه فایل (مگابایت)
+        </label>
         <Input
+          className="w-40"
           type="number"
           value={maxFileSize / (1024 * 1024)}
           onChange={(e) =>
@@ -76,9 +52,10 @@ export default function ConstantsForm() {
         />
       </div>
 
-      <div>
-        <label>Markup Percent</label>
+      <div className="flex gap-3">
+        <label className="w-full text-nowrap">درصد سود</label>
         <Input
+          className="w-40"
           type="number"
           value={markup}
           onChange={(e) => setMarkup(parseInt(e.target.value))}
@@ -86,7 +63,7 @@ export default function ConstantsForm() {
       </div>
 
       <Button disabled={isPending} onClick={handleSave}>
-        Save
+        ذخیره
       </Button>
     </div>
   );

@@ -35,6 +35,7 @@ export async function standardizeProducts(
       id: p.id,
       name: p.name,
       slug: p.slug,
+      summary: p.summary,
       description: p.description,
       image: p.image,
       badge: p.badge,

@@ -71,6 +71,7 @@ model Product {
   id          String             @id @default(cuid())
   slug        String             @unique
   name        String
+  summary     String             @default("")
   description String
   image       String[]
   badge       String?

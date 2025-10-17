@@ -88,7 +88,7 @@ export function ProductSchemas({ product }: { product: StandardizedProduct }) {
     image: Array.isArray(product.image)
       ? product.image.map((img) => `${siteUrl}${img}`)
       : [`${siteUrl}${product.image}`],
-    description: product.description,
+    description: product.summary,
     sku: product.id,
     brand: {
       "@type": "Brand",

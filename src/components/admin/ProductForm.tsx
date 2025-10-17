@@ -35,6 +35,7 @@ import { FallbackImage } from "../FallbackImage";
 const formSchema = z.object({
   name: z.string().min(2),
   slug: z.string().min(2),
+  summary: z.string().min(5),
   description: z.string().min(5),
   price: z.coerce.number().min(1),
   oldPrice: z.coerce.number().optional(),
@@ -73,6 +74,7 @@ export default function ProductForm({
     defaultValues: {
       name: initialData?.name || "",
       slug: initialData?.slug || "",
+      summary: initialData?.summary || "",
       description: initialData?.description || "",
       price: initialData?.price || 0,
       oldPrice: initialData?.oldPrice,
@@ -191,6 +193,21 @@ export default function ProductForm({
             )}
           />
 
+          {/* Summary */}
+          <FormField
+            control={form.control}
+            name="summary"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>توضیح کوتاه</FormLabel>
+                <FormControl>
+                  <Textarea rows={4} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           {/* Description */}
           <FormField
             control={form.control}
@@ -205,6 +222,7 @@ export default function ProductForm({
               </FormItem>
             )}
           />
+
           {/* Brand */}
           {brands.length > 0 && (
             <FormField

@@ -5,10 +5,10 @@ import { tomanToUsdWithMarkup } from "@/lib/exchange";
 import { revalidatePath } from "next/cache";
 
 // Create Product
-
 export async function createProduct(data: {
   name: string;
   slug: string;
+  summary: string;
   description: string;
   price: number;
   oldPrice?: number;
@@ -25,6 +25,7 @@ export async function createProduct(data: {
     data: {
       name: data.name,
       slug: data.slug,
+      summary: data.summary,
       description: data.description,
       price: finalPriceUSD,
       oldPrice: data.oldPrice,
@@ -59,6 +60,7 @@ interface UpdateProductInput {
   id: string;
   name: string;
   slug: string;
+  summary: string;
   description: string;
   price: number;
   oldPrice?: number;
@@ -75,6 +77,7 @@ export async function updateProduct(data: UpdateProductInput) {
     id,
     name,
     slug,
+    summary,
     description,
     price,
     oldPrice,
@@ -94,6 +97,7 @@ export async function updateProduct(data: UpdateProductInput) {
       data: {
         name,
         slug,
+        summary,
         description,
         price: finalPriceUSD,
         oldPrice,

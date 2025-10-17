@@ -114,7 +114,7 @@ export default function ProductDetails({
           <Badge variant="secondary">موجود در انبار</Badge>
           <div>
             <h3 className="font-semibold mt-2 mb-1">توضیحات محصول</h3>
-            <p>{product.description}</p>
+            <p>{product.summary}</p>
           </div>
           <div>
             <QuantitySelector

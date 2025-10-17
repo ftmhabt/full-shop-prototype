@@ -117,6 +117,7 @@ export type StandardizedProduct = {
   id: string;
   name: string;
   slug: string;
+  summary: string;
   description: string;
   image: string[];
   badge: string | null;

@@ -29,7 +29,6 @@ export async function getConstants() {
 }
 
 export async function saveConstants(data: {
-  brands: string[];
   maxFileSize: number;
   markupPercent: number;
 }) {

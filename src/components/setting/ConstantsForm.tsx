@@ -7,7 +7,6 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
 export default function ConstantsForm() {
-  const [brands, setBrands] = useState<string[]>([]);
   const [maxFileSize, setMaxFileSize] = useState(2 * 1024 * 1024);
   const [markup, setMarkup] = useState(30);
   const [isPending, startTransition] = useTransition();
@@ -16,7 +15,6 @@ export default function ConstantsForm() {
     (async () => {
       const data = await getConstants();
       if (data) {
-        setBrands(data.brands || []);
         setMaxFileSize(data.maxFileSize);
         setMarkup(data.markupPercent);
       }
@@ -26,7 +24,6 @@ export default function ConstantsForm() {
   const handleSave = () => {
     startTransition(async () => {
       await saveConstants({
-        brands,
         maxFileSize,
         markupPercent: markup,
       });

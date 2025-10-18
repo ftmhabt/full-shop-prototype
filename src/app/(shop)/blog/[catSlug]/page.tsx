@@ -1,4 +1,5 @@
 import { FallbackImage } from "@/components/FallbackImage";
+import BlogCategorySchemas from "@/components/SEO/BlogCategorySchemas";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -9,43 +10,12 @@ import {
 } from "@/components/ui/card";
 import db from "@/lib/db";
 import { usdToToman } from "@/lib/exchange";
+import { getBlogCategoryMetadata } from "@/lib/metadata/blogCategoryMetadata";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import BreadcrumbJSONLD from "@/components/BreadcrumbJSONLD";
-import type { Metadata } from "next";
-
-export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const category = await db.blogCategory.findUnique({
-    where: { slug: params.catSlug },
-  });
-
-  if (!category) {
-    return {
-      title: "دسته‌بندی یافت نشد | مقالات سیستم‌های حفاظتی",
-      description:
-        "این دسته‌بندی در مقالات فروشگاه سیستم‌های حفاظتی موجود نیست.",
-      robots: { index: false, follow: false },
-    };
-  }
-
-  return {
-    title: `${category.name} | مقالات سیستم‌های حفاظتی`,
-    description:
-      category.description || `مطالب آموزشی و مقالات ${category.name}.`,
-    alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${category.slug}`,
-    },
-    openGraph: {
-      title: `${category.name} | مقالات سیستم‌های حفاظتی`,
-      description:
-        category.description || `مطالب آموزشی و مقالات ${category.name}.`,
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${category.slug}`,
-      siteName: "مقالات سیستم‌های حفاظتی",
-      locale: "fa_IR",
-      type: "website",
-    },
-  };
+export async function generateMetadata({ params }: any) {
+  return getBlogCategoryMetadata(params.catSlug);
 }
 
 export default async function BlogCategoryPage({ params }: any) {
@@ -83,16 +53,8 @@ export default async function BlogCategoryPage({ params }: any) {
 
   return (
     <>
-      <BreadcrumbJSONLD
-        items={[
-          { name: "خانه", url: process.env.NEXT_PUBLIC_SITE_URL as string },
-          { name: "مقالات", url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog` },
-          {
-            name: category.name,
-            url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${category.slug}`,
-          },
-        ]}
-      />
+      {/* ✅ SEO JSON-LD */}
+      <BlogCategorySchemas category={category} />
 
       <div className="container py-8 grid grid-cols-1 lg:grid-cols-4 gap-8 mb-auto">
         {/* Blog Posts Column */}

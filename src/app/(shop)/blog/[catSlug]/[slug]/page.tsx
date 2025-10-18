@@ -1,4 +1,5 @@
 import { FallbackImage } from "@/components/FallbackImage";
+import BlogPostSchemas from "@/components/SEO/BlogPostSchemas";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -10,47 +11,12 @@ import {
 import { Separator } from "@/components/ui/separator";
 import db from "@/lib/db";
 import { usdToToman } from "@/lib/exchange";
-import type { Metadata } from "next";
+import { getBlogPostMetadata } from "@/lib/metadata/blogPostMetadata";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const post = await db.blogPost.findUnique({
-    where: { slug: params.slug },
-    include: {
-      author: { select: { displayName: true } },
-      category: true,
-      tags: true,
-    },
-  });
-
-  if (!post) {
-    return {
-      title: "مقاله یافت نشد | فروشگاه سیستم‌های حفاظتی",
-      description:
-        "پست مورد نظر در مقالات فروشگاه سیستم‌های حفاظتی موجود نیست.",
-      robots: { index: false, follow: false },
-    };
-  }
-
-  return {
-    title: `${post.title} | مقالات سیستم‌های حفاظتی`,
-    description:
-      post.excerpt ||
-      "مطالب آموزشی و راهنمایی‌های مرتبط با دزدگیر، دوربین مداربسته و تجهیزات امنیتی.",
-    alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${post.slug}`,
-    },
-    authors: [{ name: post.author.displayName || "نویسنده ناشناس" }],
-    openGraph: {
-      title: post.title,
-      description:
-        post.excerpt ||
-        "مطالب آموزشی و راهنمایی‌های مرتبط با دزدگیر، دوربین مداربسته و تجهیزات امنیتی.",
-      // images: post.featuredImage ? [post.featuredImage] : [],
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${post.slug}`,
-    },
-  };
+export async function generateMetadata({ params }: any) {
+  return getBlogPostMetadata(params.catSlug, params.slug);
 }
 
 export default async function BlogPostPage({ params }: any) {
@@ -79,79 +45,11 @@ export default async function BlogPostPage({ params }: any) {
       priceToman: await usdToToman(p.price.toNumber()),
     }))
   );
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
+
   return (
     <>
-      {/* ✅ Breadcrumb JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              {
-                "@type": "ListItem",
-                position: 1,
-                name: "خانه",
-                item: siteUrl,
-              },
-              {
-                "@type": "ListItem",
-                position: 2,
-                name: "وبلاگ",
-                item: `${siteUrl}/blog`,
-              },
-              {
-                "@type": "ListItem",
-                position: 3,
-                name: post.category?.name || "دسته‌بندی",
-                item: post.category
-                  ? `${siteUrl}/blog/category/${post.category.slug}`
-                  : `${siteUrl}/blog`,
-              },
-              {
-                "@type": "ListItem",
-                position: 4,
-                name: post.title,
-                item: `${siteUrl}/blog/${post.slug}`,
-              },
-            ],
-          }),
-        }}
-      />
+      <BlogPostSchemas post={post} />
 
-      {/* ✅ Article JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            headline: post.title,
-            description: post.excerpt || post.content.slice(0, 150),
-            author: {
-              "@type": "Person",
-              name: post.author.displayName || "نویسنده ناشناس",
-            },
-            publisher: {
-              "@type": "Organization",
-              name: "وبلاگ سیستم‌های حفاظتی",
-              logo: {
-                "@type": "ImageObject",
-                url: `${siteUrl}/logo.png`,
-              },
-            },
-            mainEntityOfPage: {
-              "@type": "WebPage",
-              "@id": `${siteUrl}/blog/${post.slug}`,
-            },
-            datePublished: post.createdAt,
-            dateModified: post.updatedAt,
-            // image: post.image ? [post.image] : undefined,
-          }),
-        }}
-      />
       <div className="container py-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-auto">
         {/* Main Content Column */}
         <div className="md:col-span-3">

@@ -1,3 +1,4 @@
+import BlogTagSchemas from "@/components/SEO/BlogTagSchemas";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -7,41 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import db from "@/lib/db";
+import { getBlogTagMetadata } from "@/lib/metadata/blogTagMetadata";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import BreadcrumbJSONLD from "@/components/BreadcrumbJSONLD";
-import { BlogTagJSONLD } from "@/lib/json-ld";
-import type { Metadata } from "next";
-
-export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const tag = await db.blogTag.findUnique({
-    where: { slug: params.slug },
-  });
-
-  if (!tag) {
-    return {
-      title: "برچسب یافت نشد | مقالات سیستم‌های حفاظتی",
-      description: "این برچسب در مقالات فروشگاه سیستم‌های حفاظتی موجود نیست.",
-      robots: { index: false, follow: false },
-    };
-  }
-
-  return {
-    title: `${tag.name} | مقالات سیستم‌های حفاظتی`,
-    description: `مطالب و مقالات مرتبط با برچسب ${tag.name} در زمینه دزدگیر، دوربین مداربسته و تجهیزات امنیتی.`,
-    alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/tag/${tag.slug}`,
-    },
-    openGraph: {
-      title: `${tag.name} | مقالات سیستم‌های حفاظتی`,
-      description: `مطالب و مقالات مرتبط با برچسب ${tag.name} در زمینه دزدگیر، دوربین مداربسته و تجهیزات امنیتی.`,
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/tag/${tag.slug}`,
-      siteName: "مقالات سیستم‌های حفاظتی",
-      locale: "fa_IR",
-      type: "website",
-    },
-  };
+export async function generateMetadata({ params }: any) {
+  return getBlogTagMetadata(params.slug);
 }
 
 export default async function TagPage({ params }: any) {
@@ -62,18 +34,8 @@ export default async function TagPage({ params }: any) {
 
   return (
     <>
-      <BlogTagJSONLD {...tag} />
-
-      <BreadcrumbJSONLD
-        items={[
-          { name: "خانه", url: process.env.NEXT_PUBLIC_SITE_URL as string },
-          { name: "مقالات", url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog` },
-          {
-            name: `برچسب: ${tag.name}`,
-            url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/tag/${tag.slug}`,
-          },
-        ]}
-      />
+      {/* SEO JSON-LD */}
+      <BlogTagSchemas tag={tag} />
 
       <div className="container py-8 grid grid-cols-1 lg:grid-cols-4 gap-8 mb-auto">
         {/* Blog Posts Column */}

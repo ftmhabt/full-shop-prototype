@@ -51,6 +51,7 @@
     "ioredis": "^5.8.0",
     "jose": "^6.0.12",
     "jsonwebtoken": "^9.0.2",
+    "keen-slider": "^6.8.6",
     "lucide-react": "^0.539.0",
     "multer": "^2.0.2",
     "nanoid": "^5.1.5",

@@ -1,68 +1,59 @@
 "use client";
 
 import { StandardizedProduct } from "@/types";
+import "keen-slider/keen-slider.min.css";
+import { KeenSliderInstance, useKeenSlider } from "keen-slider/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRef } from "react";
-import { Navigation } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { useState } from "react";
 import ProductCard from "./ProductCard";
-
-import "swiper/css";
 
 interface ProductsProps {
   products: StandardizedProduct[];
 }
 
 export default function ProductSlider({ products }: ProductsProps) {
-  const prevRef = useRef<HTMLButtonElement>(null);
-  const nextRef = useRef<HTMLButtonElement>(null);
+  // State to store slider instance
+  const [slider, setSlider] = useState<KeenSliderInstance | null>(null);
+
+  // Initialize Keen Slider
+  const [sliderRef] = useKeenSlider<HTMLDivElement>({
+    loop: true,
+    rtl: true,
+    slides: { perView: 4, spacing: 20 },
+    breakpoints: {
+      "(max-width: 1024px)": { slides: { perView: 3, spacing: 20 } },
+      "(max-width: 768px)": { slides: { perView: 2, spacing: 20 } },
+      "(max-width: 640px)": { slides: { perView: 1, spacing: 20 } },
+    },
+    created: (instance) => setSlider(instance), // store instance for arrows
+  });
 
   return (
-    <Swiper
-      modules={[Navigation]}
-      spaceBetween={20}
-      loop={true}
-      slidesOffsetBefore={40}
-      slidesOffsetAfter={40}
-      dir="rtl"
-      onBeforeInit={(swiper) => {
-        if (
-          swiper.params.navigation &&
-          typeof swiper.params.navigation !== "boolean"
-        ) {
-          swiper.params.navigation.prevEl = prevRef.current;
-          swiper.params.navigation.nextEl = nextRef.current;
-        }
-      }}
-      breakpoints={{
-        0: { slidesPerView: 1 },
-        640: { slidesPerView: 2 },
-        768: { slidesPerView: 3 },
-        1024: { slidesPerView: 4 },
-      }}
-      className="px-12"
-    >
-      {products.map((p) => (
-        <SwiperSlide key={p.id}>
-          <div className="p-2">
+    <div className="relative">
+      {/* Slider */}
+      <div ref={sliderRef} className="keen-slider">
+        {products.map((p) => (
+          <div key={p.id} className="keen-slider__slide p-2">
             <ProductCard p={p} />
           </div>
-        </SwiperSlide>
-      ))}
+        ))}
+      </div>
 
-      {/* Custom arrows */}
+      {/* Left Arrow */}
       <button
-        ref={prevRef}
-        className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white p-2 shadow-md sm:block"
+        onClick={() => slider?.prev()}
+        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white p-2 shadow-md"
       >
         <ChevronLeft className="h-5 w-5 text-gray-700" />
       </button>
+
+      {/* Right Arrow */}
       <button
-        ref={nextRef}
-        className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white p-2 shadow-md sm:block"
+        onClick={() => slider?.next()}
+        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white p-2 shadow-md"
       >
         <ChevronRight className="h-5 w-5 text-gray-700" />
       </button>
-    </Swiper>
+    </div>
   );
 }

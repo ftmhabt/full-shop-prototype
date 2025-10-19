@@ -1,13 +1,11 @@
 "use client";
 
-import { deleteProduct } from "@/app/actions/admin/products";
-import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+  deleteProduct,
+  getPaginatedProducts,
+} from "@/app/actions/admin/products";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -16,45 +14,95 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Edit, Trash } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Edit,
+  Loader2,
+  Search,
+  Trash,
+} from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import * as React from "react";
+import { useTransition } from "react";
 import toast from "react-hot-toast";
 import { ConfirmDialogButton } from "../common/ConfirmDialogButton";
 import { FallbackImage } from "../FallbackImage";
 
-export default function ProductsList({ products }: { products: any[] }) {
-  const router = useRouter();
-  const [localProducts, setLocalProducts] = React.useState(products);
+export default function ProductsList({
+  initialProducts,
+  initialPage,
+  totalPages: initialTotalPages,
+}: {
+  initialProducts: any[];
+  initialPage: number;
+  totalPages: number;
+}) {
+  const [products, setProducts] = React.useState(initialProducts);
+  const [page, setPage] = React.useState(initialPage);
+  const [totalPages, setTotalPages] = React.useState(initialTotalPages);
+  const [search, setSearch] = React.useState("");
+  const [isPending, startTransition] = useTransition();
+
+  const debounceTimeout = React.useRef<NodeJS.Timeout | null>(null);
+
+  // 🔍 Handle search input changes with debounce
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearch(value);
+
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+    debounceTimeout.current = setTimeout(() => {
+      startTransition(async () => {
+        const { products, totalPages } = await getPaginatedProducts(1, value);
+        setProducts(products);
+        setTotalPages(totalPages);
+        setPage(1);
+      });
+    }, 500);
+  };
 
   const handleDelete = async (id: string) => {
-    if (!id) return;
-
     try {
       await deleteProduct(id);
       toast.success("محصول با موفقیت حذف شد!");
-      setLocalProducts(localProducts.filter((p) => p.id !== id));
+      setProducts((prev) => prev.filter((p) => p.id !== id));
     } catch (error: any) {
-      console.error(error);
-      toast.error(
-        error?.message ||
-          "حذف محصول با مشکل مواجه شد. بررسی کنید آیا محصول در سفارش‌ها استفاده شده است."
-      );
+      toast.error(error?.message || "خطا در حذف محصول");
     }
   };
 
-  const handleEdit = (id: string) => {
-    router.push(`/admin/products/${id}`);
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    startTransition(async () => {
+      const { products } = await getPaginatedProducts(newPage, search);
+      setProducts(products);
+      setPage(newPage);
+    });
   };
 
   return (
     <div className="space-y-6 p-4" dir="rtl">
-      {/* --- Header Actions --- */}
+      {/* --- Header --- */}
       <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 justify-between items-center">
         <h1 className="text-2xl font-bold text-right w-full sm:w-auto">
           مدیریت محصولات
         </h1>
+        {/* --- Search Bar --- */}
+        <div className="relative max-w-sm w-full">
+          {isPending ? (
+            <Loader2 className="absolute right-3 top-2.5 h-4 w-4 text-gray-400 animate-spin" />
+          ) : (
+            <Search className="absolute right-3 top-2.5 h-4 w-4 text-gray-400" />
+          )}
+
+          <Input
+            placeholder="جستجو در محصولات..."
+            value={search}
+            onChange={handleSearchChange}
+            className="pr-9"
+          />
+        </div>
         <div className="flex flex-wrap gap-2 justify-end w-full sm:w-auto">
           <Link href="/admin/products/create">
             <Button>ایجاد محصول جدید</Button>
@@ -62,7 +110,7 @@ export default function ProductsList({ products }: { products: any[] }) {
         </div>
       </div>
 
-      {/* --- Table View (Desktop) --- */}
+      {/* --- Table View --- */}
       <div className="overflow-x-auto w-full border rounded-md hidden md:block">
         <Table>
           <TableHeader>
@@ -74,9 +122,8 @@ export default function ProductsList({ products }: { products: any[] }) {
               <TableHead className="text-right">عملیات</TableHead>
             </TableRow>
           </TableHeader>
-
           <TableBody>
-            {localProducts.map((product) => (
+            {products.map((product) => (
               <TableRow key={product.id}>
                 <TableCell className="w-[100px]">
                   {product.image?.[0] ? (
@@ -93,27 +140,20 @@ export default function ProductsList({ products }: { products: any[] }) {
                     </div>
                   )}
                 </TableCell>
-
                 <TableCell className="font-medium">{product.name}</TableCell>
                 <TableCell>{product.priceToman?.toLocaleString()}</TableCell>
                 <TableCell>{product.stock}</TableCell>
-
                 <TableCell className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleEdit(product.id)}
-                  >
+                  <Button size="sm" variant="ghost">
                     <Edit className="w-4 h-4" />
                   </Button>
-
                   <ConfirmDialogButton
                     buttonText={<Trash className="w-4 h-4 text-destructive" />}
                     dialogTitle="حذف محصول"
-                    dialogDescription="آیا از حذف این محصول مطمئن هستید؟ این عملیات قابل بازگشت نیست."
+                    dialogDescription="آیا از حذف این محصول مطمئن هستید؟"
                     onConfirm={() => handleDelete(product.id)}
                     size="sm"
-                    variant={"ghost"}
+                    variant="ghost"
                   />
                 </TableCell>
               </TableRow>
@@ -122,50 +162,38 @@ export default function ProductsList({ products }: { products: any[] }) {
         </Table>
       </div>
 
-      {/* --- Mobile Cards --- */}
-      <div className="grid gap-4 md:hidden">
-        {localProducts.map((product) => (
-          <Card key={product.id}>
-            <CardHeader className="flex items-center justify-between">
-              <span className="font-semibold">{product.name}</span>
-              <span className="text-sm text-gray-500">
-                {product.priceToman?.toLocaleString()} تومان
-              </span>
-            </CardHeader>
+      {/* --- Pagination Controls --- */}
+      <div className="flex items-center justify-center gap-3 mt-6">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page <= 1 || isPending}
+          onClick={() => handlePageChange(page - 1)}
+        >
+          <ChevronRight className="w-4 h-4 ml-1" />
+          قبلی
+        </Button>
 
-            <CardContent className="flex flex-col gap-2 text-sm">
-              {product.image?.[0] && (
-                <FallbackImage
-                  src={product.image[0]}
-                  alt={product.name}
-                  width={400}
-                  height={300}
-                  className="rounded-md w-full h-40 object-cover"
-                />
-              )}
-              <p>📦 موجودی: {product.stock}</p>
-            </CardContent>
+        <span className="text-sm font-medium">
+          صفحه {page} از {totalPages}
+        </span>
 
-            <CardFooter className="flex gap-2 justify-end">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleEdit(product.id)}
-              >
-                ویرایش
-              </Button>
-
-              <ConfirmDialogButton
-                buttonText={<Trash className="w-4 h-4" />}
-                dialogTitle="حذف محصول"
-                dialogDescription="آیا از حذف این محصول مطمئن هستید؟"
-                onConfirm={() => handleDelete(product.id)}
-                size="sm"
-              />
-            </CardFooter>
-          </Card>
-        ))}
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page >= totalPages || isPending}
+          onClick={() => handlePageChange(page + 1)}
+        >
+          بعدی
+          <ChevronLeft className="w-4 h-4 mr-1" />
+        </Button>
       </div>
+
+      {isPending && (
+        <div className="text-center text-gray-500 text-sm mt-2">
+          در حال بارگذاری...
+        </div>
+      )}
     </div>
   );
 }

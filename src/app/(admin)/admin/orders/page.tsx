@@ -1,29 +1,7 @@
+import { getPaginatedOrders } from "@/app/actions/admin/orders";
 import OrdersList from "@/components/admin/OrdersList";
-import db from "@/lib/db";
 
 export default async function OrdersPage() {
-  const orders = await db.order.findMany({
-    include: {
-      user: {
-        select: {
-          firstName: true,
-          lastName: true,
-          phone: true,
-        },
-      },
-      ShippingMethod: {
-        select: {
-          id: true,
-          name: true,
-          cost: true,
-        },
-      },
-      items: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  return <OrdersList orders={orders} />;
+  const { orders, totalPages } = await getPaginatedOrders(1);
+  return <OrdersList initialOrders={orders} totalPages={totalPages} />;
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { getPaginatedOrders } from "@/app/actions/admin/orders";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,8 +19,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { OrderWithUserAndShipping } from "@/types";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import OrderStatusDialog from "./OrderStatusDropdown";
 
@@ -35,13 +37,16 @@ function serializeOrder<T extends { createdAt: Date; updatedAt?: Date }>(
 }
 
 export default function OrdersList({
-  orders,
+  initialOrders,
+  totalPages,
 }: {
-  orders: OrderWithUserAndShipping[];
+  initialOrders: OrderWithUserAndShipping[];
+  totalPages: number;
 }) {
   // ✅ Serialize once to ensure safe Redux/React state usage
-  const safeOrders = useMemo(() => orders.map(serializeOrder), [orders]);
-
+  const [orders, setOrders] = useState(initialOrders);
+  const [page, setPage] = useState(1);
+  const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("");
@@ -50,6 +55,17 @@ export default function OrdersList({
   >("ALL");
   type BundleFilter = "ALL" | "WITH_BUNDLE" | "WITHOUT_BUNDLE";
   const [bundleFilter, setBundleFilter] = useState<BundleFilter>("ALL");
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    startTransition(async () => {
+      const { orders } = await getPaginatedOrders(newPage);
+      setOrders(orders);
+      setPage(newPage);
+    });
+  };
+
+  const safeOrders = useMemo(() => orders.map(serializeOrder), [orders]);
 
   const filteredOrders = useMemo(() => {
     const now = new Date();
@@ -314,6 +330,32 @@ export default function OrdersList({
             </Card>
           );
         })}
+      </div>
+      {/* --- Pagination controls --- */}
+      <div className="flex justify-center gap-3 mt-6">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page <= 1 || isPending}
+          onClick={() => handlePageChange(page - 1)}
+        >
+          <ChevronRight className="w-4 h-4 ml-1" />
+          قبلی
+        </Button>
+
+        <span className="text-sm">
+          صفحه {page} از {totalPages}
+        </span>
+
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page >= totalPages || isPending}
+          onClick={() => handlePageChange(page + 1)}
+        >
+          بعدی
+          <ChevronLeft className="w-4 h-4 mr-1" />
+        </Button>
       </div>
     </div>
   );

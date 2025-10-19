@@ -1,8 +1,42 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { tomanToUsdWithMarkup } from "@/lib/exchange";
+import { tomanToUsdWithMarkup, usdToToman } from "@/lib/exchange";
+import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+
+const PAGE_SIZE = 10;
+
+export async function getPaginatedProducts(page: number, query?: string) {
+  const where = query
+    ? {
+        name: { contains: query, mode: "insensitive" as Prisma.QueryMode },
+      }
+    : {};
+
+  const totalCount = await db.product.count({ where });
+
+  const products = await db.product.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    skip: (page - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
+    include: { reviews: true },
+  });
+
+  const productsWithToman = await Promise.all(
+    products.map(async (p) => ({
+      ...p,
+      price: p.price.toNumber(),
+      oldPrice: p.oldPrice?.toNumber(),
+      priceToman: await usdToToman(p.price?.toNumber()),
+    }))
+  );
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+  return { products: productsWithToman, totalPages };
+}
 
 // Create Product
 export async function createProduct(data: {

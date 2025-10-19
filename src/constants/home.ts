@@ -22,3 +22,4 @@ export const COLLECTIONS = [
   { title: "دوربین مداربسته", icon: Camera },
   { title: "لوازم جانبی", icon: Wrench },
 ];
+export const ORDERS_PAGE_SIZE = 20;

@@ -9,12 +9,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { formatPrice } from "@/lib/format";
 import { selectCartItems } from "@/store/selectors";
 import { StandardizedProduct } from "@/types";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { FallbackImage } from "../FallbackImage";
+import Price from "../home/Price";
 import QuantitySelector from "./QuantitySelector";
 import Rating from "./Rating";
 import RelatedProducts from "./RelatedProducts";
@@ -38,6 +38,13 @@ export default function ProductDetails({
       ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
         product.reviews.length
       : 0;
+
+  const discountPercent = product.oldPriceToman
+    ? Math.round(
+        ((product.oldPriceToman - product.priceToman) / product.oldPriceToman) *
+          100
+      )
+    : 0;
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -104,9 +111,26 @@ export default function ProductDetails({
         {/* وسط: اطلاعات */}
         <div className="flex flex-col space-y-4">
           <h1 className="text-2xl font-bold">{product.name}</h1>
-          <h2 className="text-xl font-semibold">
-            {formatPrice(product.priceToman)} تومان
+
+          <h2>
+            <Price
+              value={product.priceToman}
+              old={product.oldPriceToman}
+              size="lg"
+            />
           </h2>
+          <div className="flex gap-1 absolute right-2 top-2 ">
+            {product.badge && (
+              <Badge className="rounded-full px-3 py-1 text-xs">
+                {product.badge}
+              </Badge>
+            )}
+            {product.oldPriceToman && (
+              <Badge className="rounded-full px-3 py-1 text-xs">
+                {discountPercent + "%"}
+              </Badge>
+            )}
+          </div>
           <div>
             <h3 className="sr-only">امتیاز محصول</h3>
             <Rating value={averageRating} />

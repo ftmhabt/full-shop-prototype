@@ -2,7 +2,6 @@
 import QuantitySelector from "@/components/product details/QuantitySelector";
 import { selectCartItems } from "@/store/selectors";
 import { StandardizedProduct } from "@/types";
-import { Percent } from "lucide-react";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import { FallbackImage } from "../FallbackImage";
@@ -22,6 +21,10 @@ function ProductCard({ p }: { p: StandardizedProduct }) {
       ? p.reviews.reduce((sum, r) => sum + r.rating, 0) / p.reviews.length
       : 0;
 
+  const discountPercent = p.oldPriceToman
+    ? Math.round(((p.oldPriceToman - p.priceToman) / p.oldPriceToman) * 100)
+    : 0;
+
   return (
     <Card className="group overflow-hidden rounded-2xl border-muted/40">
       <CardContent className="p-4">
@@ -32,11 +35,19 @@ function ProductCard({ p }: { p: StandardizedProduct }) {
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
-          {p.badge && (
-            <Badge className="absolute right-2 top-2 rounded-full px-3 py-1 text-xs">
-              <Percent className="ml-1 h-3 w-3" /> {p.badge}
-            </Badge>
-          )}
+          <div className="flex gap-1 absolute right-2 top-2 ">
+            {p.badge && (
+              <Badge className="rounded-full px-3 py-1 text-xs">
+                {p.badge}
+              </Badge>
+            )}
+            {p.oldPriceToman && (
+              <Badge className="rounded-full px-3 py-1 text-xs">
+                {discountPercent + "%"}
+              </Badge>
+            )}
+          </div>
+
           <QuantitySelector
             product={{
               id: p.id,

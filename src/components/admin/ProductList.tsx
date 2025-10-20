@@ -144,9 +144,12 @@ export default function ProductsList({
                 <TableCell>{product.priceToman?.toLocaleString()}</TableCell>
                 <TableCell>{product.stock}</TableCell>
                 <TableCell className="flex gap-2">
-                  <Button size="sm" variant="ghost">
-                    <Edit className="w-4 h-4" />
-                  </Button>
+                  <Link href={"/admin/products/" + product.id}>
+                    <Button size="sm" variant="ghost">
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                  </Link>
+
                   <ConfirmDialogButton
                     buttonText={<Trash className="w-4 h-4 text-destructive" />}
                     dialogTitle="حذف محصول"

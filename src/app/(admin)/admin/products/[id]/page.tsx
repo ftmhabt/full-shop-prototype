@@ -11,6 +11,7 @@ export default async function EditPage({ params }: any) {
   const categories = await db.category.findMany();
   const attributes = await db.attribute.findMany({ include: { values: true } });
   const priceInToman = await usdToToman(product?.price.toNumber() ?? 0);
+  const oldPriceInToman = await usdToToman(product?.oldPrice?.toNumber() ?? 0);
   const brands = await db.brand.findMany({
     select: { id: true, name: true },
   });
@@ -26,7 +27,7 @@ export default async function EditPage({ params }: any) {
         summary: product?.summary || "",
         description: product?.description || "",
         price: priceInToman || 0,
-        oldPrice: product?.oldPrice?.toNumber() || undefined,
+        oldPrice: oldPriceInToman || undefined,
         stock: product?.stock || 0,
         badge: product?.badge || undefined,
         categoryId: product?.categoryId || "",

@@ -53,7 +53,8 @@ export async function createProduct(data: {
   image: string[];
   attributeValueIds: string[];
 }) {
-  const finalPriceUSD = await tomanToUsdWithMarkup(data.price ?? 0, true);
+  const priceUSD = await tomanToUsdWithMarkup(data.price ?? 0, false);
+  const oldPriceUSD = await tomanToUsdWithMarkup(data.oldPrice ?? 0, false);
 
   const product = await db.product.create({
     data: {
@@ -61,8 +62,8 @@ export async function createProduct(data: {
       slug: data.slug,
       summary: data.summary,
       description: data.description,
-      price: finalPriceUSD,
-      oldPrice: data.oldPrice,
+      price: priceUSD,
+      oldPrice: oldPriceUSD,
       stock: data.stock,
       badge: data.badge,
       category: {
@@ -122,7 +123,8 @@ export async function updateProduct(data: UpdateProductInput) {
     image,
     attributeValueIds = [],
   } = data;
-  const finalPriceUSD = await tomanToUsdWithMarkup(price ?? 0, false);
+  const priceUSD = await tomanToUsdWithMarkup(price ?? 0, false);
+  const oldPriceUSD = await tomanToUsdWithMarkup(oldPrice ?? 0, false);
   // Start a transaction to update product and attributes together
   return db.$transaction(async (tx) => {
     // Update main product fields
@@ -133,8 +135,8 @@ export async function updateProduct(data: UpdateProductInput) {
         slug,
         summary,
         description,
-        price: finalPriceUSD,
-        oldPrice,
+        price: priceUSD,
+        oldPrice: oldPriceUSD,
         stock,
         badge,
         categoryId,

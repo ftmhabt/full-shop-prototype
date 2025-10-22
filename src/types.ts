@@ -216,3 +216,31 @@ export type StandardizedCartProduct = {
   bundleId?: string;
   bundleLabel?: string;
 };
+
+export type DiscountType = "PERCENTAGE" | "FIXED";
+
+export interface Discount {
+  id: string;
+  code: string;
+  description?: string | null;
+  type: DiscountType;
+  value: number;
+  isActive: boolean;
+  isFirstTimeBuyer: boolean;
+  isGlobal: boolean;
+  startsAt?: string | null;
+  expiresAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DiscountInput {
+  code: string;
+  description?: string;
+  type: DiscountType;
+  value: number;
+  isGlobal: boolean;
+  isFirstTimeBuyer: boolean;
+  startsAt?: string | null;
+  expiresAt?: string | null;
+}

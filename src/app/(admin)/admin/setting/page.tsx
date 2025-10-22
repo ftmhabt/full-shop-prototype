@@ -1,4 +1,5 @@
 import ConstantsForm from "@/components/setting/ConstantsForm";
+import DiscountManager from "@/components/setting/DiscountSettingsForm";
 import ShippingMethodsForm from "@/components/setting/ShippingMethodsForm";
 
 export default function SettingsPage() {
@@ -8,6 +9,7 @@ export default function SettingsPage() {
       <div className="grid md:grid-cols-2 gap-6">
         <ShippingMethodsForm />
         <ConstantsForm />
+        <DiscountManager />
       </div>
     </div>
   );

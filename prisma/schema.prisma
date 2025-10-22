@@ -126,9 +126,9 @@ model Order {
   address    String  @default("Unknown")
   postalCode String?
 
-  totalPrice Int @default(0)
-  discount   Int @default(0)
-  finalPrice Int @default(0)
+  totalPrice     Int @default(0)
+  discountAmount Int @default(0)
+  finalPrice     Int @default(0)
 
   paymentMethod String    @default("ONLINE") // ONLINE, COD
   paymentStatus String    @default("PENDING") // PENDING, PAID, FAILED
@@ -144,6 +144,8 @@ model Order {
   ShippingMethod   ShippingMethod? @relation(fields: [shippingMethodId], references: [id])
   shippingMethodId String?
   OrderLog         OrderLog[]
+  discount         Discount?       @relation(fields: [discountId], references: [id])
+  discountId       String?
 }
 
 model OrderItem {
@@ -342,4 +344,29 @@ model Brand {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Discount {
+  id          String       @id @default(cuid())
+  code        String       @unique
+  description String?
+  type        DiscountType
+  value       Int // 10 means 10% or 10000 Toman depending on type
+
+  isActive         Boolean @default(true)
+  isFirstTimeBuyer Boolean @default(false)
+  isGlobal         Boolean @default(false)
+
+  startsAt  DateTime? // when it becomes active
+  expiresAt DateTime? // when it ends
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
 }

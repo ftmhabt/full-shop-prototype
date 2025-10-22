@@ -188,6 +188,24 @@ export default function OrderDetails({ order }: { order: OrderForDetails }) {
           )}
         </CardContent>
       </Card>
+
+      {/* نمایش جمع کل و تخفیف */}
+      <Card className="bg-gray-50 border">
+        <CardContent className="text-sm text-gray-800 space-y-2">
+          {order.discountAmount > 0 && (
+            <div className="flex justify-between text-green-600">
+              <span>تخفیف ({order.discount.code})</span>
+              <span>- {formatPrice(order.discountAmount)} تومان</span>
+            </div>
+          )}
+
+          <div className="flex justify-between font-bold border-t pt-2">
+            <span>مبلغ قابل پرداخت</span>
+            <span>{formatPrice(order.finalPrice)} تومان</span>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* دکمه‌ها */}
       <div className="flex flex-col sm:flex-row gap-2">
         <Link href="/dashboard/orders" className="flex-1">

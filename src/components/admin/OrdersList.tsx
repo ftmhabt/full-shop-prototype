@@ -253,7 +253,9 @@ export default function OrdersList({
                   <TableCell>
                     {order.totalPrice.toLocaleString()} تومان
                   </TableCell>
-                  <TableCell>{order.discount.toLocaleString()} تومان</TableCell>
+                  <TableCell>
+                    {order.discountAmount.toLocaleString()} تومان
+                  </TableCell>
                   <TableCell>
                     {order.finalPrice.toLocaleString()} تومان
                   </TableCell>

@@ -53,7 +53,7 @@ export default function OrderDetails({
 
   // Calculate totals
   const totalPrice = order.items.reduce(
-    (sum: number, i: any) => sum + i.product.price * i.quantity,
+    (sum: number, i: any) => sum + i.priceToman * i.quantity,
     0
   );
 
@@ -93,13 +93,13 @@ export default function OrderDetails({
                   className="flex justify-between border-b pb-2 text-sm"
                 >
                   <Link
-                    href={`/product/${item.product.id}`}
+                    href={`/product/${item.productSlug}`}
                     className="cursor-pointer"
                   >
-                    {item.product.name} × {item.quantity}
+                    {item.productName} × {item.quantity}
                   </Link>
                   <span>
-                    {(item.price * item.quantity).toLocaleString()} تومان
+                    {(item.priceToman * item.quantity).toLocaleString()} تومان
                   </span>
                 </div>
               ))}
@@ -131,7 +131,7 @@ export default function OrderDetails({
             </div>
             <div className="flex justify-between text-destructive">
               <span>تخفیف:</span>
-              <span>-{order.discount.toLocaleString()} تومان</span>
+              <span>-{order.discountAmount.toLocaleString()} تومان</span>
             </div>
             <div className="flex justify-between font-bold">
               <span>مبلغ نهایی:</span>

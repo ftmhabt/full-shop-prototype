@@ -8,9 +8,16 @@ export async function createOrderAndStartPayment(
   items: CartItem[],
   address: AddressSnapshot,
   discount: number = 0,
-  shippingCost: string
+  shippingId: string,
+  discountCode?: string
 ) {
-  const order = await createOrder(items, address, discount, shippingCost);
+  const order = await createOrder(
+    items,
+    address,
+    discount,
+    shippingId,
+    discountCode
+  );
   // درخواست به زرین‌پال
   const response = await fetch(
     "https://sandbox.zarinpal.com/pg/v4/payment/request.json",

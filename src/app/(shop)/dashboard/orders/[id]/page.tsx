@@ -12,6 +12,7 @@ export default async function OrderDetailsPage({ params }: any) {
     include: {
       items: true,
       ShippingMethod: true,
+      discount: true,
     },
   });
 

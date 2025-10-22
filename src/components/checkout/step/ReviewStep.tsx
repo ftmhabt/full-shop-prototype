@@ -1,8 +1,10 @@
 "use client";
 
+import { applyDiscount } from "@/app/actions/admin/discount";
 import { createOrderAndStartPayment } from "@/app/actions/payment";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/format";
 import { clear } from "@/store/cartSlice";
 import { selectCartItems } from "@/store/selectors";
@@ -19,29 +21,62 @@ import {
   User,
 } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function ReviewStep({
   selectedAddress,
   shippingMethod,
-  discount,
   onBack,
 }: {
   selectedAddress: Address | null;
   shippingMethod: ShippingMethod | null;
-  discount: number;
   onBack: () => void;
 }) {
   const dispatch = useDispatch();
   const items = useSelector(selectCartItems);
   const [loading, setLoading] = useState(false);
-  // ✅ Calculate totals
+
+  const [discountCode, setDiscountCode] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState(0);
+  const [discountApplied, setDiscountApplied] = useState(false);
+  const [appliedCode, setAppliedCode] = useState("");
+
+  // Calculate totals
   const itemsTotal = items.reduce(
     (sum, item) => sum + item.priceToman * item.quantity,
     0
   );
   const shippingCost = shippingMethod?.cost || 0;
-  const totalToPay = itemsTotal + shippingCost - discount;
+  const totalBeforeDiscount = itemsTotal + shippingCost;
+  const totalToPay = totalBeforeDiscount - appliedDiscount;
+
+  const handleApplyDiscount = async () => {
+    if (!discountCode) return toast.error("کد تخفیف را وارد کنید");
+
+    if (discountApplied) {
+      toast.error("شما قبلاً یک کد تخفیف اعمال کرده‌اید");
+      return;
+    }
+
+    try {
+      const res = await applyDiscount(discountCode, itemsTotal);
+      setAppliedDiscount(res.amount);
+      setAppliedCode(res.code);
+      setDiscountApplied(true);
+      toast.success(`تخفیف ${formatPrice(res.amount)} تومان اعمال شد`);
+    } catch (err: any) {
+      toast.error(err.message || "کد معتبر نیست");
+    }
+  };
+
+  const handleRemoveDiscount = () => {
+    setAppliedDiscount(0);
+    setDiscountApplied(false);
+    setAppliedCode("");
+    setDiscountCode("");
+    toast.success("کد تخفیف حذف شد");
+  };
 
   const handlePayment = async () => {
     if (loading) return;
@@ -57,8 +92,9 @@ export default function ReviewStep({
           address: selectedAddress?.address || "",
           postalCode: selectedAddress?.postalCode || "",
         },
-        discount,
-        shippingMethod?.id || ""
+        appliedDiscount,
+        shippingMethod?.id || "",
+        discountCode
       );
 
       window.location.href = url;
@@ -144,7 +180,6 @@ export default function ReviewStep({
           {items.length > 0 ? (
             items.map((item) => (
               <div key={item.id} className="border-b pb-2">
-                {/* Main Row */}
                 <div className="flex justify-between">
                   <span>
                     {item.type === "BUNDLE"
@@ -155,26 +190,6 @@ export default function ReviewStep({
                     {formatPrice(item.priceToman * item.quantity)} تومان
                   </span>
                 </div>
-
-                {/* Sub-items for bundles */}
-                {item.type === "BUNDLE" &&
-                  (item.bundleItems?.length ?? 0) > 0 && (
-                    <div className="pl-6 pr-2 space-y-1 mt-1 text-xs text-muted-foreground">
-                      {item.bundleItems?.map((sub, idx) => (
-                        <div
-                          key={idx}
-                          className="flex justify-between items-center border-l-2 border-muted-foreground/30 pl-2"
-                        >
-                          <span>
-                            • {sub.name} × {sub.quantity}
-                          </span>
-                          <span>
-                            {formatPrice(sub.priceToman * sub.quantity)} تومان
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
               </div>
             ))
           ) : (
@@ -183,16 +198,51 @@ export default function ReviewStep({
         </CardContent>
       </Card>
 
-      {/* آیتم‌های سبد خرید */}
+      {/* نمایش جمع کل و تخفیف */}
       <Card className="bg-gray-50 border">
         <CardContent className="text-sm text-gray-800 space-y-2">
-          {/* ✅ Total to pay */}
-          <div className="flex justify-between font-bold ">
-            <span>جمع کل قابل پرداخت</span>
+          <div className="flex justify-between">
+            <span>جمع کل</span>
+            <span>{formatPrice(totalBeforeDiscount)} تومان</span>
+          </div>
+
+          {appliedDiscount > 0 && (
+            <div className="flex justify-between text-green-600">
+              <span>تخفیف ({appliedCode})</span>
+              <span>- {formatPrice(appliedDiscount)} تومان</span>
+            </div>
+          )}
+
+          <div className="flex justify-between font-bold border-t pt-2">
+            <span>مبلغ قابل پرداخت</span>
             <span>{formatPrice(totalToPay)} تومان</span>
           </div>
         </CardContent>
       </Card>
+
+      {/* کد تخفیف */}
+      <Card className="flex gap-2 items-center p-4">
+        {!discountApplied ? (
+          <div className="flex gap-3 w-full">
+            <Input
+              placeholder="کد تخفیف"
+              value={discountCode}
+              onChange={(e) => setDiscountCode(e.target.value)}
+            />
+            <Button onClick={handleApplyDiscount}>اعمال</Button>
+          </div>
+        ) : (
+          <div className="flex w-full justify-between items-center">
+            <span className="text-green-600 text-sm">
+              کد {appliedCode} اعمال شده است
+            </span>
+            <Button variant="destructive" onClick={handleRemoveDiscount}>
+              حذف
+            </Button>
+          </div>
+        )}
+      </Card>
+
       {/* دکمه‌ها */}
       <div className="flex gap-2 mt-4">
         <Button variant="outline" className="flex-1" onClick={onBack}>

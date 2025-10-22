@@ -6,12 +6,14 @@ import { db } from "@/lib/db";
 import { generateOrderId } from "@/lib/generateId";
 import { CartItem } from "@/store/cartSlice";
 import { revalidatePath } from "next/cache";
+import { markDiscountUsed } from "./admin/discount";
 
 export async function createOrder(
   items: CartItem[],
   address: AddressSnapshot,
-  discount: number = 0,
-  shippingId: string
+  discountAmount: number = 0,
+  shippingId: string,
+  discountCode?: string
 ) {
   const userId = await getCurrentUserId();
   if (!userId) throw new Error("User not found");
@@ -22,12 +24,20 @@ export async function createOrder(
   });
   if (!method) throw new Error("روش ارسال نامعتبر است");
 
-  // total price already calculated per line item
+  let discountId: string | null = null;
+  if (discountCode) {
+    const discount = await db.discount.findUnique({
+      where: { code: discountCode.toUpperCase() },
+    });
+
+    if (discount) discountId = discount.id;
+  }
+
   const totalPrice = items.reduce(
     (sum, item) => sum + item.priceToman * item.quantity,
     0
   );
-  const finalPrice = totalPrice + method.cost - discount;
+  const finalPrice = Math.max(totalPrice + method.cost - discountAmount, 0);
 
   const order = await db.order.create({
     data: {
@@ -43,8 +53,11 @@ export async function createOrder(
       postalCode: address.postalCode,
 
       totalPrice,
-      discount,
+      discountAmount,
       finalPrice,
+
+      shippingMethodId: shippingId,
+      discountId,
 
       items: {
         createMany: {
@@ -74,10 +87,8 @@ export async function createOrder(
           }),
         },
       },
-
-      shippingMethodId: shippingId,
     },
-    include: { items: true, ShippingMethod: true },
+    include: { items: true, ShippingMethod: true, discount: true },
   });
 
   await db.orderLog.create({
@@ -87,6 +98,10 @@ export async function createOrder(
       note: "سفارش ایجاد شد",
     },
   });
+
+  if (discountId) {
+    await markDiscountUsed(userId, discountId);
+  }
 
   return order;
 }

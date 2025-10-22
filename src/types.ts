@@ -70,7 +70,7 @@ export type AdminOrderForDetails = {
   id: string;
   fullName: string;
   address: string;
-  discount: number;
+  discountAmount: number;
   finalPrice: number;
   status: string;
   paymentStatus: string;
@@ -174,7 +174,7 @@ export type OrderForDetails = {
   createdAt: Date;
   finalPrice: number; // you’re formatting this
   trackingCode?: string | null;
-
+  discountAmount: number;
   fullName: string;
   phone: string;
   province: string;
@@ -197,6 +197,10 @@ export type OrderForDetails = {
     name: string;
     cost: number; // converted from Decimal
   } | null;
+
+  discount:{
+    code: string;
+  }
 };
 
 export type OrderWithItems = Prisma.OrderGetPayload<{

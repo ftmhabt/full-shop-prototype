@@ -53,7 +53,6 @@ export default function CheckoutStepper({ addresses }: Props) {
         <ReviewStep
           shippingMethod={shippingMethod}
           selectedAddress={selectedAddressId}
-          discount={0}
           onBack={goBack}
         />
       ),

@@ -194,7 +194,7 @@ export default function OrderDetails({ order }: { order: OrderForDetails }) {
         <CardContent className="text-sm text-gray-800 space-y-2">
           {order.discountAmount > 0 && (
             <div className="flex justify-between text-green-600">
-              <span>تخفیف ({order.discount.code})</span>
+              <span>تخفیف ({order.discount?.code})</span>
               <span>- {formatPrice(order.discountAmount)} تومان</span>
             </div>
           )}

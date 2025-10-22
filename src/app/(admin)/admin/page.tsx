@@ -19,7 +19,7 @@ export default async function AdminDashboardPage() {
     ? orders.reduce((sum, o) => sum + o.finalPrice, 0)
     : 0;
   const totalDiscounts = isAdmin
-    ? orders.reduce((sum, o) => sum + o.discount, 0)
+    ? orders.reduce((sum, o) => sum + o.discountAmount, 0)
     : 0;
   const uniqueUsers = isAdmin ? new Set(orders.map((o) => o.userId)).size : 0;
   const orderStats = isAdmin

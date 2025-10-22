@@ -198,9 +198,9 @@ export type OrderForDetails = {
     cost: number; // converted from Decimal
   } | null;
 
-  discount:{
-    code: string;
-  }
+  discount?: {
+    code?: string | null;
+  } | null;
 };
 
 export type OrderWithItems = Prisma.OrderGetPayload<{

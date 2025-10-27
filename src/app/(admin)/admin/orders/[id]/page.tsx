@@ -1,6 +1,5 @@
 import OrderDetails from "@/components/admin/OrderDetails";
 import db from "@/lib/db";
-import console from "console";
 
 export default async function OrderPage({ params }: any) {
   const order = await db.order.findUnique({
@@ -17,6 +16,5 @@ export default async function OrderPage({ params }: any) {
     return <div className="p-6">سفارشی پیدا نشد</div>;
   }
 
-  console.log("order", order);
   return <OrderDetails order={order} />;
 }

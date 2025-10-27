@@ -37,7 +37,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* ردیف اول */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard
           title="درآمد کل"
@@ -62,8 +61,7 @@ export default async function DashboardPage() {
         />
       </div>
 
-      {/* ردیف دوم */}
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-5">
+      <div className="grid lg:gap-4 gap-0 gap-y-4 grid-cols-1 lg:grid-cols-5">
         <RevenueChart
           data={revenueTrend.map((d) => ({
             date: d.date.toString(),
@@ -74,13 +72,13 @@ export default async function DashboardPage() {
       </div>
 
       {/* ردیف سوم */}
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-5">
+      <div className="grid lg:gap-4 gap-0 gap-y-4 grid-cols-1 lg:grid-cols-5">
         <TopProducts products={topProducts} />
         <NewUsers users={newUsers} />
       </div>
 
       {/* ردیف چهارم */}
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-5">
+      <div className="grid lg:gap-4 gap-0 gap-y-4 grid-cols-1 lg:grid-cols-5">
         <LowStockProducts products={lowStock} />
         <ActiveDiscounts discounts={activeDiscounts} />
       </div>

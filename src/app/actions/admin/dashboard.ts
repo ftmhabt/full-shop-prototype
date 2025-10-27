@@ -45,14 +45,15 @@ export async function getRevenueTrend() {
   const start = subDays(new Date(), 30);
 
   const dailySales = await db.$queryRaw<{ date: string; total: number }[]>`
-  SELECT TO_CHAR("createdAt", 'YYYY-MM-DD HH24:MI') AS date, SUM("finalPrice") AS total
-  FROM "Order"
-  WHERE "status" = 'COMPLETED' AND "createdAt" >= ${start}
-  GROUP BY TO_CHAR("createdAt", 'YYYY-MM-DD HH24:MI')
-  ORDER BY TO_CHAR("createdAt", 'YYYY-MM-DD HH24:MI')
+  SELECT TO_CHAR("deliveredAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Tehran', 'YYYY-MM-DD HH24:MI') AS date,
+       SUM("finalPrice") AS total
+FROM "Order"
+WHERE "status" = 'COMPLETED' AND "deliveredAt" >= ${start}
+GROUP BY TO_CHAR("deliveredAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Tehran', 'YYYY-MM-DD HH24:MI')
+ORDER BY TO_CHAR("deliveredAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Tehran', 'YYYY-MM-DD HH24:MI');
+
 `;
 
-  console.log("dailySales", dailySales);
   return dailySales;
 }
 

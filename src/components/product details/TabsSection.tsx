@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { StandardizedProduct } from "@/types";
 import { useEffect, useState, useTransition } from "react";
+import toast from "react-hot-toast";
 import {
   Table,
   TableBody,
@@ -44,8 +45,14 @@ export default function TabsSection({
         setContent("");
         setRating(5);
         await loadReviews();
-      } catch (err) {
-        console.error(err);
+        toast.success("نظر شما با موفقیت ثبت شد!");
+      } catch (err: any) {
+        if (err.message === "Unauthorized") {
+          toast.error("برای ثبت نظر باید وارد حساب کاربری شوید.");
+        } else {
+          toast.error("مشکلی پیش آمد. لطفاً دوباره تلاش کنید.");
+          console.error(err);
+        }
       }
     });
   }

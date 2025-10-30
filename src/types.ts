@@ -92,13 +92,11 @@ export type AdminOrderForDetails = {
     productSlug: string;
   }[];
 
-  ShippingMethod: {
-    id: string;
-    name: string;
-    cost: number; // Decimal → number
-  } | null;
+  shippingMethodName: string | null;
+  shippingCost: number | null;
 
-  OrderLog: {
+  discountCode: string | null;
+  logs: {
     id: string;
     status: string;
     createdAt: Date;
@@ -108,7 +106,7 @@ export type AdminOrderForDetails = {
 export type OrderWithUserAndShipping = Prisma.OrderGetPayload<{
   include: {
     user: { select: { firstName: true; lastName: true; phone: true } };
-    ShippingMethod: { select: { id: true; name: true; cost: true } };
+    shippingMethod: { select: { id: true; name: true; cost: true } };
     items: true;
   };
 }>;
@@ -172,7 +170,7 @@ export type OrderForDetails = {
   status: string;
   paymentStatus: string;
   createdAt: Date;
-  finalPrice: number; // you’re formatting this
+  finalPrice: number;
   trackingCode?: string | null;
   discountAmount: number;
   fullName: string;
@@ -181,6 +179,9 @@ export type OrderForDetails = {
   city: string;
   address: string;
   postalCode?: string | null;
+  shippingMethodName: string | null;
+  shippingCost: number | null;
+  discountCode: string | null;
 
   items: {
     id: string;
@@ -188,19 +189,9 @@ export type OrderForDetails = {
     quantity: number;
     bundleId?: string | null;
     bundleLabel?: string | null;
-    productId: string;
+    productId: string | null; // <- allow null
     productName: string;
   }[];
-
-  ShippingMethod: {
-    id: string;
-    name: string;
-    cost: number; // converted from Decimal
-  } | null;
-
-  discount?: {
-    code?: string | null;
-  } | null;
 };
 
 export type OrderWithItems = Prisma.OrderGetPayload<{

@@ -12,10 +12,17 @@ export async function saveDiscount(formData: FormData) {
   const type = formData.get("type")?.toString() as "PERCENTAGE" | "FIXED";
   const value = Number(formData.get("value"));
   const expiresAtRaw = formData.get("expiresAt")?.toString();
-  const neverExpires = formData.get("neverExpires") === "true";
+  const neverExpires = formData.get("neverExpires") !== null;
   const description = formData.get("description")?.toString() || "";
 
   if (!code || !type || !value) throw new Error("Invalid discount data");
+
+  const expiresAt =
+    !neverExpires && expiresAtRaw ? new Date(expiresAtRaw) : null;
+
+  if (expiresAt && isNaN(expiresAt.getTime())) {
+    throw new Error("Invalid expiresAt date");
+  }
 
   await db.discount.upsert({
     where: { code },
@@ -25,14 +32,14 @@ export async function saveDiscount(formData: FormData) {
       value,
       description,
       neverExpires,
-      expiresAt: neverExpires ? null : new Date(expiresAtRaw || ""),
+      expiresAt,
     },
     update: {
       type,
       value,
       description,
       neverExpires,
-      expiresAt: neverExpires ? null : new Date(expiresAtRaw || ""),
+      expiresAt,
     },
   });
 
@@ -47,7 +54,12 @@ export async function getDiscounts() {
     orderBy: { createdAt: "desc" },
   });
 
-  return discounts;
+  return discounts.map((d) => ({
+    ...d,
+    createdAt: d.createdAt.toISOString(),
+    updatedAt: d.updatedAt.toISOString(),
+    expiresAt: d.expiresAt ? d.expiresAt.toISOString() : null,
+  }));
 }
 
 // -------------------------------
@@ -107,4 +119,29 @@ export async function markDiscountUsed(userId: string, discountId: string) {
   await db.discountUse.create({
     data: { userId, discountId },
   });
+}
+
+export async function updateDiscountStatus(id: string, isActive: boolean) {
+  try {
+    await db.discount.update({
+      where: { id },
+      data: { isActive },
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating discount status:", error);
+    return { success: false };
+  }
+}
+
+export async function deleteDiscount(id: string) {
+  try {
+    await db.discount.delete({
+      where: { id },
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting discount:", error);
+    return { success: false };
+  }
 }

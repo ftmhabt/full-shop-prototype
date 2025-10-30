@@ -4,6 +4,7 @@ import { getCurrentUserRole } from "@/app/actions/admin/getUserRole";
 import {
   CreditCard,
   FileText,
+  Gift,
   Home,
   Package,
   Settings,
@@ -61,6 +62,11 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       label: "وبلاگ",
       href: "/admin/blog",
       icon: <FileText className="w-4 h-4" />,
+    },
+    {
+      label: "تخفیف‌ها",
+      href: "/admin/discounts",
+      icon: <Gift className="w-4 h-4" />,
     },
     {
       label: "تنظیمات",

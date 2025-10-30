@@ -11,8 +11,6 @@ export default async function OrderDetailsPage({ params }: any) {
     where: { id, userId },
     include: {
       items: true,
-      ShippingMethod: true,
-      discount: { select: { code: true } },
     },
   });
 

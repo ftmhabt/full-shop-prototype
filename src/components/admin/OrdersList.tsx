@@ -259,7 +259,7 @@ export default function OrdersList({
                   <TableCell>
                     {order.finalPrice.toLocaleString()} تومان
                   </TableCell>
-                  <TableCell>{order.ShippingMethod?.name ?? "-"}</TableCell>
+                  <TableCell>{order.shippingMethod?.name ?? "-"}</TableCell>
                   <TableCell>{order.paymentMethod}</TableCell>
                   <TableCell className="space-x-2">
                     <Link href={`/admin/orders/${order.id}`}>
@@ -306,7 +306,7 @@ export default function OrdersList({
                 <p>📦 وضعیت: {order.status}</p>
                 <p>💳 پرداخت: {order.paymentStatus}</p>
                 <p>💰 مبلغ نهایی: {order.finalPrice.toLocaleString()} تومان</p>
-                <p>🚚 ارسال: {order.ShippingMethod?.name ?? "-"}</p>
+                <p>🚚 ارسال: {order.shippingMethod?.name ?? "-"}</p>
               </CardContent>
 
               <CardFooter className="flex gap-2">

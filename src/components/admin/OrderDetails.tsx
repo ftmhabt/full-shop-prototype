@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatPrice } from "@/lib/format";
 import { AdminOrderForDetails } from "@/types";
 import Link from "next/link";
 import { ScrollArea } from "../ui/scroll-area";
@@ -147,9 +148,9 @@ export default function OrderDetails({
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-40">
-              {order.OrderLog?.length > 0 ? (
+              {order.logs?.length > 0 ? (
                 <ul className="space-y-2">
-                  {order.OrderLog.map((log: any) => (
+                  {order.logs.map((log: any) => (
                     <li key={log.id} className="text-sm flex justify-between">
                       <span>{log.status}</span>
                       <span>
@@ -191,8 +192,8 @@ export default function OrderDetails({
             <CardTitle>روش ارسال</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>{order.ShippingMethod?.name}</p>
-            <p>هزینه: {order.ShippingMethod?.cost.toLocaleString()} تومان</p>
+            <p>{order.shippingMethodName}</p>
+            <p>هزینه: {formatPrice(order.shippingCost || 0)} تومان</p>
           </CardContent>
         </Card>
       </div>

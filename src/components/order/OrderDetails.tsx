@@ -178,10 +178,10 @@ export default function OrderDetails({ order }: { order: OrderForDetails }) {
           </CardTitle>
         </CardHeader>
         <CardContent className="text-sm ">
-          {order.ShippingMethod ? (
+          {order.shippingMethodName ? (
             <div className="flex justify-between border-b pb-1">
-              <span>{order.ShippingMethod.name}</span>
-              <span>{formatPrice(order.ShippingMethod.cost)} تومان</span>
+              <span>{order.shippingMethodName}</span>
+              <span>{formatPrice(order.shippingCost || 0)} تومان</span>
             </div>
           ) : (
             <p className="text-gray-500">روش ارسال انتخاب نشده است.</p>
@@ -194,7 +194,7 @@ export default function OrderDetails({ order }: { order: OrderForDetails }) {
         <CardContent className="text-sm text-gray-800 space-y-2">
           {order.discountAmount > 0 && (
             <div className="flex justify-between text-green-600">
-              <span>تخفیف ({order.discount?.code})</span>
+              <span>تخفیف ({order.discountCode})</span>
               <span>- {formatPrice(order.discountAmount)} تومان</span>
             </div>
           )}

@@ -21,7 +21,7 @@ export async function getAllOrders() {
           quantity: true,
         },
       },
-      ShippingMethod: true,
+      shippingMethod: true,
     },
   });
 
@@ -40,7 +40,7 @@ export async function getPaginatedOrders(page: number) {
           phone: true,
         },
       },
-      ShippingMethod: {
+      shippingMethod: {
         select: {
           id: true,
           name: true,

@@ -7,8 +7,7 @@ export default async function OrderPage({ params }: any) {
     include: {
       user: true,
       items: true,
-      ShippingMethod: true,
-      OrderLog: { orderBy: { createdAt: "desc" } },
+      logs: { orderBy: { createdAt: "desc" } },
     },
   });
 

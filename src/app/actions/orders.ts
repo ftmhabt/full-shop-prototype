@@ -19,18 +19,48 @@ export async function createOrder(
   if (!userId) throw new Error("User not found");
   if (items.length === 0) throw new Error("Cart is empty");
 
+  // Initialize snapshot
+  let shippingSnapshot = {
+    id: null as string | null,
+    name: null as string | null,
+    cost: null as number | null,
+  };
+
+  // Fetch the shipping method
   const method = await db.shippingMethod.findUnique({
     where: { id: shippingId },
   });
   if (!method) throw new Error("روش ارسال نامعتبر است");
 
-  let discountId: string | null = null;
+  // Fill snapshot
+  shippingSnapshot = {
+    id: method.id,
+    name: method.name,
+    cost: method.cost,
+  };
+
+  type DiscountTypeSnapshot = "PERCENTAGE" | "FIXED" | null;
+
+  let discountSnapshot = {
+    id: null as string | null,
+    code: null as string | null,
+    type: null as DiscountTypeSnapshot,
+    value: null as number | null,
+  };
+
   if (discountCode) {
     const discount = await db.discount.findUnique({
       where: { code: discountCode.toUpperCase() },
     });
 
-    if (discount) discountId = discount.id;
+    if (discount) {
+      discountSnapshot = {
+        id: discount.id,
+        code: discount.code,
+        type: discount.type,
+        value: discount.value,
+      };
+    }
   }
 
   const totalPrice = items.reduce(
@@ -56,8 +86,14 @@ export async function createOrder(
       discountAmount,
       finalPrice,
 
-      shippingMethodId: shippingId,
-      discountId,
+      discountId: discountSnapshot.id,
+      discountCode: discountSnapshot.code,
+      discountType: discountSnapshot.type,
+      discountValue: discountSnapshot.value,
+
+      shippingMethodId: shippingSnapshot.id,
+      shippingMethodName: shippingSnapshot.name,
+      shippingCost: shippingSnapshot.cost,
 
       items: {
         createMany: {
@@ -88,7 +124,7 @@ export async function createOrder(
         },
       },
     },
-    include: { items: true, ShippingMethod: true, discount: true },
+    include: { items: true, shippingMethod: true, discount: true },
   });
 
   await db.orderLog.create({
@@ -99,8 +135,8 @@ export async function createOrder(
     },
   });
 
-  if (discountId) {
-    await markDiscountUsed(userId, discountId);
+  if (discountSnapshot.id) {
+    await markDiscountUsed(userId, discountSnapshot.id);
   }
 
   return order;
@@ -115,8 +151,8 @@ export async function getUserOrders() {
     orderBy: { createdAt: "desc" },
     include: {
       items: { include: { product: true } },
-      ShippingMethod: true,
-      OrderLog: { orderBy: { createdAt: "desc" } },
+      shippingMethod: true,
+      logs: { orderBy: { createdAt: "desc" } },
     },
   });
 

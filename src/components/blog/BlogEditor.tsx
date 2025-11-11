@@ -19,7 +19,6 @@ import StarterKit from "@tiptap/starter-kit";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import toast from "react-hot-toast";
-import slugify from "slugify";
 import { ShadcnSelect } from "../ShadcnSelect";
 import { Button } from "../ui/button";
 import Editor from "./Editor";
@@ -127,7 +126,7 @@ export default function BlogEditor({
       tags: tags.map((t) => ({
         id: t.value?.length === 25 ? t.value : undefined,
         name: t.label,
-        slug: t.slug || slugify(t.label, { lower: true, locale: "fa" }),
+        slug: t.slug,
       })),
       content: editor?.getHTML(),
     };
@@ -150,13 +149,6 @@ export default function BlogEditor({
       }
     });
   };
-
-  useEffect(() => {
-    if (!initialData?.slug) {
-      const newSlug = slugify(title, { lower: true, locale: "fa" });
-      setSlug(newSlug);
-    }
-  }, [title, initialData?.slug]);
 
   useEffect(() => {
     if (onChange) {

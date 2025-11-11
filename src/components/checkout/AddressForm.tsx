@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/select";
 import { provinces } from "@/lib/locations";
 import { AddressInput, addressSchema } from "@/lib/validations";
-import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState, useTransition } from "react";
 
 interface AddressFormProps {
@@ -40,18 +39,6 @@ export default function AddressForm({
   >({});
   const [cities, setCities] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
-  const controls = useAnimation();
-
-  useEffect(() => {
-    if (isVisible) {
-      controls.start({
-        opacity: 1,
-        y: 0,
-        height: "auto",
-        transition: { duration: 0.25 },
-      });
-    }
-  }, [isVisible, controls]);
 
   useEffect(() => {
     async function loadUserDefaults() {
@@ -121,11 +108,7 @@ export default function AddressForm({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -10, height: 0 }}
-      animate={controls}
-      className="overflow-hidden w-full"
-    >
+    <div className="overflow-hidden w-full">
       <form
         onSubmit={handleSubmit}
         dir="rtl"
@@ -237,6 +220,6 @@ export default function AddressForm({
           </Button>
         </div>
       </form>
-    </motion.div>
+    </div>
   );
 }

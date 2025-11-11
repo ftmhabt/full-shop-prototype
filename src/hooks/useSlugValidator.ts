@@ -24,17 +24,16 @@ export function useSlugValidator(slug: string) {
     const persianRegex = /[\u0600-\u06FF\s]/;
 
     if (!slug.trim()) {
-      // If the slug is empty, don't show an error, but mark it as invalid for submission
       setIsValid(false);
-      setErrorMessage("");
+      setErrorMessage("اسلاگ نباید خالی باشد");
     } else if (persianRegex.test(slug)) {
       setIsValid(false);
-      setErrorMessage("لطفا از حروف انگلیسی استفاده کنید."); // Please use English letters.
+      setErrorMessage("لطفا از حروف انگلیسی استفاده کنید.");
     } else if (invalidCharsRegex.test(slug)) {
       setIsValid(false);
       setErrorMessage(
         "اسلاگ تنها می‌تواند شامل حروف انگلیسی، اعداد، خط تیره و زیرخط باشد."
-      ); // Slug can only contain English letters, numbers, hyphens, and underscores.
+      );
     } else {
       setIsValid(true);
       setErrorMessage("");

@@ -1,6 +1,5 @@
 "use server";
 import { Prisma } from "@prisma/client";
-import axios from "axios";
 import { existsSync } from "fs";
 import fs from "fs/promises";
 import path from "path";
@@ -27,12 +26,25 @@ async function fetchFromNavasan(): Promise<number> {
   const key = process.env.EXCHANGE_API_ACCESS_KEY;
   if (!key) throw new Error("Invalid API key");
 
-  const res = await axios.get("https://api.navasan.tech/latest", {
-    params: { api_key: key, item: "usd" },
-    timeout: 5000,
+  const params = new URLSearchParams({
+    api_key: key,
+    item: "usd",
   });
-  console.log("navasan", res.data);
-  const tomanRate = res.data?.usd?.value;
+
+  const response = await fetch(
+    `https://api.navasan.tech/latest?${params.toString()}`,
+    {
+      method: "GET",
+      // Optional timeout wrapper below
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const tomanRate = data?.usd?.value;
 
   const tomanRateNumber = Number(tomanRate);
   if (tomanRateNumber <= 0) {

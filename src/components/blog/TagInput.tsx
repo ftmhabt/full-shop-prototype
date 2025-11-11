@@ -14,7 +14,6 @@ import { Label } from "@/components/ui/label";
 import { useSlugValidator } from "@/hooks/useSlugValidator";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import slugify from "slugify";
 import { ShadcnSelect } from "../ShadcnSelect";
 
 type OptionType = {
@@ -43,13 +42,6 @@ export function TagInput({
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
     setNewTagName(name);
-
-    if (
-      !newTagSlug ||
-      newTagSlug === slugify(newTagName, { lower: true, locale: "fa" })
-    ) {
-      setNewTagSlug(slugify(name, { lower: true, locale: "fa" }));
-    }
   };
 
   const handleAddTag = () => {

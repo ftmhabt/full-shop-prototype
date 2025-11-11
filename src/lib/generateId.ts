@@ -1,7 +1,14 @@
-import { customAlphabet } from "nanoid";
-
 export function generateOrderId() {
   const alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
-  const nanoid = customAlphabet(alphabet, 6);
-  return `ORD-${nanoid()}`;
+  const length = 6;
+  let result = "";
+
+  const randomValues = new Uint32Array(length);
+  crypto.getRandomValues(randomValues);
+
+  for (let i = 0; i < length; i++) {
+    result += alphabet[randomValues[i] % alphabet.length];
+  }
+
+  return `ORD-${result}`;
 }

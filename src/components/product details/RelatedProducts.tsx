@@ -3,7 +3,6 @@
 import { getRelatedProducts } from "@/app/actions/products";
 import { standardizeProducts } from "@/lib/standardizeProduct";
 import { useEffect, useState } from "react";
-import "swiper/css";
 import ProductSlider from "../home/ProductSlider";
 import ProductSliderSkeleton from "./ProductSliderSkeleton";
 

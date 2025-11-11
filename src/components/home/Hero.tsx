@@ -7,7 +7,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { HeroSlideItem } from "./HeroSlideItem";
 
 import "swiper/css";
-import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 interface HeroProps {

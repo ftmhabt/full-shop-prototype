@@ -66,7 +66,10 @@ export default function AdminLoginPage() {
         <CardContent>
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={(e) => {
+                e.preventDefault();
+                form.handleSubmit(onSubmit)(e);
+              }}
               className="space-y-5"
               dir="rtl"
             >

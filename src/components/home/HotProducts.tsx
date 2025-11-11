@@ -1,14 +1,8 @@
-"use client";
-
-import { StandardizedProduct } from "@/types";
-import "swiper/css";
+import { get4PopularProducts } from "@/lib/homeData";
 import ProductSlider from "./ProductSlider";
 
-interface HotProductsProps {
-  products: StandardizedProduct[];
-}
-
-export default function HotProducts({ products }: HotProductsProps) {
+export default async function HotProducts() {
+  const products = await get4PopularProducts();
   return (
     <section className="mt-10 relative">
       {/* Header */}

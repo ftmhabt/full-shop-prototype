@@ -32,7 +32,8 @@ function ProductCard({ p }: { p: StandardizedProduct }) {
           <FallbackImage
             src={p.image[0]}
             alt={p.name}
-            fill
+            width={300}
+            height={300}
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
           <div className="flex gap-1 absolute right-2 top-2 ">

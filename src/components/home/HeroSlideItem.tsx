@@ -27,6 +27,7 @@ export function HeroSlideItem({ slide }: HeroSlideItemProps) {
           alt={title || ""}
           fill
           className="object-cover"
+          priority
         />
 
         {/* Gradient overlay */}

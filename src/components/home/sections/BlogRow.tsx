@@ -1,17 +1,11 @@
+import { get4BlogPosts } from "@/app/actions/blog";
 import BlogPostCard from "@/components/blog/BlogPostCard";
 import { Button } from "@/components/ui/button";
-import { BlogCategory, BlogPost, User } from "@prisma/client";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
-interface BlogRowProps {
-  blogPosts: (BlogPost & {
-    category: BlogCategory | null;
-    author: User;
-  })[];
-}
-
-export default function BlogRow({ blogPosts }: BlogRowProps) {
+export default async function BlogRow() {
+  const blogPosts = await get4BlogPosts();
   return (
     <section className="mt-12">
       <div className="mb-4 flex items-center justify-between">

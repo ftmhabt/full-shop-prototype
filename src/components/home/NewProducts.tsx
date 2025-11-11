@@ -1,11 +1,8 @@
-import { StandardizedProduct } from "@/types";
+import { get4NewProducts } from "@/lib/homeData";
 import ProductCard from "./ProductCard";
 
-export default async function NewProducts({
-  products,
-}: {
-  products: StandardizedProduct[];
-}) {
+export default async function NewProducts() {
+  const products = await get4NewProducts();
   return (
     <section className="mt-8">
       <div className="mb-4 flex items-center justify-between">

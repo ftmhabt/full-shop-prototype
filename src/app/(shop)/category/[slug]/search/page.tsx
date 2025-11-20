@@ -1,5 +1,6 @@
 import {
   getAttributesByCategorySlug,
+  getBrandsByCategorySlug,
   getCategories,
 } from "@/app/actions/products";
 import FiltersFormWrapper from "@/components/FiltersFormWrapper";
@@ -26,6 +27,7 @@ export default async function CategorySearchPage({
   const query = resolvedSearchParams.query as string | undefined;
 
   const attributes = await getAttributesByCategorySlug(slug);
+  const brands = await getBrandsByCategorySlug(slug);
 
   const categories = await getCategories();
   const currentCategory = categories.find((cat) => cat.slug === slug);
@@ -39,6 +41,7 @@ export default async function CategorySearchPage({
           query={query}
           filters={filters}
           attributes={attributes}
+          brands={brands}
         />
       </aside>
 

@@ -93,7 +93,7 @@ export async function getProductsByCategorySlug(
 
   // Filter by attribute slugs
   const attributeFilters = Object.entries(otherFilters).filter(
-    ([key]) => key !== "inStock"
+    ([key]) => key !== "inStock" && key !== "brand"
   );
   if (attributeFilters.length) {
     where.AND = attributeFilters.map(([attrSlug, valueSlugs]) => ({
@@ -106,6 +106,13 @@ export async function getProductsByCategorySlug(
         },
       },
     }));
+  }
+
+  // Filter by brand
+  if (otherFilters.brand?.length) {
+    where.brand = {
+      slug: { in: otherFilters.brand },
+    };
   }
 
   // Determine sorting
@@ -261,4 +268,19 @@ export async function getProductsBySearch(
     products,
     attributes: Object.values(attributeMap),
   };
+}
+
+export async function getBrandsByCategorySlug(slug: string) {
+  return db.brand.findMany({
+    where: {
+      products: {
+        some: {
+          category: {
+            slug,
+          },
+        },
+      },
+    },
+    orderBy: { name: "asc" },
+  });
 }

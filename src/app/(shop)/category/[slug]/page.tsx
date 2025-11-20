@@ -1,5 +1,6 @@
 import {
   getAttributesByCategorySlug,
+  getBrandsByCategorySlug,
   getProductsByCategorySlug,
 } from "@/app/actions/products";
 import FiltersFormWrapper from "@/components/FiltersFormWrapper";
@@ -30,6 +31,7 @@ export default async function CategoryPage({ params, searchParams }: any) {
   const { filters, orderBy, query } =
     parseCategorySearchParams(resolvedSearchParams);
   const attributes = await getAttributesByCategorySlug(slug);
+  const brands = await getBrandsByCategorySlug(slug);
 
   const productsPerPage = 12;
   const totalProducts = await db.product.count({
@@ -68,6 +70,7 @@ export default async function CategoryPage({ params, searchParams }: any) {
             slug={slug}
             filters={filters}
             attributes={attributes}
+            brands={brands}
             query={query}
           />
         </aside>

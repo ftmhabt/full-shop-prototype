@@ -22,6 +22,7 @@ interface FiltersFormProps {
   query?: string;
   filters?: Record<string, string[]>;
   attributes?: AttributeWithValues[];
+  brands?: { id: string; name: string; slug: string }[];
 }
 
 export default function FiltersForm({
@@ -29,6 +30,7 @@ export default function FiltersForm({
   query,
   filters = {},
   attributes = [],
+  brands = [],
 }: FiltersFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -121,6 +123,38 @@ export default function FiltersForm({
         />
         <span>فقط موجودی</span>
       </label>
+      {/* brands */}
+      {brands && brands.length > 0 && (
+        <Accordion type="single" className="w-full">
+          <AccordionItem value="brand">
+            <AccordionTrigger>برند</AccordionTrigger>
+            <AccordionContent className="space-y-2">
+              {brands.map((brand) => (
+                <label key={brand.id} className="flex items-center gap-2">
+                  <Checkbox
+                    name="brand"
+                    value={brand.slug}
+                    checked={
+                      localFilters["brand"]?.includes(brand.slug) ?? false
+                    }
+                    onCheckedChange={(checked) => {
+                      setLocalFilters((prev) => ({
+                        ...prev,
+                        brand: checked
+                          ? [...(prev["brand"] || []), brand.slug]
+                          : (prev["brand"] || []).filter(
+                              (b) => b !== brand.slug
+                            ),
+                      }));
+                    }}
+                  />
+                  <span>{brand.name}</span>
+                </label>
+              ))}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
 
       {/* Attributes */}
       <Accordion type="multiple" className="w-full">

@@ -12,7 +12,8 @@ export async function tomanToUsdWithMarkup(
   basePriceToman: number,
   applyMarkup = true
 ): Promise<number> {
-  if (!basePriceToman) throw new Error("base price required");
+  if (basePriceToman === null || basePriceToman === undefined)
+    throw new Error("base price required");
 
   const { rateToman } = await getLatestRate();
   const { markupPercent } = await getConstants();

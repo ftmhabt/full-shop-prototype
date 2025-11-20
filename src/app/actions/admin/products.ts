@@ -129,8 +129,8 @@ export async function updateProduct(data: UpdateProductInput) {
     image,
     attributeValueIds = [],
   } = data;
-  const priceUSD = await tomanToUsdWithMarkup(price ?? 0, false);
-  const oldPriceUSD = await tomanToUsdWithMarkup(oldPrice ?? 0, false);
+  const priceUSD = await tomanToUsdWithMarkup(price, false);
+  const oldPriceUSD = await tomanToUsdWithMarkup(oldPrice || 0, false);
   // Start a transaction to update product and attributes together
   return db.$transaction(async (tx) => {
     // Update main product fields

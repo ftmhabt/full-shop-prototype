@@ -42,7 +42,7 @@ function ProductCard({ p }: { p: StandardizedProduct }) {
                 {p.badge}
               </Badge>
             )}
-            {p.oldPriceToman && (
+            {0 < discountPercent && (
               <Badge className="rounded-full px-3 py-1 text-xs">
                 {discountPercent + "%"}
               </Badge>

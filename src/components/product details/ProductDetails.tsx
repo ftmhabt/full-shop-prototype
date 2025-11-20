@@ -125,7 +125,7 @@ export default function ProductDetails({
                 {product.badge}
               </Badge>
             )}
-            {product.oldPriceToman && (
+            {0 < discountPercent && (
               <Badge className="rounded-full px-3 py-1 text-xs">
                 {discountPercent + "%"}
               </Badge>

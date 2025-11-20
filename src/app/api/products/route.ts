@@ -1,5 +1,6 @@
 import { getProductsByCategorySlug } from "@/app/actions/products";
-import { usdToToman } from "@/lib/exchange";
+import { getRateCached } from "@/lib/exchangeCache";
+import { getLatestRate } from "@/lib/latestRate";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -40,6 +41,8 @@ export async function GET(req: Request) {
     );
 
     // Normalize price fields
+    const rate = await getRateCached(getLatestRate);
+
     const standardized = await Promise.all(
       products.map(async (p) => {
         const priceNum =
@@ -56,9 +59,9 @@ export async function GET(req: Request) {
             ? Number(p.oldPrice)
             : null;
 
-        const priceToman = await usdToToman(priceNum);
+        const priceToman = Math.round(priceNum * rate);
         const oldPriceToman = oldPriceNum
-          ? await usdToToman(oldPriceNum)
+          ? Math.round(oldPriceNum * rate)
           : null;
 
         return {

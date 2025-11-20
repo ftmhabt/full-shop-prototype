@@ -8,7 +8,8 @@ import CategorySchemas from "@/components/SEO/CategorySchemas";
 import ProductsWrapper from "@/components/server/ProductsWrapper";
 import SortBar from "@/components/SortBar";
 import db from "@/lib/db";
-import { usdToToman } from "@/lib/exchange";
+import { getRateCached } from "@/lib/exchangeCache";
+import { getLatestRate } from "@/lib/latestRate";
 import { getProductCategoryMetadata } from "@/lib/metadata/productCategoryMetadata";
 import { ProductWithAttributes } from "@/types";
 import { notFound } from "next/navigation";
@@ -112,14 +113,16 @@ function parseCategorySearchParams(
 }
 
 async function standardizeProducts(products: ProductWithAttributes[]) {
+  const rate = await getRateCached(getLatestRate);
+
   return Promise.all(
     products.map(async (p) => ({
       ...p,
       price: p.price.toNumber(),
-      priceToman: await usdToToman(p.price.toNumber()),
+      priceToman: Math.round(p.price.toNumber() * rate),
       oldPrice: p.oldPrice?.toNumber() || null,
       oldPriceToman: p.oldPrice
-        ? await usdToToman(p.oldPrice?.toNumber())
+        ? Math.round(p.oldPrice.toNumber() * rate)
         : null,
       image: Array.isArray(p.image) ? p.image : [p.image],
     }))

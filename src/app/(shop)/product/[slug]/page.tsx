@@ -1,7 +1,8 @@
 import { getProductBySlug } from "@/app/actions/products";
 import ProductDetails from "@/components/product details/ProductDetails";
 import { ProductSchemas } from "@/components/SEO/SiteSchemas";
-import { usdToToman } from "@/lib/exchange";
+import { getRateCached } from "@/lib/exchangeCache";
+import { getLatestRate } from "@/lib/latestRate";
 import { getProductMetadata } from "@/lib/metadata/productMetadata";
 
 export async function generateMetadata({ params }: any) {
@@ -9,15 +10,17 @@ export async function generateMetadata({ params }: any) {
 }
 
 export default async function ProductPage({ params }: any) {
+  const rate = await getRateCached(getLatestRate);
+
   const { slug } = params;
   const product = await getProductBySlug(slug);
   const standardizedProduct = {
     ...product,
     price: product.price.toNumber(),
-    priceToman: await usdToToman(product.price.toNumber()),
+    priceToman: Math.round(product.price.toNumber() * rate),
     oldPrice: product.oldPrice ? product.oldPrice.toNumber() : null,
     oldPriceToman: product.oldPrice
-      ? await usdToToman(product.oldPrice.toNumber())
+      ? Math.round(product.oldPrice.toNumber() * rate)
       : null,
     reviews: product.reviews.map((r) => ({
       id: r.id,

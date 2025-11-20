@@ -1,8 +1,11 @@
 import ProductForm from "@/components/admin/ProductForm";
 import { db } from "@/lib/db";
-import { usdToToman } from "@/lib/exchange";
+import { getRateCached } from "@/lib/exchangeCache";
+import { getLatestRate } from "@/lib/latestRate";
 
 export default async function EditPage({ params }: any) {
+  const rate = await getRateCached(getLatestRate);
+
   const product = await db.product.findUnique({
     where: { id: params.id },
     include: { attributes: { include: { value: true } }, brand: true },
@@ -10,8 +13,10 @@ export default async function EditPage({ params }: any) {
 
   const categories = await db.category.findMany();
   const attributes = await db.attribute.findMany({ include: { values: true } });
-  const priceInToman = await usdToToman(product?.price.toNumber() ?? 0);
-  const oldPriceInToman = await usdToToman(product?.oldPrice?.toNumber() ?? 0);
+  const priceInToman = Math.round((product?.price?.toNumber() || 0) * rate);
+  const oldPriceInToman = product?.oldPrice?.toNumber()
+    ? Math.round(product.oldPrice.toNumber() * rate)
+    : undefined;
   const brands = await db.brand.findMany({
     select: { id: true, name: true },
   });

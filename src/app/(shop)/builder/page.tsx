@@ -1,8 +1,11 @@
 import DeviceBuilder from "@/components/builder/DeviceBuilder";
 import db from "@/lib/db";
-import { usdToToman } from "@/lib/exchange";
+import { getRateCached } from "@/lib/exchangeCache";
+import { getLatestRate } from "@/lib/latestRate";
 
 export default async function DeviceBuilderPage() {
+  const rate = await getRateCached(getLatestRate);
+
   const categories = await db.category.findMany({
     where: {
       inBundle: true,
@@ -28,7 +31,7 @@ export default async function DeviceBuilderPage() {
         cat.products.map(async (p) => ({
           ...p,
           price: p.price.toNumber(),
-          priceToman: await usdToToman(p.price.toNumber()),
+          priceToman: Math.round(p.price.toNumber() * rate),
         }))
       ),
     }))

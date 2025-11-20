@@ -2,7 +2,8 @@
  * Recursively adds `priceToman` and `oldPriceToman` to any object or array that has `price` or `oldPrice`.
  */
 
-import { usdToToman } from "@/lib/exchange";
+import { getRateCached } from "@/lib/exchangeCache";
+import { getLatestRate } from "@/lib/latestRate";
 
 export type Priceable = {
   price?: number;
@@ -38,12 +39,14 @@ export async function addTomanPrices<T>(
 
   const result = { ...data } as any;
 
+  const rate = await getRateCached(getLatestRate);
+
   // Add priceToman / oldPriceToman if applicable
   if (typeof result.price === "number") {
-    result.priceToman = await usdToToman(result.price);
+    result.priceToman = Math.round(result.price * rate);
   }
   if (typeof result.oldPrice === "number") {
-    result.oldPriceToman = await usdToToman(result.oldPrice);
+    result.oldPriceToman = Math.round(result.oldPrice * rate);
   }
 
   // Recursively apply to nested objects/arrays

@@ -30,7 +30,7 @@ export async function tomanToUsdWithMarkup(
 export async function usdToToman(usdPrice: number): Promise<number> {
   const { rateToman } = await getLatestRate();
 
-  const toman = usdPrice * rateToman;
+  const toman = Math.round(usdPrice * rateToman);
 
   return Number(Math.round(toman));
 }

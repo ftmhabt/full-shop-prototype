@@ -1,6 +1,7 @@
 import { StandardizedProduct } from "@/types";
 import { Product as PrismaProduct } from "@prisma/client";
-import { usdToToman } from "./exchange";
+import { getRateCached } from "./exchangeCache";
+import { getLatestRate } from "./latestRate";
 
 export async function standardizeProducts(
   products: (PrismaProduct & {
@@ -30,6 +31,8 @@ export async function standardizeProducts(
     brand: { id: string; name: string; slug: string } | null;
   })[]
 ): Promise<StandardizedProduct[]> {
+  const rate = await getRateCached(getLatestRate);
+
   return await Promise.all(
     products.map(async (p) => ({
       id: p.id,
@@ -40,9 +43,9 @@ export async function standardizeProducts(
       image: p.image,
       badge: p.badge,
       oldPrice: p.oldPrice ? Number(p.oldPrice) : null,
-      oldPriceToman: p.oldPrice ? await usdToToman(Number(p.oldPrice)) : null,
+      oldPriceToman: p.oldPrice ? Math.round(Number(p.oldPrice) * rate) : null,
       price: Number(p.price),
-      priceToman: await usdToToman(Number(p.price)),
+      priceToman: Math.round(Number(p.price) * rate),
       rating: p.rating,
       stock: p.stock,
       soldCount: p.soldCount,

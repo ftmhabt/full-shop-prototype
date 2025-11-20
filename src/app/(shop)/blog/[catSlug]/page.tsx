@@ -9,7 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import db from "@/lib/db";
-import { usdToToman } from "@/lib/exchange";
+import { getRateCached } from "@/lib/exchangeCache";
+import { getLatestRate } from "@/lib/latestRate";
 import { getBlogCategoryMetadata } from "@/lib/metadata/blogCategoryMetadata";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -19,6 +20,8 @@ export async function generateMetadata({ params }: any) {
 }
 
 export default async function BlogCategoryPage({ params }: any) {
+  const rate = await getRateCached(getLatestRate);
+
   const category = await db.blogCategory.findUnique({
     where: { slug: params.catSlug },
     include: {
@@ -47,7 +50,11 @@ export default async function BlogCategoryPage({ params }: any) {
     relatedProducts.map(async (p) => ({
       ...p,
       price: p.price.toNumber(),
-      priceToman: await usdToToman(p.price.toNumber()),
+      priceToman: Math.round(p.price.toNumber() * rate),
+      oldPrice: p.oldPrice ? p.oldPrice.toNumber() : undefined,
+      oldPriceToman: p.oldPrice
+        ? Math.round(p.oldPrice.toNumber() * rate)
+        : undefined,
     }))
   );
 

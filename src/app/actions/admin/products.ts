@@ -1,7 +1,9 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { tomanToUsdWithMarkup, usdToToman } from "@/lib/exchange";
+import { tomanToUsdWithMarkup } from "@/lib/exchange";
+import { getRateCached } from "@/lib/exchangeCache";
+import { getLatestRate } from "@/lib/latestRate";
 import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -23,13 +25,17 @@ export async function getPaginatedProducts(page: number, query?: string) {
     take: PAGE_SIZE,
     include: { reviews: true },
   });
+  const rate = await getRateCached(getLatestRate);
 
   const productsWithToman = await Promise.all(
     products.map(async (p) => ({
       ...p,
       price: p.price.toNumber(),
       oldPrice: p.oldPrice?.toNumber(),
-      priceToman: await usdToToman(p.price?.toNumber()),
+      priceToman: Math.round(p.price.toNumber() * rate),
+      oldPriceToman: p.oldPrice
+        ? Math.round(p.oldPrice.toNumber() * rate)
+        : null,
     }))
   );
 

@@ -1,5 +1,6 @@
 import { getProductsByCategorySlug } from "@/app/actions/products";
-import { usdToToman } from "@/lib/exchange";
+import { getRateCached } from "@/lib/exchangeCache";
+import { getLatestRate } from "@/lib/latestRate";
 import InfiniteProducts from "../product/InfiniteProducts";
 
 interface ProductsWrapperProps {
@@ -25,6 +26,8 @@ export default async function ProductsWrapper({
 
   if (!data?.length) return <p>هیچ محصولی یافت نشد</p>;
 
+  const rate = await getRateCached(getLatestRate);
+
   const standardized = await Promise.all(
     data.map(async (p) => ({
       ...p,
@@ -34,16 +37,16 @@ export default async function ProductsWrapper({
       oldPrice: p.oldPrice
         ? (p.oldPrice as any).toNumber?.() ?? Number(p.oldPrice)
         : null,
-      priceToman: await usdToToman(
-        (p.price as any).toNumber
+      priceToman: Math.round(
+        ((p.price as any).toNumber
           ? (p.price as any).toNumber()
-          : Number(p.price)
+          : Number(p.price)) * rate
       ),
       oldPriceToman: p.oldPrice
-        ? await usdToToman(
-            (p.oldPrice as any).toNumber
+        ? Math.round(
+            ((p.oldPrice as any).toNumber
               ? (p.oldPrice as any).toNumber()
-              : Number(p.oldPrice)
+              : Number(p.oldPrice)) * rate
           )
         : null,
       reviews: p.reviews.map((r) => ({

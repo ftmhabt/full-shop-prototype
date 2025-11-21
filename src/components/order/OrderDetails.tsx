@@ -212,7 +212,7 @@ export default function OrderDetails({ order }: { order: OrderForDetails }) {
           </div>
         </CardContent>
       </Card>
-      {hasOutOfStockItem && (
+      {order.status === "PENDING" && hasOutOfStockItem && (
         <p className="text-red-600 text-sm">
           موجودی برخی محصولات این سفارش به اتمام رسیده است. امکان پرداخت مجدد
           وجود ندارد.

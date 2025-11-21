@@ -3,7 +3,6 @@ export const revalidate = 10800;
 import CategorySection from "@/components/home/CategorySection";
 import Hero from "@/components/home/Hero";
 import HotProducts from "@/components/home/HotProducts";
-import LoadingSkeleton from "@/components/home/LoadingSkeleton";
 import NewProducts from "@/components/home/NewProducts";
 import BlogRow from "@/components/home/sections/BlogRow";
 import BrandStrip from "@/components/home/sections/BrandStrip";
@@ -12,6 +11,9 @@ import Collections from "@/components/home/sections/Collections";
 import Newsletter from "@/components/home/sections/Newsletter";
 import PromoRow from "@/components/home/sections/PromoRow";
 import ServiceBar from "@/components/home/sections/ServiceBar";
+import BlogPostSkeleton from "@/components/loading/BlogPostSkeleton";
+import HotProductSkeleton from "@/components/loading/HotProductSkeleton";
+import NewProductSkeleton from "@/components/loading/NewProductSkeleton";
 import { getHomeData } from "@/lib/homeData";
 import { Suspense } from "react";
 
@@ -39,16 +41,16 @@ export default async function HomePage() {
       <Hero heroSlides={heroSlides} />
       <CategorySection categories={standardizedCategories} />
       <BuilderStrip />
-      <Suspense fallback={<LoadingSkeleton />}>
+      <Suspense fallback={<NewProductSkeleton />}>
         <NewProducts />
       </Suspense>
-      <Suspense fallback={<LoadingSkeleton />}>
+      <Suspense fallback={<HotProductSkeleton />}>
         <HotProducts />
       </Suspense>
       <PromoRow />
       <Collections />
       <BrandStrip />
-      <Suspense fallback={<LoadingSkeleton />}>
+      <Suspense fallback={<BlogPostSkeleton />}>
         <BlogRow />
       </Suspense>
       <ServiceBar />

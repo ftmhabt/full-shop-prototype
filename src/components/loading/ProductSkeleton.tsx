@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-function ProductSkeleton() {
+export function ProductSkeleton() {
   return (
     <Card className="overflow-hidden rounded-2xl border-muted/40">
       <CardContent className="p-4 space-y-3">

@@ -33,10 +33,10 @@ export function CategoriesList({ categories }: { categories: any[] }) {
               <h3 className="font-bold text-lg">{cat.name}</h3>
               <DynamicIcon iconName={cat.icon} className="text-primary/70" />
             </div>
-            <p className="text-sm text-muted-foreground italic flex gap-2 items-center">
+            <div className="text-sm text-muted-foreground italic flex gap-2 items-center">
               <div>{cat.slug}</div>
               {cat.inBundle && <Badge variant="secondary">قطعه سفارشی</Badge>}
-            </p>
+            </div>
           </div>
 
           <div className="flex justify-between mt-4 gap-2">

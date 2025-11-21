@@ -87,6 +87,7 @@ export default function DeviceBuilder({
             quantity: 1,
             image: p.image?.[0],
             type: "PRODUCT",
+            stock: p.stock ?? 0,
           })
         );
       });
@@ -122,6 +123,7 @@ export default function DeviceBuilder({
             priceToman: p.priceToman,
             quantity: 1,
           })),
+          stock: selectedProducts.reduce((acc, p) => acc + (p.stock ?? 0), 0),
         })
       );
 

@@ -32,9 +32,10 @@ function ProductCard({ p }: { p: StandardizedProduct }) {
           <FallbackImage
             src={p.image[0]}
             alt={p.name}
-            width={300}
-            height={300}
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            fill
+            className={`object-cover transition-transform duration-300 group-hover:scale-105 ${
+              p.stock <= 0 ? "grayscale contrast-75 opacity-60" : ""
+            }`}
           />
           <div className="flex gap-1 absolute right-2 top-2 ">
             {p.badge && (
@@ -57,6 +58,7 @@ function ProductCard({ p }: { p: StandardizedProduct }) {
               priceToman: p.priceToman,
               quantity,
               image: p.image?.[0] ?? "",
+              stock: p.stock,
             }}
             size="sm"
           />

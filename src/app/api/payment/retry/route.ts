@@ -9,7 +9,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "OrderId required" }, { status: 400 });
   }
 
-  const order = await db.order.findUnique({ where: { id: orderId } });
+  const order = await db.order.findUnique({
+    where: { id: orderId },
+    include: { items: true },
+  });
   if (!order) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
   }
@@ -21,6 +24,27 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  for (const item of order.items) {
+    if (!item.productId) {
+      return NextResponse.json(
+        { error: "شناسه محصول نامعتبر است" },
+        { status: 400 }
+      );
+    }
+    const product = await db.product.findUnique({
+      where: { id: item.productId },
+      select: { stock: true, name: true },
+    });
+
+    if (!product) return NextResponse.json({ error: "محصول یافت نشد" });
+
+    if (product.stock < item.quantity) {
+      return NextResponse.json(
+        { error: `موجودی محصول «${product.name}» کافی نیست` },
+        { status: 409 }
+      );
+    }
+  }
   const res = await fetch(
     "https://sandbox.zarinpal.com/pg/v4/payment/request.json",
     {

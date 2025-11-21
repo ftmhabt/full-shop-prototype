@@ -135,23 +135,28 @@ export default function ProductDetails({
             <h3 className="sr-only">امتیاز محصول</h3>
             <Rating value={averageRating} />
           </div>
-          <Badge variant="secondary">موجود در انبار</Badge>
+          {product.stock > 0 && (
+            <Badge variant="secondary">موجود در انبار</Badge>
+          )}
           <div>
             <h3 className="font-semibold mt-2 mb-1">توضیحات محصول</h3>
             <p>{product.summary}</p>
           </div>
-          <div>
-            <QuantitySelector
-              product={{
-                id: product.id,
-                name: product.name,
-                slug: product.slug,
-                priceToman: product.priceToman,
-                quantity,
-                image: product.image?.[0] ?? "",
-              }}
-            />
-          </div>
+          {product.stock > 0 && (
+            <div>
+              <QuantitySelector
+                product={{
+                  id: product.id,
+                  name: product.name,
+                  slug: product.slug,
+                  priceToman: product.priceToman,
+                  quantity,
+                  image: product.image?.[0] ?? "",
+                  stock: product.stock,
+                }}
+              />
+            </div>
+          )}
           <div className="flex space-x-2 mt-2">
             <Badge>گارانتی</Badge>
             <Badge>پرداخت امن</Badge>

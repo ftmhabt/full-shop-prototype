@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState, useTransition } from "react";
+import toast from "react-hot-toast";
 
 interface OrderStatusDialogProps {
   order: any;
@@ -49,15 +50,19 @@ export default function OrderStatusDialog({ order }: OrderStatusDialogProps) {
     if (!pendingStatus) return;
 
     startTransition(async () => {
-      await changeOrderStatus(
-        order.id,
-        pendingStatus as any,
-        trackingCode || undefined
-      );
-      setSelectedStatus(pendingStatus);
-      setPendingStatus(null);
-      setTrackingCode("");
-      setIsDialogOpen(false);
+      try {
+        await changeOrderStatus(
+          order.id,
+          pendingStatus as any,
+          trackingCode || undefined
+        );
+        setSelectedStatus(pendingStatus);
+        setPendingStatus(null);
+        setTrackingCode("");
+        setIsDialogOpen(false);
+      } catch (error: any) {
+        toast.error(error?.message || "خطا در تغییر وضعیت سفارش");
+      }
     });
   };
 

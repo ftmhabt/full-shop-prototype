@@ -19,6 +19,7 @@ export default function QuantitySelector({
   const number = items.find((i) => i.id === product.id)?.quantity ?? 0;
 
   const handleAdd = () => {
+    if (number >= product.stock) return;
     dispatch(
       add({
         id: product.id,
@@ -27,6 +28,7 @@ export default function QuantitySelector({
         priceToman: product.priceToman,
         quantity: 1,
         image: product.image?.[0] ?? "",
+        stock: product.stock,
       })
     );
   };
@@ -35,13 +37,19 @@ export default function QuantitySelector({
     <>
       {number === 0 ? (
         size === "lg" ? (
-          <Button
-            onClick={handleAdd}
-            className="w-60 bg-primary text-white text-lg py-1 rounded-lg"
-          >
-            افزودن به سبد خرید
-          </Button>
-        ) : (
+          product.stock > 0 ? (
+            <Button
+              onClick={handleAdd}
+              className="w-60 bg-primary text-white text-lg py-1 rounded-lg"
+            >
+              افزودن به سبد خرید
+            </Button>
+          ) : (
+            <Button variant="outline" className="w-60 text-lg py-1 rounded-lg">
+              ناموجود
+            </Button>
+          )
+        ) : product.stock > 0 ? (
           <Button
             onClick={handleAdd}
             size="sm"
@@ -49,6 +57,14 @@ export default function QuantitySelector({
             variant="secondary"
           >
             <ShoppingCart className="ml-1 h-4 w-4" /> افزودن به سبد
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            className="absolute bottom-2 left-2 rounded-full"
+          >
+            ناموجود
           </Button>
         )
       ) : size === "lg" ? (
@@ -67,6 +83,7 @@ export default function QuantitySelector({
             variant="ghost"
             className="text-primary hover:bg-gray-100 w-8 h-8 rounded-full"
             onClick={() => dispatch(increase(product.id))}
+            disabled={number >= product.stock}
           >
             +
           </Button>
@@ -87,6 +104,7 @@ export default function QuantitySelector({
             variant="ghost"
             className="text-primary hover:bg-gray-100 w-6 h-6 rounded-full"
             onClick={() => dispatch(increase(product.id))}
+            disabled={number >= product.stock}
           >
             +
           </Button>

@@ -19,6 +19,43 @@ export async function createOrder(
   if (!userId) throw new Error("User not found");
   if (items.length === 0) throw new Error("Cart is empty");
 
+  // ---------------------------------------------
+  //  STEP 1 — Stock Validation Before Creating Order
+  // ---------------------------------------------
+  for (const item of items) {
+    // Normal product
+    if (!item.type || item.type === "PRODUCT") {
+      const product = await db.product.findUnique({
+        where: { id: item.id },
+        select: { stock: true, name: true },
+      });
+
+      if (!product) throw new Error("محصول یافت نشد");
+      if (product.stock < item.quantity)
+        throw new Error(`موجودی محصول «${product.name}» کافی نیست`);
+    }
+
+    // Bundle product → check each included item
+    if (item.type === "BUNDLE" && item.bundleItems) {
+      for (const b of item.bundleItems) {
+        const product = await db.product.findUnique({
+          where: { id: b.productId },
+          select: { stock: true, name: true },
+        });
+
+        if (!product) throw new Error("محصول یافت نشد");
+
+        const neededQty = b.quantity * item.quantity;
+
+        if (product.stock < neededQty)
+          throw new Error(
+            `موجودی محصول «${product.name}» برای این بسته کافی نیست`
+          );
+      }
+    }
+  }
+  // ---------------------------------------------
+
   // Initialize snapshot
   let shippingSnapshot = {
     id: null as string | null,
@@ -69,6 +106,9 @@ export async function createOrder(
   );
   const finalPrice = Math.max(totalPrice + method.cost - discountAmount, 0);
 
+  // ---------------------------------------------
+  //  STEP 2 — Create Order (stock already validated)
+  // ---------------------------------------------
   const order = await db.order.create({
     data: {
       id: generateOrderId(),
@@ -169,20 +209,53 @@ export async function changeOrderStatus(
   // سفارش فعلی
   const order = await db.order.findUnique({
     where: { id: orderId },
+    include: { items: true },
   });
   if (!order) throw new Error("سفارش پیدا نشد");
 
   const data: any = { status: newStatus };
 
-  // بر اساس وضعیت جدید، تایم‌ها و کد رهگیری ثبت میشه
   if (newStatus === "PAID") {
-    data.paidAt = now;
-  }
-  if (newStatus === "SHIPPED") {
+    await db.$transaction(async (tx) => {
+      for (const item of order.items) {
+        if (!item.productId) continue;
+
+        // 1 Fetch current stock
+        const product = await tx.product.findUnique({
+          where: { id: item.productId },
+          select: { stock: true },
+        });
+
+        if (!product) throw new Error("محصول یافت نشد");
+
+        // 2 Check stock before decrement
+        if (product.stock < item.quantity) {
+          throw new Error(`موجودی محصول ${item.productName} کافی نیست`);
+        }
+
+        // 3 Apply decrement + soldCount increment
+        await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stock: { decrement: item.quantity },
+            soldCount: { increment: item.quantity },
+          },
+        });
+      }
+
+      // 4 Update payment status safely
+      await tx.order.update({
+        where: { id: orderId },
+        data: {
+          paymentStatus: "PAID",
+          paidAt: now,
+        },
+      });
+    });
+  } else if (newStatus === "SHIPPED") {
     data.shippedAt = now;
     if (trackingCode) data.trackingCode = trackingCode;
-  }
-  if (newStatus === "COMPLETED") {
+  } else if (newStatus === "COMPLETED") {
     data.deliveredAt = now;
   }
 
@@ -200,6 +273,8 @@ export async function changeOrderStatus(
       note:
         newStatus === "SHIPPED" && trackingCode
           ? `سفارش ارسال شد - کد رهگیری: ${trackingCode}`
+          : newStatus === "PAID"
+          ? "پرداخت با موفقیت تایید شد"
           : undefined,
     },
   });

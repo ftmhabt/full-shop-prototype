@@ -99,6 +99,8 @@ export default function ReviewStep({
 
       window.location.href = url;
       dispatch(clear());
+    } catch (err: any) {
+      toast.error(err.message || "خطا در پرداخت");
     } finally {
       setLoading(false);
     }

@@ -1,13 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// export interface CartItem {
-//   id: string;
-//   name: string;
-//   price: number;
-//   quantity: number;
-//   image?: string;
-// }
-
 export interface CartItem {
   id: string; // productId OR bundleId
   name: string;
@@ -15,6 +7,7 @@ export interface CartItem {
   priceToman: number;
   quantity: number;
   image?: string;
+  stock: number;
   type?: "PRODUCT" | "BUNDLE";
   bundleItems?: {
     productId: string;
@@ -52,9 +45,18 @@ const cartSlice = createSlice({
       );
 
       if (existing) {
-        existing.quantity += item.quantity;
+        // Prevent exceeding stock
+        existing.quantity = Math.min(
+          existing.quantity + item.quantity,
+          item.stock
+        );
       } else {
-        state.items.push(item);
+        if (item.stock > 0) {
+          state.items.push({
+            ...item,
+            quantity: Math.min(item.quantity, item.stock),
+          });
+        }
       }
 
       localStorage.setItem("cart", JSON.stringify(state.items));
@@ -62,9 +64,12 @@ const cartSlice = createSlice({
 
     increase(state, action: PayloadAction<string>) {
       const item = state.items.find((i) => i.id === action.payload);
-      if (item) {
+      if (!item) return;
+
+      if (item.quantity < item.stock) {
         item.quantity += 1;
       }
+
       localStorage.setItem("cart", JSON.stringify(state.items));
     },
 

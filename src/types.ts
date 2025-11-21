@@ -50,6 +50,7 @@ export interface CartItem {
   image?: string;
   bundleId?: string;
   bundleLabel?: string;
+  stock: number;
 }
 
 export type OrderStep = "address" | "cart" | "review" | "payment" | "success";
@@ -191,6 +192,7 @@ export type OrderForDetails = {
     bundleLabel?: string | null;
     productId: string | null; // <- allow null
     productName: string;
+    product: { stock: number } | null;
   }[];
 };
 

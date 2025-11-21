@@ -18,6 +18,13 @@ import { useState } from "react";
 export default function OrderDetails({ order }: { order: OrderForDetails }) {
   const [isLoading, setIsLoading] = useState(false);
 
+  const hasOutOfStockItem = order.items.some(
+    (i) =>
+      i.product &&
+      typeof i.product.stock === "number" &&
+      i.product.stock < i.quantity
+  );
+
   const handleRetryPayment = async () => {
     setIsLoading(true);
     try {
@@ -205,7 +212,12 @@ export default function OrderDetails({ order }: { order: OrderForDetails }) {
           </div>
         </CardContent>
       </Card>
-
+      {hasOutOfStockItem && (
+        <p className="text-red-600 text-sm">
+          موجودی برخی محصولات این سفارش به اتمام رسیده است. امکان پرداخت مجدد
+          وجود ندارد.
+        </p>
+      )}
       {/* دکمه‌ها */}
       <div className="flex flex-col sm:flex-row gap-2">
         <Link href="/dashboard/orders" className="flex-1">
@@ -217,10 +229,14 @@ export default function OrderDetails({ order }: { order: OrderForDetails }) {
         {order.status === "PENDING" && (
           <Button
             onClick={handleRetryPayment}
-            disabled={isLoading}
+            disabled={isLoading || hasOutOfStockItem}
             className="flex-1"
           >
-            {isLoading ? "در حال انتقال..." : "پرداخت دوباره"}
+            {hasOutOfStockItem
+              ? "امکان پرداخت نیست"
+              : isLoading
+              ? "در حال انتقال..."
+              : "پرداخت دوباره"}
           </Button>
         )}
       </div>

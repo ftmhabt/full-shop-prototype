@@ -10,7 +10,13 @@ export default async function OrderDetailsPage({ params }: any) {
   const order = await db.order.findFirst({
     where: { id, userId },
     include: {
-      items: true,
+      items: {
+        include: {
+          product: {
+            select: { stock: true },
+          },
+        },
+      },
     },
   });
 

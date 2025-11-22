@@ -62,7 +62,11 @@ export default function BlogEditor({
       : null
   );
   const [tags, setTags] = useState<OptionType[]>(
-    initialData?.tags?.map((t) => ({ value: t.id, label: t.name })) || []
+    initialData?.tags?.map((t) => ({
+      value: t.id,
+      label: t.name,
+      slug: t.slug,
+    })) || []
   );
   const [categories, setCategories] = useState<OptionType[]>([]);
   const [availableTags, setAvailableTags] = useState<OptionType[]>([]);

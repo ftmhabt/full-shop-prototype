@@ -7,7 +7,7 @@ export default function BlogPostSkeleton() {
   return (
     <section className="mt-12">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold">مطالب خواندنی</h2>
+        <h2 className="text-lg font-bold">مقالات</h2>
         <Button variant="ghost" size="sm" className="gap-1">
           مشاهده همه <ChevronLeft className="h-4 w-4" />
         </Button>

@@ -79,7 +79,7 @@ export default function OrderStatusDialog({ order }: OrderStatusDialogProps) {
         onValueChange={handleSelectChange}
         disabled={isPending}
       >
-        <SelectTrigger>
+        <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="وضعیت سفارش" />
         </SelectTrigger>
         <SelectContent>

@@ -69,7 +69,7 @@ export async function updateHeroSlide(
   return updated;
 }
 
-async function saveFile(file: File) {
+export async function saveFile(file: File) {
   if (file && file.size > 1 * 1024 * 1024) {
     throw new Error("حجم تصویر زیاد است (تا یک مگابایت مجاز)");
   }

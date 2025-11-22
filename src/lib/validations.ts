@@ -50,3 +50,14 @@ export const heroSlideSchema = z.object({
 });
 
 export type HeroSlideFormValues = z.infer<typeof heroSlideSchema>;
+
+export const brandSchema = z.object({
+  name: z.string().min(2, "عنوان حداقل ۲ کاراکتر باشد"),
+  slug: z.string().min(2, "اسلاگ حداقل ۲ کاراکتر باشد"),
+  imageFile: z
+    .any()
+    .refine((files) => !files || files.length <= 1, "Only one file allowed")
+    .optional(),
+});
+
+export type BrandFormValues = z.infer<typeof brandSchema>;

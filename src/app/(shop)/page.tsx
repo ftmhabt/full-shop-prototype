@@ -5,7 +5,9 @@ import Hero from "@/components/home/Hero";
 import HotProducts from "@/components/home/HotProducts";
 import NewProducts from "@/components/home/NewProducts";
 import BlogRow from "@/components/home/sections/BlogRow";
-import BrandStrip from "@/components/home/sections/BrandStrip";
+import BrandStrip, {
+  BrandStripSkeleton,
+} from "@/components/home/sections/BrandStrip";
 import BuilderStrip from "@/components/home/sections/BuilderStrip";
 import Collections from "@/components/home/sections/Collections";
 import Newsletter from "@/components/home/sections/Newsletter";
@@ -49,7 +51,9 @@ export default async function HomePage() {
       </Suspense>
       <PromoRow />
       <Collections />
-      <BrandStrip />
+      <Suspense fallback={<BrandStripSkeleton />}>
+        <BrandStrip />
+      </Suspense>
       <Suspense fallback={<BlogPostSkeleton />}>
         <BlogRow />
       </Suspense>

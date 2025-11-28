@@ -37,11 +37,14 @@ function HydrateCart() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-    dispatch(hydrate(storedCart ? JSON.parse(storedCart) : []));
+    // Add a check to ensure we're on the client
+    if (typeof window !== 'undefined') {
+      const storedCart = localStorage.getItem("cart");
+      dispatch(hydrate(storedCart ? JSON.parse(storedCart) : []));
+    }
   }, [dispatch]);
 
-  return null; // No UI, just dispatches hydration
+  return null;
 }
 
 function Header({ categoryNav }: { categoryNav: React.ReactNode }) {
@@ -53,28 +56,30 @@ function Header({ categoryNav }: { categoryNav: React.ReactNode }) {
           href="/"
           className="flex items-center gap-2 font-bold text-lg ml-auto sm:ml-0"
         >
-          <FallbackImage src="/logo.png" alt="لوگو" width={40} height={40} />
-          شاپ
+          <div className='relative w-[40px] h-[48.33px]'>
+            <FallbackImage src="/logo.png" alt="لوگو" fill />
+          </div>
+          <span className='mt-[5px]'>شاپ</span>
         </Link>
-        <ThemeSwitcher />
-        {/* Search Bar */}
-        <SearchBar />
-
+        
         {/* Icons */}
-        <div className="flex items-center gap-4">
+        <div className="flex justify-end items-center gap-1 flex-2">
+          {/* Search Bar */}
+          <div className="flex md:justify-center justify-end flex-2"><SearchBar /></div>
+          <ThemeSwitcher />
           <Link
             href="/dashboard"
-            className="flex items-center gap-1 text-sm text-primary"
+            className="flex justify-center items-center gap-1 text-sm text-primary size-9 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 rounded-full"
           >
             <User className="h-4 w-4" />
           </Link>
           <ResponsiveCart />
           <a
             href="tel:09123456789"
-            className="flex items-center gap-1 text-sm text-primary"
+            className="flex items-center gap-1 text-sm text-primary h-9"
           >
-            <Phone className="h-4 w-4" />
-            <span className="hidden sm:inline-block">۰۹۱۲۳۴۵۶۷۸۹</span>
+            <Phone className="h-4 w-4 mr-[10px]" />
+            <span className="hidden sm:inline-block mt-[2.66px]">۰۹۱۲۳۴۵۶۷۸۹</span>
           </a>
         </div>
       </div>
@@ -154,11 +159,11 @@ function Footer() {
       </div>
       <Separator />
       <div className="container mx-auto flex flex-col items-center justify-between gap-3 px-4 py-4 text-xs text-muted-foreground sm:flex-row">
-        <p>© 2025 شاپ - همه حقوق محفوظ است</p>
+        <p>© {new Date().getFullYear()} شاپ - همه حقوق محفوظ است</p>
         <div className="flex gap-3">
-          <Link href="#">اینستاگرام</Link>
-          <Link href="#">تلگرام</Link>
-          <Link href="#">یوتیوب</Link>
+          <Link href="https://www.instagram.com" target="_blank">اینستاگرام</Link>
+          <Link href="https://web.telegram.org" target="_blank">تلگرام</Link>
+          <Link href="https://www.youtube.com" target="_blank">یوتیوب</Link>
         </div>
       </div>
     </footer>

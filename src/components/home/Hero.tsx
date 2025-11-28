@@ -21,7 +21,7 @@ export default function Hero({ heroSlides }: HeroProps) {
         spaceBetween={20}
         slidesPerView={1}
         pagination={{ clickable: true }}
-        loop
+        loop={heroSlides.length > 1}
         autoplay={{ delay: 5000 }}
         className="rounded-xl"
       >

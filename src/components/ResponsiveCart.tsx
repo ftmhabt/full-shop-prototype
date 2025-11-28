@@ -38,7 +38,7 @@ export default function ResponsiveCart() {
     <Button
       variant="ghost"
       size="icon"
-      className="relative rounded-full"
+      className="relative rounded-full cursor-pointer"
       aria-label="Cart"
     >
       <ShoppingCart className="h-5 w-5" />

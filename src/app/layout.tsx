@@ -1,5 +1,17 @@
 import { SiteSchemas } from "@/components/SEO/SiteSchemas";
+import localFont from 'next/font/local';
 import "./globals.css";
+import { Providers } from "./providers";
+import { getThemeCookie } from '@/app/actions/theme';
+
+const vazirMatn = localFont({
+    src:'../../public/fonts/Vazirmatn-Variable.ttf',
+    style: 'normal',
+    variable: '--font-vazirmatn',
+    display: 'swap',
+    fallback: ['system-ui', 'sans-serif'],
+    preload: false,
+});
 
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost"),
@@ -34,17 +46,28 @@ export const metadata = {
   alternates: {
     canonical: process.env.NEXT_PUBLIC_SITE_URL,
   },
+  icons: {
+    apple: [
+        {url: '/apple-icon-152x152.png', sizes: '152x152'},
+        {url: '/apple-icon-180x180.png', sizes: '180x180'}
+    ],
+    other: [
+        {url: '/android-icon-144x144.png', sizes: '144x144'},
+        {url: '/android-icon-192x192.png', sizes: '192x192'}
+    ]
+  },
 };
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const savedTheme = await getThemeCookie();
+
   return (
-    <html lang="fa" dir="rtl" suppressHydrationWarning>
+    <html lang="fa" className={`${vazirMatn.variable}`} dir="rtl" suppressHydrationWarning>
       <body>
-        {children}
+        <Providers savedTheme={savedTheme}>{children}</Providers>
         <SiteSchemas />
       </body>
     </html>
